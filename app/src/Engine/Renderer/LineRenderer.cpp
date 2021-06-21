@@ -47,9 +47,7 @@ namespace Maple
 	auto LineRenderer::init(const std::shared_ptr<GBuffer>& buffer) -> void 
 	{
 		memset(&systemUniformBuffer, 0, sizeof(UniformBufferObject));
-		auto vertShaderCode = File::read("shaders/spv/BatchLineVert.spv");
-		auto fragShaderCode = File::read("shaders/spv/BatchLineFrag.spv");
-		shader = Shader::create(vertShaderCode, fragShaderCode);
+		shader = Shader::create("shaders/BatchLine.shader");
 		createRenderPass();
 		createPipeline();
 		createFrameBuffers();

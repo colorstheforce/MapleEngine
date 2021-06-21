@@ -47,14 +47,10 @@ namespace Maple
 
 	auto DeferredOffScreenRenderer::init(const std::shared_ptr<GBuffer> & buffer) -> void
 	{
-
 		gbuffer = buffer;
 		createDefaultMaterial();
 		createRendererPass();
-
-		auto vertShaderCode = File::read("shaders/spv/DeferredColorVert.spv");
-		auto fragShaderCode = File::read("shaders/spv/DeferredColorFrag.spv");
-		shader = Shader::create(vertShaderCode, fragShaderCode);
+		shader = Shader::create("shaders/DeferredOffScreen.shader");
 		PipelineInfo pipeInfo;
 		pipeInfo.renderPass = renderPass;
 		pipeInfo.shader = shader;
@@ -185,9 +181,9 @@ namespace Maple
 	{
 		defaultMaterial = std::make_unique<Material>();
 		MaterialProperties properties;
-		properties.albedoColour = glm::vec4(1.f);
-		properties.roughnessColour = glm::vec4(0.5f);
-		properties.metallicColour = glm::vec4(0.5f);
+		properties.albedoColor = glm::vec4(1.f);
+		properties.roughnessColor = glm::vec4(0.5f);
+		properties.metallicColor = glm::vec4(0.5f);
 		properties.usingAlbedoMap = 1.0f;
 		properties.usingRoughnessMap = 0.0f;
 		properties.usingNormalMap = 0.0f;
@@ -207,11 +203,12 @@ namespace Maple
 			{TextureType::COLOR,gbuffer->getFormat(GBufferTextures::COLOR)},
 			{TextureType::COLOR,gbuffer->getFormat(GBufferTextures::POSITION)},
 			{TextureType::COLOR,gbuffer->getFormat(GBufferTextures::NORMALS)},
+			{TextureType::COLOR,gbuffer->getFormat(GBufferTextures::PBR)},
 			{TextureType::DEPTH,TextureFormat::RGBA8}
 		};
 
 		RenderPassInfo info;
-		info.attachmentCount = 4;
+		info.attachmentCount = 5;
 		info.textureType = infos;
 		renderPass = RenderPass::create(info);
 	}
@@ -245,6 +242,7 @@ namespace Maple
 			TextureType::COLOR,
 			TextureType::COLOR,
 			TextureType::COLOR,
+			TextureType::COLOR,
 			TextureType::DEPTH
 		};
 
@@ -252,6 +250,7 @@ namespace Maple
 			gbuffer->getBuffer(GBufferTextures::COLOR),
 			gbuffer->getBuffer(GBufferTextures::POSITION),
 			gbuffer->getBuffer(GBufferTextures::NORMALS),
+			gbuffer->getBuffer(GBufferTextures::PBR),
 			gbuffer->getDepthBuffer()
 		};
 		frameBuffers.emplace_back(FrameBuffer::create(bufferInfo));

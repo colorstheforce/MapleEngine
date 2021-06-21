@@ -24,7 +24,8 @@ namespace Maple
 	{
 		NONE,
 		LINEAR,
-		NEAREST
+		NEAREST,
+		LINEAR_MIPMAP_LINEAR
 	};
 
 	enum class TextureFormat

@@ -18,6 +18,7 @@ namespace Maple
 	class Texture;
 	class ShadowRenderer;
 	class OmniShadowRenderer;
+	class PreProcessRenderer;
 	class RenderManager 
 	{
 	public:
@@ -44,6 +45,10 @@ namespace Maple
 
 		inline auto getOmniShadowRenderer() const { return omniShadowRenderer; }
 
+		inline auto getPreProcessRenderer() const { return preProcessRenderer; }
+		inline auto setPreProcessRenderer(PreProcessRenderer* preProcessRenderer) { this->preProcessRenderer = preProcessRenderer; }
+
+
 	private:
 		std::vector<std::unique_ptr<Renderer>> renders;
 		std::shared_ptr<GBuffer> gbuffer;
@@ -52,6 +57,7 @@ namespace Maple
 
 		ShadowRenderer* shadowRenderer = nullptr;
 		OmniShadowRenderer* omniShadowRenderer = nullptr;
+		PreProcessRenderer* preProcessRenderer = nullptr;
 
 	};
 };

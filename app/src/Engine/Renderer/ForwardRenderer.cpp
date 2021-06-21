@@ -68,9 +68,9 @@ namespace Maple
 
 	
 
-		auto vertShaderCode = File::read("shaders/simpleVert.spv");
-		auto fragShaderCode = File::read("shaders/simpleFrag.spv");
-		shader = std::make_shared<VulkanShader>(vertShaderCode, fragShaderCode);
+		//auto vertShaderCode = File::read("shaders/simpleVert.spv");
+		//auto fragShaderCode = File::read("shaders/simpleFrag.spv");
+		//shader = std::make_shared<VulkanShader>(vertShaderCode, fragShaderCode);
 		PipelineInfo pipeInfo;
 		//pipeInfo.drawType = DrawType::TRIANGLE_STRIP;
 		//pipeInfo.polygonMode = PolygonMode::LINE;

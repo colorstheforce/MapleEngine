@@ -19,6 +19,7 @@
 #include "Engine/Vulkan/VulkanCommandPool.h"
 
 #include "Engine/Interface/Texture.h"
+
 #include "Engine/Interface/DescriptorSet.h"
 #include "Engine/Interface/UniformBuffer.h"
 
@@ -59,7 +60,6 @@ namespace Maple
 		eventHandler.deferredTypeHandler = [&](auto event) {
 			systemVsUniformBuffer.type = event->getDeferredType();
 			return true;
-
 		};
 		systemVsUniformBuffer.type = 6;
 		systemVsUniformBuffer.colorCascade = 0;
@@ -73,7 +73,7 @@ namespace Maple
 		screenQuad = Mesh::createQuad();
 
 		AttachmentInfo infos[] = {
-			{TextureType::COLOR,TextureFormat::BGRA8}
+			{TextureType::COLOR,TextureFormat::RGBA8}
 		};
 
 		RenderPassInfo info;
@@ -83,10 +83,7 @@ namespace Maple
 		 
 		renderPass = RenderPass::create(info);
 
-		auto vertShaderCode = File::read("shaders/spv/DeferredLightVert.spv");
-		auto fragShaderCode = File::read("shaders/spv/DeferredLightFrag.spv");
-
-		shader = Shader::create(vertShaderCode, fragShaderCode);
+		shader = Shader::create("shaders/DeferredLight.shader");
 		PipelineInfo pipeInfo;
 		pipeInfo.renderPass = renderPass;
 		pipeInfo.shader = shader;
@@ -105,6 +102,9 @@ namespace Maple
 		desInfo.shader = shader;
 		descriptorSet = DescriptorSet::create(desInfo);
 
+
+		preIntegratedFG = Texture2D::create("preIntegratedFG","textures/ibl_brdf_lut.png");
+
 		updateScreenDescriptorSet();
 
 	}
@@ -114,7 +114,7 @@ namespace Maple
 		auto bufferId = renderTexture != nullptr ? 0 : VulkanContext::get()->getSwapChain()->getCurrentBuffer();
 
 		renderPass->beginRenderPass(getCommandBuffer(),
-			{ 0,0,0,1 }, frameBuffers[bufferId].get(),
+			{ 0.3,0.3,0.3,1 }, frameBuffers[bufferId].get(),
 			SubPassContents::INLINE, width,height);
 	}
 
@@ -155,18 +155,36 @@ namespace Maple
 
 	auto DeferredRenderer::renderScene() -> void
 	{
-
 		deferredOffScreenRenderer->renderScene();
-
 		begin();
 		present();
 		end();
-
 	}
 
 	auto DeferredRenderer::beginScene(Scene* scene) -> void
 	{
 		submitLight(scene);
+		auto& registry = scene->getRegistry();
+		auto view = registry.view<Environment>();
+		if (view.empty())
+		{
+			if (environmentMap)
+			{
+				environmentMap = nullptr;
+				irradianceMap = nullptr;
+				updateScreenDescriptorSet();
+			}
+		}
+		else 
+		{
+			const auto& env = view.get<Environment>(view.front());
+			if (environmentMap != env.getPrefilteredEnvironment())
+			{
+				environmentMap = env.getPrefilteredEnvironment();
+				irradianceMap = env.getIrradianceMap();
+				updateScreenDescriptorSet();
+			}
+		}
 		deferredOffScreenRenderer->beginScene(scene);
 	}
 
@@ -264,7 +282,7 @@ namespace Maple
 
 		auto omniShadowRender = app->getRenderManager()->getOmniShadowRenderer();
 
-		if (shadowRender) {
+		if (omniShadowRender) {
 			ImageInfo imageInfo5 = {};
 			imageInfo5.textures = { omniShadowRender->getShadowTexture() };
 			imageInfo5.binding = 5;
@@ -272,6 +290,41 @@ namespace Maple
 			imageInfo5.name = "uShadowCubeMap";
 			infos.emplace_back(imageInfo5);
 		}
+
+
+		ImageInfo imageInfo6 = {};
+		imageInfo6.textures = { gbuffer->getBuffer(GBufferTextures::PBR) };
+		imageInfo6.binding = 6;
+		imageInfo6.type = TextureType::COLOR;
+		imageInfo6.name = "uPBRSampler";
+		infos.emplace_back(imageInfo6);
+
+
+		if (irradianceMap) {
+			ImageInfo imageInfo7 = {};
+			imageInfo7.textures = { irradianceMap };
+			imageInfo7.binding = 7;
+			imageInfo7.type = TextureType::CUBE;
+			imageInfo7.name = "uIrradianceMap";
+			infos.emplace_back(imageInfo7);
+		}
+
+		if (environmentMap) {
+			ImageInfo imageInfo8 = {};
+			imageInfo8.textures = { environmentMap };
+			imageInfo8.binding = 8;
+			imageInfo8.type = TextureType::CUBE;
+			imageInfo8.name = "uEnvironmentMap";
+			infos.emplace_back(imageInfo8);
+		}
+		
+
+		ImageInfo imageInfo9 = {};
+		imageInfo9.textures = { preIntegratedFG };
+		imageInfo9.binding = 9;
+		imageInfo9.type = TextureType::COLOR;
+		imageInfo9.name = "uPreintegratedFG";
+		infos.emplace_back(imageInfo9);
 
 
 		descriptorSet->update(infos);
@@ -296,11 +349,15 @@ namespace Maple
 				light.lightData.position =  { trans.getWorldPosition(),1 };
 				systemVsUniformBuffer.lights[i++] = light.lightData;
 			}
+
 			systemVsUniformBuffer.viewPos = glm::inverse(camera.second->getWorldMatrix());
+			systemVsUniformBuffer.cameraPos = glm::vec4(camera.second->getWorldPosition(),1.0);
+			systemVsUniformBuffer.prefilterLODLevel = environmentMap ? environmentMap->getMipLevel() : 0;
 
 			if (auto shadowRenderer = app->getRenderManager()->getShadowRenderer())
 			{
-			
+				systemVsUniformBuffer.lightSize = shadowRenderer->getLightSize();
+				systemVsUniformBuffer.lightView = shadowRenderer->getLightViewMatrix();
 				systemVsUniformBuffer.bias = shadowRenderer->getBias();
 				for (auto i = 0;i<SHADOWMAP_MAX;i++)
 				{

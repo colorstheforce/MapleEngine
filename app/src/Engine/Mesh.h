@@ -31,9 +31,8 @@ namespace Maple
 		Mesh() = default;
 		Mesh(const std::shared_ptr<VertexBuffer> & vertexBuffer,
 			const std::shared_ptr<IndexBuffer> & indexBuffer);
-		inline auto setMaterial(const std::shared_ptr<Material>& material) {
-			this->material = material;
-		}
+		inline auto setMaterial(const std::shared_ptr<Material>& material) {this->material = material;}
+
 		inline auto setIndicesSize(uint32_t size) { this->size = size; }
 		inline auto getSize() { return size; }
 		inline auto& getIndexBuffer() { return indexBuffer; }
@@ -51,6 +50,7 @@ namespace Maple
 
 		static auto createQuad()->std::shared_ptr< Mesh>;
 		static auto createCube()->std::shared_ptr< Mesh>;
+		static auto createSphere(uint32_t xSegments = 64, uint32_t ySegments = 64)->std::shared_ptr< Mesh>;
 		static auto createPlane(float w,float h,const glm::vec3 & normal)->std::shared_ptr< Mesh>;
 
 
@@ -70,10 +70,5 @@ namespace Maple
 		uint32_t size = 0;
 		bool active = true;
 		std::string name;
-
-
-		static std::shared_ptr<Mesh> defaultCube;
-
-
 	};
 };

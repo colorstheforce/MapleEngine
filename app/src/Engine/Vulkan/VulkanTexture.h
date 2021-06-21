@@ -26,8 +26,7 @@ namespace Maple
 		inline auto setData(const void* pixels) -> void {};
 		inline auto getHandle() const ->  void* { return (void*)&descriptor; };
 	
-		inline auto getMipMaplevels() const -> uint32_t { return mipLevels; }
-		inline auto getName() const -> const std::string& { return name; };
+		inline auto& getName() const { return name; };
 	
 		inline auto setName(const std::string& name) -> void { this->name = name; }
 
@@ -36,7 +35,7 @@ namespace Maple
 		inline auto getDeviceMemory() const { return textureImageMemory; }
 		inline auto getImageView() const { return textureImageView; }
 		inline auto getSampler() const { return textureSampler; }
-
+		inline auto getImageLayout() const { return imageLayout; }
 		auto loadKTX() -> void;
 
 		auto load() -> bool;
@@ -46,7 +45,7 @@ namespace Maple
 		std::string name;
 	
 		uint32_t handle = 0;
-		uint32_t mipLevels = 1;
+
 		const uint8_t* data = nullptr;
 
 		TextureParameters parameters;
@@ -134,7 +133,7 @@ namespace Maple
 	class VulkanTextureCube : public TextureCube
 	{
 	public:
-		VulkanTextureCube(int32_t size);
+		VulkanTextureCube(int32_t size,TextureFormat format = TextureFormat::RGBA8,int32_t numMips = 1);
 
 		VulkanTextureCube(const std::string& filePath);
 		~VulkanTextureCube();
@@ -145,7 +144,7 @@ namespace Maple
 		auto updateDescriptor() -> void;
 		auto load(uint32_t mips) -> void;
 
-		auto update(CommandBuffer* commandBuffer,FrameBuffer * framebuffer,int32_t cubeIndex) -> void override;
+		auto update(CommandBuffer* commandBuffer,FrameBuffer * framebuffer,int32_t cubeIndex, int32_t mipmapLevel = 0) -> void override;
 
 		inline auto getImage() const
 		{
@@ -164,6 +163,8 @@ namespace Maple
 			return textureSampler;
 		}
 
+
+
 	private:
 		auto init() -> void;
 	
@@ -172,14 +173,14 @@ namespace Maple
 		std::string files[6];
 
 		uint32_t handle = 0;
+/*
 		uint32_t width = 0; 
-		uint32_t height = 0; 
+		uint32_t height = 0; */
 		uint32_t size = 0;
-		uint32_t numMips = 0;
+		//uint32_t numMips = 0;
 		std::vector<uint8_t> data;
 
-		TextureParameters parameters;
-		TextureLoadOptions loadOptions;
+		
 
 		VkImage textureImage = nullptr;
 		VkImageLayout imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;

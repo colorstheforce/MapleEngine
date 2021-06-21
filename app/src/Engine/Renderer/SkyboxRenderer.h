@@ -33,6 +33,7 @@ namespace Maple
 		auto onResize(uint32_t width, uint32_t height) -> void override;
 		auto setCubeMap(const std::shared_ptr<Texture>& cubeMap) -> void;
 		auto setRenderTarget(std::shared_ptr <Texture> texture, bool rebuildFramebuffer /*= true*/) -> void override;
+		auto onImGui() -> void override;
 	private:
 
 	
@@ -48,7 +49,11 @@ namespace Maple
 		std::shared_ptr<Mesh> skybox;
 		std::shared_ptr<Texture> cubeMap;
 		std::shared_ptr<UniformBuffer> uniformBuffer;
+		std::shared_ptr<UniformBuffer> uniformBufferLodLevel;
 
 		UniformBufferObject uniformBufferObj;
+
+		float lodLevel = 0;
+
 	};
 };

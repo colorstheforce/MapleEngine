@@ -1,7 +1,15 @@
+//////////////////////////////////////////////////////////////////////////////
+// This file is part of the Maple Engine                              // 
+// Copyright ?2020-2022 Tian Zeng                                           // 
+////////////////////////////////////////////////////////////////////////////// 
+
 #include "Component.h"
 #include "Scene/Entity/Entity.h"
 #include "Scene/SceneManager.h"
+#include "Engine/Interface/Texture.h"
 #include "Application.h"
+
+
 
 namespace Maple
 {
@@ -179,5 +187,28 @@ namespace Maple
 		this->entity = entity;
 	}
 
+	Environment::Environment()
+	{
+	}
+
+	Environment::Environment(const std::string& filePath)
+	{
+		init(filePath);
+	}
+
+	auto Environment::init(const std::string& filePath) -> void
+	{
+		this->filePath = filePath;
+		if (filePath != "") {
+			TextureLoadOptions options(false, false, true);
+			TextureParameters parameters(TextureFormat::RGBA32);
+			equirectangularMap = Texture2D::create(filePath, parameters, options);
+			width = equirectangularMap->getWidth();
+			height = equirectangularMap->getHeight();
+			numMips = equirectangularMap->getMipmapLevel();
+			irradianceMap = TextureCube::create(IrradianceMapSize, TextureFormat::RGBA32);
+			prefilteredEnvironment = TextureCube::create(PrefilterMapSize, TextureFormat::RGBA32, 5);
+		}
+	}
 }
 

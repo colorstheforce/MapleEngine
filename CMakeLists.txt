@@ -32,6 +32,14 @@ add_subdirectory(lib/SPIRV-Cross)
 add_subdirectory(lib/ktx)
 
 
+
+file(GLOB SHADERS_GLSL 
+	"${ASSET_DIR}/shaders/*.vert" 
+	"${ASSET_DIR}/shaders/*.frag" 
+	"${ASSET_DIR}/shaders/*.bat" 
+)
+
+
 file(GLOB VK_APP_SRC
 	${APP_SRC_DIR}/*.cpp
 	${APP_SRC_DIR}/*.h	
@@ -89,7 +97,12 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "SampleApp")
 
 source_group(TREE ${APP_SRC_DIR} FILES ${VK_APP_SRC})
 
-add_executable(SampleApp ${VK_APP_SRC} ${KTX_SOURCES})
+source_group("Shaders\\GLSL" FILES ${SHADERS_GLSL})
+
+
+
+
+add_executable(SampleApp ${VK_APP_SRC} ${KTX_SOURCES} ${SHADERS_GLSL})
 
 set_property(TARGET SampleApp PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${ASSET_DIR})
 

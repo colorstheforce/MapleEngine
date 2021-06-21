@@ -7,8 +7,10 @@
 #include <memory>
 #include <vector>
 #include "Component.h"
-
 #include "Resources/MeshResource.h"
+#include <cereal/types/memory.hpp>
+#include "Engine/Material.h"
+
 
 namespace Maple 
 {
@@ -64,15 +66,18 @@ namespace Maple
 		template<class Archive>
 		auto save(Archive& archive) const -> void
 		{
-			archive(mesh->getName(), entity);
+			archive(mesh->getName(), entity, cereal::make_nvp("material", mesh->getMaterial()));
 		}
 
 		template<class Archive>
 		auto load(Archive& archive) -> void
 		{
 			std::string name;
-			archive(name, entity);
+			std::shared_ptr<Material> material;
+			archive(name, entity, cereal::make_nvp("material", material));
 			getMesh(name);
+			if(mesh)
+				mesh->setMaterial(material);
 		}
 		std::shared_ptr<Mesh> mesh;
 	private:

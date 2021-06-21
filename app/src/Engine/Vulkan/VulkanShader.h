@@ -15,7 +15,7 @@ namespace Maple
 	class VulkanShader : public Shader
 	{
 	public:
-		VulkanShader(const std::vector<uint8_t>& vertex, const std::vector<uint8_t>& fragment);
+		VulkanShader(const std::string & path);
 		~VulkanShader();
 		inline auto& getStageInfos() const { return stageInfos; }
         inline auto& getDescriptorLayoutInfo() const { return descriptorLayoutInfo; }
@@ -29,6 +29,9 @@ namespace Maple
 		auto getHandle() const -> void* override;
 
 	private:
+
+		static auto parseSource(const std::vector<std::string>& lines, std::unordered_map<ShaderType, std::string> &shaders) -> void;
+
 		auto createShader(const std::vector<uint8_t>& data,ShaderType type)->VkShaderModule;
 		std::unordered_map<ShaderType, VkShaderModule> shaderModules;
 		std::vector<VkPipelineShaderStageCreateInfo> stageInfos;

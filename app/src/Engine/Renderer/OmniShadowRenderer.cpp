@@ -58,10 +58,9 @@ namespace Maple
 	auto OmniShadowRenderer::init(const std::shared_ptr<GBuffer> & buffer) -> void
 	{
 		memset(&systemUniformBuffer, 0, sizeof(UniformBufferObject));
-		auto vertShaderCode = File::read("shaders/spv/OmniShadowVert.spv");
-		auto fragShaderCode = File::read("shaders/spv/OmniShadowFrag.spv");
-		
-		shader = Shader::create(vertShaderCode, fragShaderCode);
+		//auto vertShaderCode = File::read("shaders/spv/OmniShadowVert.spv");
+		//auto fragShaderCode = File::read("shaders/spv/OmniShadowFrag.spv");
+		shader = Shader::create("shaders/OmniShadow.shader");
 		createRenderPass();
 		createPipeline();
 		createFrameBuffers();

@@ -31,8 +31,9 @@ namespace Maple
 		auto split(std::u16string input, const std::u16string& delimiter, std::vector<std::u16string>& outs) -> void;
 		auto split(std::string input, const std::string& delimiter, std::vector<std::string>& outs) -> void;
 		auto startWith(const std::string& str, const std::string& start) -> bool;
+		auto contains(const std::string& str, const std::string& start) -> bool;
 		auto endWith(const std::string& str, const std::string& start) -> bool;
-		auto trim(std::string& str) -> void;
+		auto trim(std::string& str,const std::string & trimStr = " ") -> void;
 		auto trim(std::u16string& str) -> void;
 		auto replace(std::string& str, const std::string& old, const std::string& newStr) -> void;
 

@@ -34,7 +34,7 @@ namespace Maple
 		virtual auto submit(const RenderCommand& cmd) -> void = 0;
 		virtual auto renderScene() -> void = 0;
 		virtual auto beginScene(Scene* scene) -> void = 0;
-		virtual auto onResize(uint32_t width, uint32_t height) -> void = 0;
+		virtual auto onResize(uint32_t width, uint32_t height) -> void {};
 		virtual auto onImGui() -> void {};
 		virtual auto setRenderTarget(std::shared_ptr <Texture> texture, bool rebuildFramebuffer = true) -> void { renderTexture = texture; }
 

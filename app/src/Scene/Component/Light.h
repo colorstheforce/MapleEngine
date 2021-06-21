@@ -11,7 +11,6 @@ namespace Maple
 		DirectionalLight = 0,
 		SpotLight = 1,
 		PointLight = 2,
-		GlobalDirectionalLight = 3,
 	};
 
 	struct LightData

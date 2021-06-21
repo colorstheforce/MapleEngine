@@ -39,12 +39,10 @@ namespace Maple
 		auto onResize(uint32_t width, uint32_t height) -> void override {};
 
 		inline auto getShadowTexture() const { return shadowTexture; }
-
 		inline auto getShadowCascadeTransform() const { return systemUniformBuffer.projView; }
-
 		inline auto& getLightViewMatrix() const { return lightViewMatrix; }
-
 		inline auto& getBias() const { return initialBias; }
+		inline auto& getLightSize() const { return lightSize; }
 		inline auto& getSplitDepth() const { return splitDepth; }
 
 		auto onImGui() -> void override;
@@ -74,6 +72,9 @@ namespace Maple
 		//bias for cast shadow
 		float initialBias = 0.0005f;
 		float cascadeSplitLambda = 0.95;
+		float splitDepth[SHADOWMAP_MAX];
+
+		float lightSize = 0.1;
 
 		uint32_t shadowMapSize = 0;
 		uint32_t bufferId = 0;
@@ -81,7 +82,6 @@ namespace Maple
 		bool shadowMapsInvalidated = true;
 		bool hasLight = false;
 		int32_t cascadeIndex = 0;
-		float splitDepth[SHADOWMAP_MAX];
 		std::array<std::shared_ptr<FrameBuffer>, SHADOWMAP_MAX> shadowFrameBuffers;
 		std::array<std::vector<RenderCommand>, SHADOWMAP_MAX> cascadeCommandQueue;
 		glm::mat4 lightViewMatrix;

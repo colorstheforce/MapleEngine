@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Shader.h"
 #include "Engine/Vulkan/VulkanShader.h"
+#include "Resources/ShaderResource.h"
 
 namespace Maple 
 {
@@ -15,8 +16,13 @@ namespace Maple
 		return &pushConstants[index];
 	}
 
-	auto Shader::create(const std::vector<uint8_t>& vertex, const std::vector<uint8_t>& fragment) ->std::shared_ptr<Shader>
+	auto Shader::create(const std::string& filePath) ->std::shared_ptr<Shader>
 	{
-		return std::make_shared<VulkanShader>(vertex, fragment);
+		if (auto shader = ShaderResource::tryGet(filePath)) {
+			return shader;
+		}
+		auto shader= std::make_shared<VulkanShader>(filePath);
+		ShaderResource::add(filePath, shader);
+		return shader;
 	}
 };

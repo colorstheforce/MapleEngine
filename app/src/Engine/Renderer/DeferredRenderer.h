@@ -17,6 +17,7 @@ namespace Maple
 #define MAX_LIGHTS 32
 #define MAX_SHADOWMAPS 4
 
+	class TextureCube;
 	class DescriptorSet;
 	class UniformBuffer;
 	class Texture2D;
@@ -53,7 +54,9 @@ namespace Maple
 			LightData lights[MAX_LIGHTS]; //32 Bytes * 32
 			glm::mat4 viewPos;//16
 			glm::mat4 lightProjView[4];//cascade proj view
-			
+			glm::mat4 lightView;
+			glm::vec4 cameraPos;
+
 			float splitDepth[4];
 
 			//16 bytes
@@ -64,9 +67,15 @@ namespace Maple
 
 			//16 bytes
 			float bias;
-			float bias1;
+			float lightSize;
 			float bias2;
 			float bias3;
+
+			int32_t prefilterLODLevel;
+			int32_t padding1;
+			int32_t padding2;
+			int32_t padding3;
+
 		};
 
 		auto createFrameBuffers() -> void;
@@ -87,6 +96,9 @@ namespace Maple
 
 		EventHandler eventHandler;
 
+		std::shared_ptr<TextureCube>  environmentMap;
+		std::shared_ptr<TextureCube>  irradianceMap;
 
+		std::shared_ptr<Texture2D> preIntegratedFG;
 	};
 };

@@ -27,7 +27,8 @@ Camera, \
 Light, \
 CameraControllerComponent, \
 Model,	\
-MeshRenderer
+MeshRenderer, \
+Environment
 
 
 namespace Maple

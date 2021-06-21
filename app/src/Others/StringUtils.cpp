@@ -107,6 +107,11 @@ namespace Maple
 		return str.compare(0, start.size(), start) == 0;
 	}
 
+	auto StringUtils::contains(const std::string& str, const std::string& start) -> bool
+	{
+		return str.find(start) != std::string::npos;
+	}
+
 	auto StringUtils::endWith(const std::string& str, const std::string& start) -> bool
 	{
 		return str.compare(str.length() - start.length(), start.size(), start) == 0;
@@ -140,12 +145,12 @@ namespace Maple
 	}
 
 
-	auto StringUtils::trim(std::string& str) -> void
+	auto StringUtils::trim(std::string& str, const std::string& trimStr) -> void
 	{
 		if (!str.empty())
 		{
-			str.erase(0, str.find_first_not_of(" "));
-			str.erase(str.find_last_not_of(" ") + 1);
+			str.erase(0, str.find_first_not_of(trimStr));
+			str.erase(str.find_last_not_of(trimStr) + 1);
 		}
 	}
 
@@ -231,7 +236,7 @@ namespace Maple
 		std::string extension = getExtension(filePath);
 		trim(extension);
 		std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c) -> unsigned char { return std::tolower(c); });
-		return extension == "png" || extension == "tga" || extension == "jpg";
+		return extension == "png" || extension == "tga" || extension == "jpg" || extension == "hdr";
 	}
 
 

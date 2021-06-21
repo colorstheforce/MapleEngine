@@ -188,7 +188,7 @@ namespace Maple
 
 			textureImageView = VulkanHelper::createImageView(
 				textureImage,
-				VkConverter::textureFormatToVK(parameters.format, parameters.srgb)
+				VkConverter::textureFormatToVK(this->parameters.format, parameters.srgb)
 				, mipLevels, VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT, 1
 			);
 
@@ -359,21 +359,29 @@ namespace Maple
 		}
 		else
 		{
-			image = Maple::ImageLoader::loadAsset(fileName, false);
-			parameters.format = image->getPixelFormat();
+			image = Maple::ImageLoader::loadAsset(fileName);
 			width = image->getWidth();
 			height = image->getHeight();
 			imageSize = image->getImageSize();
-			pixel = image->getData();
+			pixel = reinterpret_cast<const uint8_t*>(image->getData());
 		}
-
 
 		mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
 
-		VulkanBuffer* stagingBuffer = new VulkanBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, imageSize, pixel);
+		if (!loadOptions.generateMipMaps) 
+		{
+			mipLevels = 1;
+		}
 
-		VulkanHelper::createImage(width, height, mipLevels, VkConverter::textureFormatToVK(parameters.format, parameters.srgb), VK_IMAGE_TYPE_2D, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory, 1, 0);
+		auto stagingBuffer = std::make_unique<VulkanBuffer>(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, imageSize, pixel);
 
+		auto size = VulkanHelper::createImage(width, height, mipLevels, 
+			VkConverter::textureFormatToVK(parameters.format, parameters.srgb), 
+			VK_IMAGE_TYPE_2D, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory, 1, 0);
+		
+		
+		
 		VulkanHelper::transitionImageLayout(textureImage, VkConverter::textureFormatToVK(parameters.format, parameters.srgb), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
 		VulkanHelper::copyBufferToImage(stagingBuffer->getBuffer(), textureImage, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 		VulkanHelper::transitionImageLayout(textureImage, VkConverter::textureFormatToVK(parameters.format), 
@@ -381,9 +389,8 @@ namespace Maple
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			 mipLevels);
 
-		delete stagingBuffer;
-
-		generateMipmaps(textureImage, VkConverter::textureFormatToVK(parameters.format, parameters.srgb), width, height, mipLevels);
+		if(loadOptions.generateMipMaps)
+			generateMipmaps(textureImage, VkConverter::textureFormatToVK(parameters.format, parameters.srgb), width, height, mipLevels);
 
 		return true;
 	}
@@ -495,13 +502,8 @@ namespace Maple
 
 
 
-
-
 	VulkanTextureCube::VulkanTextureCube(const std::string& filePath)
-		: width(0)
-		, height(0)
-		, size(0)
-		, numMips(0)
+		: size(0)
 	{
 		files[0] = filePath;
 		load(1);
@@ -509,9 +511,13 @@ namespace Maple
 	}
 
 
-	VulkanTextureCube::VulkanTextureCube(int32_t size)
-		:width(size),height(size),numMips(1)
+
+	VulkanTextureCube::VulkanTextureCube(int32_t size, TextureFormat format,int32_t numMips)
 	{
+		this->numMips = numMips;
+		width = size;
+		height = size;
+		parameters.format = format;
 		init();
 		deleteImg = false;
 	}
@@ -629,7 +635,7 @@ namespace Maple
 		ktxTexture_Destroy(ktxTexture);
 	}
 
-	auto VulkanTextureCube::update(CommandBuffer* commandBuffer, FrameBuffer* framebuffer, int32_t cubeIndex) -> void
+	auto VulkanTextureCube::update(CommandBuffer* commandBuffer, FrameBuffer* framebuffer, int32_t cubeIndex, int32_t mipmapLevel) -> void
 	{
 		VkCommandBuffer cmd = *static_cast<VulkanCommandBuffer*>(commandBuffer);
 		VulkanFrameBuffer* frameBuffer = static_cast<VulkanFrameBuffer*>(framebuffer);
@@ -667,17 +673,20 @@ namespace Maple
 		VkImageSubresourceRange cubeFaceSubresourceRange = {};
 		cubeFaceSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		cubeFaceSubresourceRange.baseMipLevel = 0;
-		cubeFaceSubresourceRange.levelCount = 1;
 		cubeFaceSubresourceRange.baseArrayLayer = cubeIndex;
-		cubeFaceSubresourceRange.layerCount = 1;
+		cubeFaceSubresourceRange.layerCount = 6;
+		cubeFaceSubresourceRange.levelCount = numMips;
 
 		// Change image layout of one cubemap face to transfer destination
 		VulkanHelper::setImageLayout(
 			cmd,
 			textureImage,
-			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-			cubeFaceSubresourceRange);
+			VK_IMAGE_ASPECT_COLOR_BIT,
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+			VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+			/*VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,*/
+		);
 
 		// Copy region for transfer from framebuffer to cube face
 		VkImageCopy copyRegion = {};
@@ -690,15 +699,13 @@ namespace Maple
 
 		copyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		copyRegion.dstSubresource.baseArrayLayer = cubeIndex;
-		copyRegion.dstSubresource.mipLevel = 0;
+		copyRegion.dstSubresource.mipLevel = mipmapLevel;
 		copyRegion.dstSubresource.layerCount = 1;
 		copyRegion.dstOffset = { 0, 0, 0 };
 
 		copyRegion.extent.width = width;
 		copyRegion.extent.height = height;
 		copyRegion.extent.depth = 1;
-
-	
 
 		// Put image copy into command buffer
 		vkCmdCopyImage(
@@ -730,12 +737,10 @@ namespace Maple
 
 	auto VulkanTextureCube::init() -> void
 	{
-		VkFormat format = VK_FORMAT_R8G8B8A8_UNORM;
-			
-			//VK_FORMAT_R32_SFLOAT;
+		VkFormat format = VkConverter::textureFormatToVK(parameters.format);
 
 		VulkanHelper::createImage(
-			width, height, 1, format, 
+			width, height, numMips, format, 
 			VK_IMAGE_TYPE_2D, VK_IMAGE_TILING_OPTIMAL, 
 			VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory,
@@ -747,7 +752,7 @@ namespace Maple
 		VkImageSubresourceRange subresourceRange = {};
 		subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		subresourceRange.baseMipLevel = 0;
-		subresourceRange.levelCount = 1;
+		subresourceRange.levelCount = numMips;
 		subresourceRange.layerCount = 6;
 
 		VulkanHelper::setImageLayout(
@@ -763,12 +768,12 @@ namespace Maple
 		textureSampler = VulkanHelper::createTextureSampler(
 			VK_FILTER_LINEAR, 
 			VK_FILTER_LINEAR, 
-			0.0f, static_cast<float>(1), 
+			0.0f, static_cast<float>(numMips), 
 			true, 
 			VulkanDevice::get()->getPhysicalDevice()->getProperties().limits.maxSamplerAnisotropy, 
 			VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT);
 	
-		textureImageView = VulkanHelper::createImageView(textureImage, format, 1, 
+		textureImageView = VulkanHelper::createImageView(textureImage, format, numMips, 
 			VK_IMAGE_VIEW_TYPE_CUBE, VK_IMAGE_ASPECT_COLOR_BIT, 6);
 
 		updateDescriptor();

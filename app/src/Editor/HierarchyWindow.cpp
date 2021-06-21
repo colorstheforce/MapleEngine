@@ -100,6 +100,13 @@ namespace Maple
 							auto& meshRender = entity.addComponent<MeshRenderer>();
 							meshRender.mesh = Mesh::createCube();
 						}
+
+						if (strcmp("Sphere", name) == 0) {
+							auto entity = scene->createEntity(name);
+							entity.addComponent<Model>().type = PrimitiveType::Sphere;
+							auto& meshRender = entity.addComponent<MeshRenderer>();
+							meshRender.mesh = Mesh::createSphere();
+						}
 					}
 				}
 				ImGui::EndMenu();

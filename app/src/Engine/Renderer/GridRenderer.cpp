@@ -42,11 +42,10 @@ namespace Maple
 		this->gbuffer = buffer;
 		memset(&systemUniformBuffer, 0, sizeof(UniformBufferObject));
 		memset(&systemUniformBufferFrag, 0, sizeof(UniformBufferObjectFrag));
-		auto vertShaderCode = File::read("shaders/spv/GridVert.spv");
-		auto fragShaderCode = File::read("shaders/spv/GridFrag.spv");
-		shader = Shader::create(vertShaderCode, fragShaderCode);
 
-		quad = Mesh::createPlane(5000, 5000, Maple::UP);
+		shader = Shader::create("shaders/Grid.shader");
+
+		quad = Mesh::createPlane(500, 500, Maple::UP);
 
 		createRenderPass();
 		createPipeline();
@@ -59,7 +58,7 @@ namespace Maple
 		auto bufferId = renderTexture != nullptr ? 0 : VulkanContext::get()->getSwapChain()->getCurrentBuffer();
 
 		renderPass->beginRenderPass(
-			getCommandBuffer(), { 0,0,0,0 },
+			getCommandBuffer(), { 1,1,1,1 },
 			frameBuffers[bufferId].get()
 			, INLINE, width, height);
 	}

@@ -10,8 +10,8 @@
 #include "Application.h"
 #include "Renderer/ForwardRenderer.h"
 #include "Vertex.h"
-
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 namespace Maple 
 {
@@ -51,10 +51,7 @@ namespace Maple
 
 	auto Mesh::createCube() ->std::shared_ptr< Mesh>
 	{
-		if (defaultCube) {
-			return defaultCube;
-		}
-
+	
 		Vertex* data = new Vertex[24];
 
 		data[0].pos = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -181,13 +178,81 @@ namespace Maple
 
 		auto vb = std::make_shared<VertexBuffer>();
 		vb->setData(sizeof(Vertex) * 24, data);
-		defaultCube = std::make_shared<Mesh>(vb, std::make_shared<IndexBuffer>(indices, 36));
+		auto defaultCube = std::make_shared<Mesh>(vb, std::make_shared<IndexBuffer>(indices, 36));
 		defaultCube->setIndicesSize(36);
 		defaultCube->setName("Cube");
 		delete[] data;
 		return defaultCube;
 	}
 
+
+	auto Mesh::createSphere(uint32_t xSegments /*= 64*/, uint32_t ySegments /*= 64*/) ->std::shared_ptr< Mesh>
+	{
+		auto data = std::vector<Vertex>();
+		float sectorCount = static_cast<float>(xSegments);
+		float stackCount = static_cast<float>(ySegments);
+		float sectorStep = 2 * M_PI / sectorCount;
+		float stackStep = M_PI / stackCount;
+		float radius = 1.0f;
+
+		Mesh* mesh = new Mesh();
+		mesh->setName("Sphere");
+
+
+		for (int i = 0; i <= stackCount; ++i)
+		{
+			float stackAngle = M_PI / 2 - i * stackStep;
+			float xy = radius * cos(stackAngle);
+			float z = radius * sin(stackAngle);
+
+			for (int32_t j = 0; j <= sectorCount; ++j)
+			{
+				float sectorAngle = j * sectorStep;
+				float x = xy * cosf(sectorAngle);
+				float y = xy * sinf(sectorAngle);
+
+				float s = static_cast<float>(j / sectorCount);
+				float t = static_cast<float>(i / stackCount);
+
+				Vertex& vertex = data.emplace_back();
+				vertex.pos = glm::vec3(x, y, z);
+				vertex.texCoord = glm::vec2(s, t);
+				vertex.normal = glm::normalize(glm::vec3(x, y, z));
+			}
+		}
+
+
+		auto vb = std::make_shared<VertexBuffer>();
+		vb->setData(data.size() * sizeof(Vertex), data.data());
+
+		std::vector<uint32_t> indices;
+		uint32_t k1, k2;
+		for (uint32_t i = 0; i < stackCount; ++i)
+		{
+			k1 = i * (static_cast<uint32_t>(sectorCount) + 1U);
+			k2 = k1 + static_cast<uint32_t>(sectorCount) + 1U;
+
+			for (uint32_t j = 0; j < sectorCount; ++j, ++k1, ++k2)
+			{
+				if (i != 0)
+				{
+					indices.push_back(k1);
+					indices.push_back(k2);
+					indices.push_back(k1 + 1);
+				}
+
+				if (i != (stackCount - 1))
+				{
+					indices.push_back(k1 + 1);
+					indices.push_back(k2);
+					indices.push_back(k2 + 1);
+				}
+			}
+		}
+
+		auto ib = std::make_shared<IndexBuffer>(indices.data(), indices.size());
+		return std::make_shared<Mesh>(vb, ib);
+	}
 
 	auto Mesh::createPlane(float width, float height, const glm::vec3& normal) ->std::shared_ptr< Mesh>
 	{
@@ -315,7 +380,4 @@ namespace Maple
 		const float factor = 1.0f / (coord1.x * coord2.y - coord2.x * coord1.y);
 		return axis * factor;
 	}
-
-	std::shared_ptr<Mesh> Mesh::defaultCube = nullptr;
-
 };

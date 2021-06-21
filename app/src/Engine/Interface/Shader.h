@@ -12,8 +12,11 @@ namespace Maple
 {
 	enum ShaderType
 	{
+		UNKNOWN,
 		VERTEX_SHADER,
 		FRAGMENT_SHADER,
+		GEOMETRY_SHADER,
+		COMPUTE_SHADER,
 		TYPE_LENGTH
 	};
 
@@ -38,10 +41,11 @@ namespace Maple
 		virtual auto getHandle() const -> void* = 0;
 		inline auto& getPushConstants() { return pushConstants; }
 		auto getPushConstant(uint32_t index)->PushConstant*;
-
-		static auto create(const std::vector<uint8_t>& vertex, const std::vector<uint8_t>& fragment)->std::shared_ptr<Shader>;
+		inline auto& getFilePath() const { return path; }
+		static auto create(const std::string & filePath)->std::shared_ptr<Shader>;
 
 	protected:
+		std::string path;
 		std::vector<PushConstant> pushConstants;
 	};
 };

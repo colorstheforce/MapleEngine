@@ -12,6 +12,7 @@
 #include "Scene/Component/CameraControllerComponent.h"
 #include "Scene/Component/MeshRenderer.h"
 
+#include "Engine/Material.h"
 #include "Engine/CameraController.h"
 #include "Others/StringUtils.h"
 #include "Engine/Camera.h"
@@ -91,7 +92,13 @@ namespace Maple {
 	auto Scene::createEntity(const std::string& name) -> Entity
 	{
 		dirty = true;
-		return entityManager->create(name);
+		int32_t i = 0; 
+		auto entity = entityManager->getEntityByName(name);
+		while (entity.valid()) {
+			entity = entityManager->getEntityByName(name+"("+std::to_string(i + 1)+")");
+			i++;
+		}
+		return entityManager->create(i == 0 ? name : name + "(" + std::to_string(i) + ")");
 	}
 
 	auto Scene::duplicateEntity(const Entity& entity, const Entity& parent) -> void

@@ -33,6 +33,7 @@ namespace Maple
 	public:
 		static auto getDefaultTexture()->std::shared_ptr<Texture2D>;
 		static auto create(const std::string& name, const std::string& fileName)->std::shared_ptr<Texture2D>;
+		static auto create(const std::string& fileName, TextureParameters parameters = TextureParameters(), TextureLoadOptions loadOptions = TextureLoadOptions())->std::shared_ptr<Texture2D>;
 		static auto create()->std::shared_ptr<Texture2D>;
 		static auto createFromSource(uint32_t w, uint32_t h, const uint8_t* data)->std::shared_ptr<Texture2D>;
 		
@@ -40,8 +41,10 @@ namespace Maple
 		virtual auto buildTexture(TextureFormat internalformat, uint32_t width, uint32_t height, bool srgb, bool depth, bool samplerShadow) ->void = 0;
 		auto loadKTXFile(std::string filename, ktxTexture** target)->ktxResult;
 		inline auto getFilePath() const -> const std::string& { return fileName; };
+		inline auto getMipmapLevel() const { return mipLevels; }
 	protected:
 		std::string fileName;
+		uint32_t mipLevels = 1;
 	};
 
 	class TextureDepth : public Texture
@@ -60,10 +63,16 @@ namespace Maple
 			HORIZONTAL_CROSS
 		};
 		static auto create(const std::string& files)->std::shared_ptr<TextureCube>;
-		static auto create(int32_t size)->std::shared_ptr<TextureCube>;
+		static auto create(int32_t size,TextureFormat format = TextureFormat::RGBA,int32_t numMips = 1)->std::shared_ptr<TextureCube>;
 
-		virtual auto update(CommandBuffer* commandBuffer, FrameBuffer* framebuffer, int32_t cubeIndex) -> void;
-
+		inline const auto& getTextureParameters() const { return parameters; }
+		inline auto& getTextureParameters() { return parameters; }
+		inline auto& getMipLevel() const { return numMips; }
+		virtual auto update(CommandBuffer* commandBuffer, FrameBuffer* framebuffer, int32_t cubeIndex, int32_t mipmapLevel = 0) -> void;
+	protected:
+		TextureParameters parameters;
+		TextureLoadOptions loadOptions;
+		int32_t numMips = 1;
 	};
 
 

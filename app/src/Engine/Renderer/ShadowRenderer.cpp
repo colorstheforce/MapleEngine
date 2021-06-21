@@ -59,17 +59,8 @@ namespace Maple
 	auto ShadowRenderer::init(const std::shared_ptr<GBuffer> & buffer) -> void
 	{
 		memset(&systemUniformBuffer, 0, sizeof(UniformBufferObject));
-		auto vertShaderCode = File::read("shaders/spv/ShadowVert.spv");
-		auto fragShaderCode = File::read("shaders/spv/ShadowFrag.spv");
 
-		
-	/*	for (auto i = 0; i < VulkanContext::get()->getSwapChain()->getSwapChainBuffers().size(); i++)
-		{
-			commandBuffers.emplace_back(CommandBuffer::create(true));
-		}
-*/
-
-		shader = Shader::create(vertShaderCode, fragShaderCode);
+		shader = Shader::create("shaders/Shadow.shader");
 		createRenderPass();
 		createPipeline();
 		createFrameBuffers();
@@ -126,7 +117,7 @@ namespace Maple
 		{
 			auto & clight = view.get<Light>(entity);
 			auto & trans = view.get<Transform>(entity);
-			if (static_cast<LightType>(clight.lightData.type) == LightType::GlobalDirectionalLight) {
+			if (static_cast<LightType>(clight.lightData.type) == LightType::DirectionalLight) {
 				light = &clight;
 			}
 		}
@@ -336,6 +327,10 @@ namespace Maple
 			splitDepth[i] = (camera->getNear() + splitDist * clipRange) * -1.f;
 			systemUniformBuffer.projView[i] = lightOrthoMatrix * lightViewMatrix;
 			lastSplitDist = cascadeSplits[i];
+			if (i == 0)
+			{
+				this->lightViewMatrix = lightViewMatrix;
+			}
 		}
 	}
 

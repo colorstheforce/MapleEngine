@@ -41,7 +41,7 @@ namespace Maple
 		auto executeInternal(VkPipelineStageFlags flags, VkSemaphore waitSemaphore, VkSemaphore signalSemaphore, bool waitFence) -> void;
 	private:
 		VkCommandBuffer commandBuffer = nullptr;
-		//VkFence fence = nullptr;
+		VkFence fence = nullptr;
 		bool primary = false;
 	};
 };

@@ -5,20 +5,26 @@
 
 
 #include "Engine/Vulkan/VulkanTexture.h"
+#include "Resources/TextureCache.h"
 
 namespace Maple 
 {
 	auto TextureCube::create(const std::string& files) -> std::shared_ptr<TextureCube>
 	{
-		return std::make_shared<VulkanTextureCube>(files);
+		if (auto txt = TextureCache::tryGet(files)) {
+			return std::static_pointer_cast<TextureCube>(txt);
+		}
+		auto txt = std::make_shared<VulkanTextureCube>(files);
+		TextureCache::add(files, txt);
+		return txt;
 	}
 
-	auto TextureCube::create(int32_t size) -> std::shared_ptr<TextureCube>
+	auto TextureCube::create(int32_t size, TextureFormat format, int32_t numMips ) -> std::shared_ptr<TextureCube>
 	{
-		return std::make_shared<VulkanTextureCube>(size);
+		return std::make_shared<VulkanTextureCube>(size, format, numMips);
 	}
 
-	auto TextureCube::update(CommandBuffer* commandBuffer, FrameBuffer* framebuffer, int32_t cubeIndex) -> void
+	auto TextureCube::update(CommandBuffer* commandBuffer, FrameBuffer* framebuffer, int32_t cubeIndex,int32_t mipLevel) -> void
 	{
 
 	}
@@ -32,12 +38,27 @@ namespace Maple
 
 	auto Texture2D::create(const std::string& name, const std::string& fileName) ->std::shared_ptr<Texture2D>
 	{
-		return std::make_shared<VulkanTexture2D>(name, fileName);
+		if (auto txt = TextureCache::tryGet(fileName)) {
+			return std::static_pointer_cast<Texture2D>(txt);
+		}
+		auto txt = std::make_shared<VulkanTexture2D>(name, fileName);
+		TextureCache::add(fileName, txt);
+		return txt;
 	}
 
 	auto Texture2D::create() ->std::shared_ptr<Texture2D>
 	{
 		return std::make_shared<VulkanTexture2D>();
+	}
+
+	auto Texture2D::create(const std::string& fileName, TextureParameters parameters /*= TextureParameters()*/, TextureLoadOptions loadOptions /*= TextureLoadOptions()*/) ->std::shared_ptr<Texture2D>
+	{
+		if (auto txt = TextureCache::tryGet(fileName)) {
+			return std::static_pointer_cast<Texture2D>(txt);
+		}
+		auto txt = std::make_shared<VulkanTexture2D>(fileName, fileName, parameters, loadOptions);
+		TextureCache::add(fileName, txt);
+		return txt;
 	}
 
 	auto Texture2D::createFromSource(uint32_t w, uint32_t h, const uint8_t* data) ->std::shared_ptr<Texture2D>

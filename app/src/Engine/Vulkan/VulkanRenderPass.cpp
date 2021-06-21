@@ -47,7 +47,8 @@ namespace Maple
 		}
 		else if (info.textureType == TextureType::CUBE) 
 		{
-			attachment.format = VK_FORMAT_R32_SFLOAT;
+			attachment.format = VkConverter::textureFormatToVK(info.format, info.srgb);
+				//VK_FORMAT_R32_SFLOAT;
 			attachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		}
 		else

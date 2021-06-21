@@ -90,4 +90,67 @@ namespace Maple
 		}
 	};
 
+	class TextureCube;
+	class Texture;
+	class Texture2D;
+
+	class Environment : public Component
+	{
+	public:
+		static constexpr int32_t IrradianceMapSize = 32;
+		static constexpr int32_t PrefilterMapSize = 128;
+		Environment();
+		Environment(const std::string& filePath);
+		auto init(const std::string& filePath) -> void;
+
+		template<class Archive>
+		auto save(Archive& archive) const -> void
+		{
+			archive(filePath, entity);
+		}
+
+		template<class Archive>
+		auto load(Archive& archive) -> void
+		{
+			archive(filePath, entity);
+			init(filePath);
+		}
+
+	private:
+		std::shared_ptr<Texture2D> equirectangularMap;
+		std::shared_ptr<TextureCube> environmnet;
+		std::shared_ptr<TextureCube> prefilteredEnvironment;
+		std::shared_ptr<TextureCube> irradianceMap;
+
+		uint32_t numMips = 0;
+		uint32_t width = 0;
+		uint32_t height = 0;
+		std::string filePath;
+	public:
+		inline auto& getEnvironmnet() const { return environmnet; }
+		inline auto& getEquirectangularMap() const { return equirectangularMap; }
+
+        inline auto setEnvironmnet(std::shared_ptr<TextureCube> environmnet) { this->environmnet = environmnet; }
+
+        inline auto& getPrefilteredEnvironment() const { return prefilteredEnvironment; }
+        inline auto setPrefilteredEnvironment(std::shared_ptr<TextureCube> prefilteredEnvironment) { this->prefilteredEnvironment = prefilteredEnvironment; }
+
+        inline auto& getIrradianceMap() const { return irradianceMap; }
+        inline auto setIrradianceMap(std::shared_ptr<TextureCube> irradianceMap) { this->irradianceMap = irradianceMap; }
+
+        inline auto& getNumMips() const { return numMips; }
+        inline auto setNumMips(uint32_t numMips) { this->numMips = numMips; }
+
+        inline auto& getWidth() const { return width; }
+        inline auto setWidth(uint32_t width) { this->width = width; }
+
+        inline auto& getHeight() const { return height; }
+        inline auto setHeight(uint32_t height) { this->height = height; }
+
+        inline auto& getFilePath() const { return filePath; }
+        inline auto setFilePath(std::string filePath) { this->filePath = filePath; }
+
+
+	};
+
 };

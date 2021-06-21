@@ -182,4 +182,14 @@ namespace Maple
 		}
 	}
 
+	auto Material::setShader(const std::string& path) -> void
+	{
+		shader = Shader::create(path);
+	}
+
+	auto Material::getShaderPath() const->std::string
+	{
+		return shader ? shader->getFilePath() : "";
+	}
+
 };

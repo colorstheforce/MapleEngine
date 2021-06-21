@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-struct ImGui_ImplVulkanH_WindowData;
+struct ImGui_ImplVulkanH_Window;
 namespace Maple 
 {
 
@@ -32,8 +32,8 @@ namespace Maple
 		auto onResize(uint32_t width, uint32_t height) -> void;
 		auto clear() -> void;
 		
-		auto frameRender(ImGui_ImplVulkanH_WindowData* wd) -> void;
-		auto setupVulkanWindowData(ImGui_ImplVulkanH_WindowData* wd,VkSurfaceKHR surface, int32_t width, int32_t height) -> void;
+		auto frameRender(ImGui_ImplVulkanH_Window* wd) -> void;
+		auto setupVulkanWindowData(ImGui_ImplVulkanH_Window* wd,VkSurfaceKHR surface, int32_t width, int32_t height) -> void;
 		auto rebuildFontTexture() -> void;
 	private:
 		void* windowHandle = nullptr;

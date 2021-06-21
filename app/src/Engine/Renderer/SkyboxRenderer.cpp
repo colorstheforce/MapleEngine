@@ -13,7 +13,8 @@
 #include "Engine/Vulkan/VulkanFrameBuffer.h"
 #include "Engine/Vulkan/VulkanCommandBuffer.h"
 #include "Engine/Vulkan/VulkanUniformBuffer.h"
-#include "Engine/VUlkan/VulkanDevice.h"
+#include "Engine/Vulkan/VulkanDevice.h"
+#include "ImGui/ImGuiHelpers.h"
 #include "Engine/Camera.h"
 #include "Engine/GBuffer.h"
 #include "FileSystem/File.h"
@@ -36,14 +37,8 @@ namespace Maple
 	{
 		skybox = Mesh::createCube();
 		gbuffer = buffer;
-		auto vertShaderCode = File::read("shaders/spv/skyboxVert.spv");
-		auto fragShaderCode = File::read("shaders/spv/skyboxFrag.spv");
-		shader = Shader::create(vertShaderCode, fragShaderCode);
-
-	/*	for (size_t i = 0; i < VulkanContext::get()->getSwapChain()->getSwapChainBuffers().size(); i++) {
-			commandBuffers.emplace_back(CommandBuffer::create(true));
-		}*/
-
+		shader = Shader::create("shaders/Skybox.shader");
+	
 		AttachmentInfo infos[] = {
 			{TextureType::COLOR,TextureFormat::RGBA8},
 			{TextureType::DEPTH,TextureFormat::DEPTH}
@@ -61,7 +56,10 @@ namespace Maple
 	{
 		auto bufferId = renderTexture != nullptr ? 0 : VulkanContext::get()->getSwapChain()->getCurrentBuffer();
 
-		renderPass->beginRenderPass(getCommandBuffer(), { 1,1,0,1 }, frameBuffers[bufferId].get(), SubPassContents::INLINE, width, height);
+		renderPass->beginRenderPass(
+			getCommandBuffer(), { 0.3,0.3,0.3,1 },
+			frameBuffers[bufferId].get(), 
+			SubPassContents::INLINE, width, height);
 	}
 	
 	auto SkyboxRenderer::end() -> void
@@ -86,7 +84,7 @@ namespace Maple
 	auto SkyboxRenderer::present() -> void
 	{
 		uniformBuffer->setData(sizeof(UniformBufferObject), &uniformBufferObj);
-
+		uniformBufferLodLevel->setData(sizeof(float), &lodLevel);
 		//uniform
 		pipeline->bind(getCommandBuffer());
 		skybox->getVertexBuffer()->bind(getCommandBuffer(), pipeline.get());
@@ -99,7 +97,6 @@ namespace Maple
 		skybox->getIndexBuffer()->unbind();
 
 	}
-
 
 
 	auto SkyboxRenderer::setRenderTarget(std::shared_ptr <Texture> texture, bool rebuildFramebuffer /*= true*/) -> void
@@ -117,6 +114,15 @@ namespace Maple
 		uniformBufferObj.proj = scene->getTargetCamera()->getProjectionMatrix();
 		uniformBufferObj.view = glm::inverse(scene->getCameraTransform()->getWorldMatrix());
 		uniformBufferObj.view[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		
+		auto& registry = scene->getRegistry();
+		auto view = registry.view<Environment>();
+		if (!view.empty()) {
+			auto & env = view.get<Environment>(view.front());
+			if (cubeMap != env.getEnvironmnet()) {
+				setCubeMap(env.getEnvironmnet());
+			}
+		}
 	}
 
 	auto SkyboxRenderer::onResize(uint32_t width, uint32_t height) -> void 
@@ -145,7 +151,6 @@ namespace Maple
 		pipeInfo.transparencyEnabled = false;
 		pipeInfo.depthBiasEnabled = false;
 
-	
 		pipeline = Pipeline::create(pipeInfo);
 	}
 
@@ -154,8 +159,14 @@ namespace Maple
 		if (uniformBuffer == nullptr)
 		{
 			uint32_t bufferSize = static_cast<uint32_t>(sizeof(UniformBufferObject));
-			uniformBuffer = std::make_shared<VulkanUniformBuffer>(bufferSize,nullptr);
+			uniformBuffer = UniformBuffer::create(bufferSize, nullptr);
 		}
+
+		if (uniformBufferLodLevel == nullptr) 
+		{
+			uniformBufferLodLevel = UniformBuffer::create(sizeof(float),nullptr);
+		}
+
 
 		std::vector<BufferInfo> bufferInfos;
 
@@ -167,6 +178,15 @@ namespace Maple
 		bufferInfo.binding = 0;
 		bufferInfo.shaderType = ShaderType::VERTEX_SHADER;
 		bufferInfos.emplace_back(bufferInfo);
+
+		BufferInfo bufferInfo1 = {};
+		bufferInfo1.buffer = uniformBufferLodLevel;
+		bufferInfo1.offset = 0;
+		bufferInfo1.size = sizeof(float);
+		bufferInfo1.type = DescriptorType::UNIFORM_BUFFER;
+		bufferInfo1.binding = 2;
+		bufferInfo1.shaderType = ShaderType::FRAGMENT_SHADER;
+		bufferInfos.emplace_back(bufferInfo1);
 
 
 		std::vector<ImageInfo> imageInfos;
@@ -185,6 +205,11 @@ namespace Maple
 			pipeline->getDescriptorSet()->update(imageInfos, bufferInfos);
 		}
 
+	}
+
+	auto SkyboxRenderer::onImGui() -> void
+	{
+		ImGuiHelper::property("Skybox Lod", lodLevel, 0.1f, 5.f);
 	}
 
 	auto SkyboxRenderer::createFrameBuffer() -> void

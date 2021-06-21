@@ -16,6 +16,7 @@
 #include "Engine/Renderer/SkyboxRenderer.h"
 #include "Engine/Renderer/ShadowRenderer.h"
 #include "Engine/Renderer/GridRenderer.h"
+#include "Engine/Renderer/PreProcessRenderer.h"
 #include "Engine/Renderer/OmniShadowRenderer.h"
 
 #include "Engine/Terrain.h"
@@ -50,21 +51,17 @@ namespace Maple
 		timer.start();
 		rendererDevice->init();
 
-		//auto skybox = std::make_unique<SkyboxRenderer>(window->getWidth(), window->getHeight());
-		//auto rawPtr = skybox.get();
-
+		//off-screen
+		renderManager->addRender(std::make_unique<PreProcessRenderer>());
 		renderManager->addRender(std::make_unique<ShadowRenderer>());
-		renderManager->addRender(std::make_unique<OmniShadowRenderer>());
+
+	//	renderManager->addRender(std::make_unique<OmniShadowRenderer>());
 		renderManager->addRender(std::make_unique<DeferredRenderer>(window->getWidth(), window->getHeight()));
-		
+		renderManager->addRender(std::make_unique<SkyboxRenderer>(window->getWidth(), window->getHeight()));
 		renderManager->addRender(std::make_unique<GridRenderer>(window->getWidth(), window->getHeight()));
-	//	renderManager->addRender(std::move(skybox));
 
 		debugRender.init(window->getWidth(), window->getHeight());
-
 		renderManager->init(window->getWidth(), window->getHeight());
-		//auto cubeMap = TextureCube::create("textures/skybox/cubemap_vulkan.ktx");
-		//rawPtr->setCubeMap(cubeMap);
 
 		imGuiManager->init();
 	}

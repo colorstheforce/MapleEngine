@@ -17,8 +17,8 @@ namespace Maple
 			return "Spot Light";
 		case LightType::PointLight:
 			return "Point Light";
-		case LightType::GlobalDirectionalLight:
-			return "GlobalDirectionalLight";
+	/*	case LightType::GlobalDirectionalLight:
+			return "GlobalDirectionalLight";*/
 		default:
 			return "ERROR";
 		}
@@ -35,8 +35,8 @@ namespace Maple
 		if (type == "Spot")
 			return int32_t(LightType::SpotLight);
 
-		if (type == "GlobalDirectionalLight")
-			return int32_t(LightType::GlobalDirectionalLight);
+		/*if (type == "GlobalDirectionalLight")
+			return int32_t(LightType::GlobalDirectionalLight);*/
 
 
 		return 0.0f;
@@ -60,7 +60,7 @@ namespace Maple
 		ImGui::Columns(2);
 		ImGui::Separator();
 
-		if (static_cast<LightType>(lightData.type) != LightType::GlobalDirectionalLight)
+		if (static_cast<LightType>(lightData.type) != LightType::DirectionalLight)
 			ImGuiHelper::property("Radius", lightData.radius, 1.0f, 100.0f);
 
 		ImGuiHelper::property("Color", lightData.color, true, ImGuiHelper::PropertyFlag::ColorProperty);
@@ -78,8 +78,7 @@ namespace Maple
 		ImGui::PushItemWidth(-1);
 
 
-
-		const char* lights[] = { /*"Directional Light",*/"Spot Light","Point Light","GlobalDirectionalLight"};
+		const char* lights[] = { "Directional Light","Spot Light","Point Light"};
 		auto currLight = lightTypeToString(LightType(int32_t(lightData.type)));
 
 		if (ImGui::BeginCombo("LightType", currLight.c_str(), 0))
@@ -88,7 +87,7 @@ namespace Maple
 			{
 				if (ImGui::Selectable(lights[n]))
 				{
-					lightData.type = n + 1;
+					lightData.type = n;
 				}
 			}
 			ImGui::EndCombo(); 

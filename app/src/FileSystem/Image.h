@@ -17,8 +17,8 @@ namespace Maple
 
         Image(TextureFormat initPixelFormat,
               uint32_t width,uint32_t height,
-              uint8_t * initData,uint32_t imageSize,uint32_t channel):
-            pixelFormat(initPixelFormat), width(width), height(height), data(initData),size(imageSize), channel(channel)
+              void * initData,uint32_t imageSize,uint32_t channel,bool mipmaps = true):
+            pixelFormat(initPixelFormat), width(width), height(height), data(initData),size(imageSize), channel(channel), mipmaps(mipmaps)
         {
         }
 
@@ -31,14 +31,17 @@ namespace Maple
 		inline auto& getHeight() const noexcept { return height; }
         inline auto& getData() const noexcept { return data; }
         inline auto getImageSize() const noexcept { return size; }
-        inline auto getChannel() const  noexcept { return channel; }
+		inline auto getChannel() const  noexcept { return channel; }
+		inline auto isGenerateMipmaps() const  noexcept { return mipmaps; }
+        
      protected:
         TextureFormat pixelFormat = TextureFormat::RGBA8;
         uint32_t width = 0;
         uint32_t height = 0;
-        uint8_t* data = nullptr;
+        void* data = nullptr;
         uint32_t size = 0;
         uint32_t channel = 0;
+        bool mipmaps;
     };
 
 

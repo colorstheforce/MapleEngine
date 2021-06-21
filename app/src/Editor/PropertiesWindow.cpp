@@ -18,13 +18,19 @@
 #include "Engine/Renderer/RenderManager.h"
 #include "Engine/Renderer/ShadowRenderer.h"
 #include "Engine/Renderer/OmniShadowRenderer.h"
+#include "Engine/Renderer/PreProcessRenderer.h"
 
+
+#include "Others/StringUtils.h"
 #include "Engine/Camera.h"
 #include "ImGui/ImGuiHelpers.h"
+#include "Engine/Mesh.h"
+#include "Engine/Material.h"
 
 
 namespace MM
 {
+
 
 	using namespace Maple;
 
@@ -82,12 +88,197 @@ namespace MM
 		ImGui::PopStyleVar();
 	}
 
+
+	auto textureWidget(const char* label, Material* material, std::shared_ptr<Texture2D> tex, float& usingMapProperty, glm::vec4& colorProperty, const std::function<void(const std::string&)>& callback) -> void
+	{
+		if (ImGui::TreeNodeEx(label, ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
+			ImGui::Columns(2);
+			ImGui::Separator();
+
+			ImGui::AlignTextToFramePadding();
+
+			const ImGuiPayload* payload = ImGui::GetDragDropPayload();
+
+			auto min = ImGui::GetCursorPos();
+			auto max = min + ImVec2{ 64,64 } + ImGui::GetStyle().FramePadding;
+
+			bool hoveringButton = ImGui::IsMouseHoveringRect(min, max, false);
+			bool showTexture = !(hoveringButton && (payload != NULL && payload->IsDataType("AssetFile")));
+			if (tex && showTexture)
+			{
+				const bool flipImage = false;
+				if (ImGui::ImageButton(tex->getHandle(), ImVec2{ 64,64 }, ImVec2(0.0f, flipImage ? 1.0f : 0.0f), ImVec2(1.0f, flipImage ? 0.0f : 1.0f)))
+				{
+
+				}
+
+				if (ImGui::IsItemHovered() && tex)
+				{
+					ImGui::BeginTooltip();
+					ImGui::Image(tex->getHandle(), ImVec2(256, 256), ImVec2(0.0f, flipImage ? 1.0f : 0.0f), ImVec2(1.0f, flipImage ? 0.0f : 1.0f));
+					ImGui::EndTooltip();
+				}
+			}
+			else
+			{
+				if (ImGui::Button(tex ? "" : "Empty", ImVec2{ 64,64 }))
+				{
+					/*Lumos::Editor::GetEditor()->GetFileBrowserWindow().Open();
+					Lumos::Editor::GetEditor()->GetFileBrowserWindow().SetCallback(callback);*/
+				}
+			}
+
+			if (payload != NULL && payload->IsDataType("AssetFile"))
+			{
+				auto filePath = std::string(reinterpret_cast<const char*>(payload->Data));
+				if (StringUtils::isTextureFile(filePath))
+				{
+					if (ImGui::BeginDragDropTarget())
+					{
+						// Drop directly on to node and append to the end of it's children list.
+						if (ImGui::AcceptDragDropPayload("AssetFile"))
+						{
+							callback(filePath);
+							ImGui::EndDragDropTarget();
+
+							ImGui::Columns(1);
+							ImGui::Separator();
+							ImGui::PopStyleVar();
+
+							ImGui::TreePop();
+							return;
+						}
+
+						ImGui::EndDragDropTarget();
+					}
+				}
+			}
+
+			ImGui::NextColumn();
+			ImGui::PushItemWidth(-1);
+			ImGui::TextUnformatted(tex ? tex->getFilePath().c_str() : "No Texture");
+			if (tex)
+			{
+				ImGuiHelper::tooltip(tex->getFilePath().c_str());
+				ImGui::Text("%u x %u", tex->getWidth(), tex->getHeight());
+				ImGui::Text("Mip Levels : %u", tex->getMipmapLevel());
+			}
+			ImGui::PopItemWidth();
+			ImGui::NextColumn();
+
+			ImGuiHelper::property("Use Map", usingMapProperty, 0.0f, 1.0f);
+			ImGuiHelper::property("Color", colorProperty, 0.0f, 1.0f, false, ImGuiHelper::PropertyFlag::ColorProperty);
+
+			ImGui::Columns(1);
+			ImGui::PopStyleVar();
+
+			ImGui::TreePop();
+		}
+	}
+
+
+	template<>
+	void ComponentEditorWidget<MeshRenderer>(entt::registry& reg, entt::registry::entity_type e)
+	{
+		auto& mesh = reg.get<MeshRenderer>(e);
+
+		auto material = mesh.mesh->getMaterial();
+
+		std::string matName = "Material";
+		if (!material)
+		{
+			ImGui::TextUnformatted("Empty Material");
+			if (ImGui::Button("Add Material", ImVec2(ImGui::GetContentRegionAvail().x, 0.0f)))
+				mesh.mesh->setMaterial(std::make_shared<Material>());
+		}
+		else if (ImGui::TreeNodeEx(matName.c_str(), 0))
+		{
+
+			auto & prop = material->getProperties();
+			auto color = glm::vec4(0.f);
+			auto textures = material->getTextures();
+
+			textureWidget("Albedo", material.get(), textures.albedo, prop.usingAlbedoMap, prop.albedoColor, std::bind(&Material::setAlbedoTexture, material, std::placeholders::_1));
+			ImGui::Separator();
+
+			textureWidget("Normal", material.get(), textures.normal, prop.usingNormalMap, color, std::bind(&Material::setNormalTexture, material, std::placeholders::_1));
+			ImGui::Separator();
+
+			textureWidget("Metallic", material.get(), textures.metallic, prop.usingMetallicMap, prop.metallicColor, std::bind(&Material::setMetallicTexture, material, std::placeholders::_1));
+			ImGui::Separator();
+
+			textureWidget("Roughness", material.get(), textures.roughness, prop.usingRoughnessMap, prop.roughnessColor, std::bind(&Material::setRoughnessTexture, material, std::placeholders::_1));
+			ImGui::Separator();
+
+			textureWidget("AO", material.get(), textures.ao, prop.usingAOMap, color, std::bind(&Material::setAOTexture, material, std::placeholders::_1));
+			ImGui::Separator();
+
+			textureWidget("Emissive", material.get(), textures.emissive, prop.usingEmissiveMap, prop.emissiveColor, std::bind(&Material::setEmissiveTexture, material, std::placeholders::_1));
+
+			material->setMaterialProperites(prop);
+
+			ImGui::TreePop();
+		}
+
+	}
+
+
+
+
 	template<>
 	void ComponentEditorWidget<Light>(entt::registry& reg, entt::registry::entity_type e)
 	{
 		auto& light = reg.get<Light>(e);
 		light.onImGui();
 	}
+
+	template<>
+	void ComponentEditorWidget<Environment>(entt::registry& reg, entt::registry::entity_type e)
+	{
+		auto& env = reg.get<Environment>(e);
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
+		ImGui::Columns(2);
+		ImGui::Separator();
+
+
+	
+		auto label = env.getFilePath();
+		if (ImGuiHelper::property("File", label, true))
+		{
+			
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			auto data = ImGui::AcceptDragDropPayload("AssetFile", ImGuiDragDropFlags_None);
+			if (data)
+			{
+				std::string file = (char*)data->Data;
+				if (StringUtils::isTextureFile(file)) {
+					env.init(file);
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		ImGui::Columns(1);
+		ImGui::Separator();
+
+		/*ImGui::Columns(1);
+		ImGui::Separator();
+
+		if (env.getEquirectangularMap()) {
+			ImGuiHelper::image(
+				env.getEquirectangularMap().get()
+				, { 100,100 });
+		}
+*/
+
+		ImGui::PopStyleVar();
+	}
+
 
 	template<>
 	void ComponentEditorWidget<Camera>(entt::registry& reg, entt::registry::entity_type e)
@@ -263,6 +454,7 @@ namespace Maple
 		TRIVIAL_COMPONENT(Light, true);
 		TRIVIAL_COMPONENT(Camera, true);
 		TRIVIAL_COMPONENT(CameraControllerComponent, true);
+		TRIVIAL_COMPONENT(Environment, true);
 		TRIVIAL_COMPONENT(MeshRenderer, false);
 	}
 

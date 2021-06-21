@@ -16,7 +16,7 @@
 #include "Application.h"
 #include "Engine/Renderer/VkRenderDevice.h"
 
-static ImGui_ImplVulkanH_WindowData g_WindowData;
+static ImGui_ImplVulkanH_Window g_WindowData;
 static VkAllocationCallbacks* g_Allocator = nullptr;
 static VkDescriptorPool g_DescriptorPool = VK_NULL_HANDLE;
 static void checkVKResult(VkResult err)
@@ -39,7 +39,7 @@ namespace Maple
 	{
 		for (int i = 0; i < VulkanContext::get()->getSwapChain()->getSwapChainBuffers().size(); i++)
 		{
-			ImGui_ImplVulkanH_FrameData* fd = &g_WindowData.Frames[i];
+			ImGui_ImplVulkanH_Frame* fd = &g_WindowData.Frames[i];
 			vkDestroyFence(*VulkanDevice::get(), fd->Fence, g_Allocator);
 			vkDestroyCommandPool(*VulkanDevice::get(), fd->CommandPool, g_Allocator);
 		}
@@ -47,7 +47,7 @@ namespace Maple
 		ImGui_ImplVulkan_Shutdown();
 	}
 
-	auto VkImGUIRenderer::setupVulkanWindowData(ImGui_ImplVulkanH_WindowData* wd, VkSurfaceKHR surface, int32_t width, int32_t height) -> void
+	auto VkImGUIRenderer::setupVulkanWindowData(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int32_t width, int32_t height) -> void
 	{
 		//some uniforms in vulkan shader.
 		const uint32_t maxSize = 10;
@@ -91,7 +91,7 @@ namespace Maple
 		wd->Width = width;
 		wd->Height = height;
 
-		wd->BackBufferCount = bufferCount;
+		wd->ImageCount = bufferCount;
 
 		AttachmentInfo textureTypes[2] =
 		{
@@ -106,13 +106,18 @@ namespace Maple
 		renderPass = std::make_shared<VulkanRenderPass>(renderPassInfo);
 		wd->RenderPass = *renderPass;
 
+		wd->Frames = (ImGui_ImplVulkanH_Frame*)IM_ALLOC(sizeof(ImGui_ImplVulkanH_Frame) * wd->ImageCount);
+		wd->FrameSemaphores = (ImGui_ImplVulkanH_FrameSemaphores*)IM_ALLOC(sizeof(ImGui_ImplVulkanH_FrameSemaphores) * wd->ImageCount);
+		memset(wd->Frames, 0, sizeof(wd->Frames[0]) * wd->ImageCount);
+		memset(wd->FrameSemaphores, 0, sizeof(wd->FrameSemaphores[0]) * wd->ImageCount);
+
 		// Create The Image Views
 		{
-			for (uint32_t i = 0; i < wd->BackBufferCount; i++)
+			for (uint32_t i = 0; i < wd->ImageCount; i++)
 			{
 				auto scBuffer = (VulkanTexture2D*)swapChain->getTexture(i).get();
-				wd->BackBuffer[i] = scBuffer->getImage();
-				wd->BackBufferView[i] = scBuffer->getImageView();
+				wd->Frames[i].Backbuffer = scBuffer->getImage();
+				wd->Frames[i].BackbufferView = scBuffer->getImageView();
 			}
 		}
 
@@ -135,14 +140,14 @@ namespace Maple
 		{
 			bufferInfo.attachments[0] = swapChain->getTexture(i);
 			frameBuffers[i] = std::make_shared<VulkanFrameBuffer>(bufferInfo);
-			wd->Framebuffer[i] = *frameBuffers[i];
+			wd->Frames[i].Framebuffer = *frameBuffers[i];
 		}
 
 	}
 	auto VkImGUIRenderer::init() -> void
 	{
 
-		ImGui_ImplVulkanH_WindowData* wd = &g_WindowData;
+		auto wd = &g_WindowData;
 		VkSurfaceKHR surface = VulkanContext::get()->getVkSurface();
 		setupVulkanWindowData(wd, surface, width, height);
 
@@ -156,6 +161,8 @@ namespace Maple
 		init_info.PipelineCache = VulkanDevice::get()->getPipelineCache();
 		init_info.DescriptorPool = g_DescriptorPool;
 		init_info.Allocator = g_Allocator;
+		init_info.MinImageCount = 2;
+		init_info.ImageCount = frameBuffers.size();
 		init_info.CheckVkResultFn = NULL;
 		ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
 		// Upload Fonts
@@ -175,11 +182,11 @@ namespace Maple
 		auto swapChain = std::static_pointer_cast<VulkanSwapChain>(VulkanContext::get()->getSwapChain());
 		auto* wd = &g_WindowData;
 		wd->Swapchain = *swapChain;
-		for (uint32_t i = 0; i < wd->BackBufferCount; i++)
+		for (uint32_t i = 0; i < wd->ImageCount; i++)
 		{
 			auto scBuffer = (VulkanTexture2D*)swapChain->getTexture(i).get();
-			wd->BackBuffer[i] = scBuffer->getImage();
-			wd->BackBufferView[i] = scBuffer->getImageView();
+			wd->Frames[i].Backbuffer = scBuffer->getImage();
+			wd->Frames[i].BackbufferView = scBuffer->getImageView();
 		}
 
 		wd->Width = width;
@@ -203,13 +210,13 @@ namespace Maple
 		{
 			bufferInfo.attachments[0] = swapChain->getTexture(i);
 			frameBuffers[i] = std::make_shared<VulkanFrameBuffer>(bufferInfo);
-			wd->Framebuffer[i] = *frameBuffers[i];
+			wd->Frames[i].Framebuffer = *frameBuffers[i];
 		}
 	}
 	auto VkImGUIRenderer::clear() -> void
 	{
 	}
-	auto VkImGUIRenderer::frameRender(ImGui_ImplVulkanH_WindowData* wd) -> void
+	auto VkImGUIRenderer::frameRender(ImGui_ImplVulkanH_Window* wd) -> void
 	{
 		wd->FrameIndex = VulkanContext::get()->getSwapChain()->getCurrentBuffer();
 
@@ -248,6 +255,6 @@ namespace Maple
 
 		ImGui_ImplVulkan_AddTexture(io.Fonts->TexID, ImGui_ImplVulkanH_GetFontDescriptor());
 
-		ImGui_ImplVulkan_InvalidateFontUploadObjects();
+		//ImGui_ImplVulkan_InvalidateFontUploadObjects();
 	}
 };

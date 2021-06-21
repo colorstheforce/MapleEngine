@@ -31,9 +31,30 @@ namespace Maple
 			return iter->second;
 		}
 
+		template<typename... Args>
+		static auto emplace(const std::string& id, const Args &... args) -> std::shared_ptr<T>
+		{
+			auto iter = cache.find(id);
+			if (iter == cache.end())
+			{
+				iter = cache.emplace(id, std::shared_ptr<T>(new T(id, std::forward<Args>(args)...)))
+					.first;
+			}
+			return iter->second;
+		}
+
+		static auto add(const std::string& id, const std::shared_ptr<T>& ptr)-> void
+		{
+			cache[id] = ptr;
+		}
+
 		static auto remove(const std::string& id)
 		{
 			cache.erase(id);
+		}
+
+		static auto tryGet(const std::string& id) {
+			return cache[id];
 		}
 
 		static auto clear() -> void
@@ -55,6 +76,5 @@ namespace Maple
 #else
 	std::unordered_map<std::string, std::shared_ptr<T>> Resources<T>::cache;
 #endif
-
 
 };

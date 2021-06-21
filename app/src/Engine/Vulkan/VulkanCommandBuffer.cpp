@@ -49,7 +49,16 @@ namespace Maple
 		cmdBufferCI.commandBufferCount = 1;
 		cmdBufferCI.level = primary ? VK_COMMAND_BUFFER_LEVEL_PRIMARY : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 
+
 		VK_CHECK_RESULT(vkAllocateCommandBuffers(*VulkanDevice::get(), &cmdBufferCI, &commandBuffer));
+		
+		VkFenceCreateInfo fenceCI{};
+		fenceCI.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		fenceCI.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+		VK_CHECK_RESULT(vkCreateFence(*VulkanDevice::get(), &fenceCI, nullptr, &fence));
+		
+		
 		return true;
 	}
 
@@ -58,7 +67,7 @@ namespace Maple
 	 */
 	auto VulkanCommandBuffer::unload() -> void
 	{
-	//	vkDestroyFence(*VulkanDevice::get(), fence, nullptr);
+		vkDestroyFence(*VulkanDevice::get(), fence, nullptr);
 		vkFreeCommandBuffers(*VulkanDevice::get(), *VulkanDevice::get()->getCommandPool(), 1, &commandBuffer);
 	}
 
@@ -139,19 +148,19 @@ namespace Maple
 		submitInfo.signalSemaphoreCount = signalSemaphoreCount;
 		submitInfo.pSignalSemaphores = &signalSemaphore;
 
+		//VK_CHECK_RESULT(vkQueueSubmit(VulkanDevice::get()->getGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE));
 
-		VK_CHECK_RESULT(vkQueueSubmit(VulkanDevice::get()->getGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE));
 
-		/*if (waitFence)
+		if (waitFence)
 		{
+			VK_CHECK_RESULT(vkWaitForFences(*VulkanDevice::get(), 1, &fence, VK_TRUE, 100000000000));
 			VK_CHECK_RESULT(vkQueueSubmit(VulkanDevice::get()->getGraphicsQueue(), 1, &submitInfo, fence));
-			VK_CHECK_RESULT(vkWaitForFences(*VulkanDevice::get(), 1, &fence, VK_TRUE, UINT64_MAX));
 			VK_CHECK_RESULT(vkResetFences(*VulkanDevice::get(), 1, &fence));
 		}
 		else
 		{
 			VK_CHECK_RESULT(vkQueueSubmit(VulkanDevice::get()->getGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE));
 			VK_CHECK_RESULT(vkQueueWaitIdle(VulkanDevice::get()->getGraphicsQueue()));
-		}*/
+		}
 	}
 };

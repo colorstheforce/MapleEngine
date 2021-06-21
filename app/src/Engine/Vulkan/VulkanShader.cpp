@@ -6,6 +6,8 @@
 #include "VulkanDevice.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
+#include "FileSystem/File.h"
+#include "Others/StringUtils.h"
 #include "Others/Console.h"
 #include <spirv_cross.hpp>
 
@@ -44,6 +46,26 @@ namespace Maple
 
 		return 0;
 	}
+
+	auto getShaderTypeByName(const std::string& name) -> ShaderType 
+	{
+		if (StringUtils::contains(name, "Vertex")) {
+			return VERTEX_SHADER;
+		}
+
+		if (StringUtils::contains(name, "Fragment")) {
+			return FRAGMENT_SHADER;
+		}
+
+		if (StringUtils::contains(name, "Geometry")) {
+			return GEOMETRY_SHADER;
+		}
+		if (StringUtils::contains(name, "Compute")) {
+			return COMPUTE_SHADER;
+		}
+		return UNKNOWN;
+	}
+
 
 	VkFormat getVulkanFormat(const spirv_cross::SPIRType type)
 	{
@@ -126,10 +148,22 @@ namespace Maple
 		return nullptr;
 	}
 
-	VulkanShader::VulkanShader(const std::vector<uint8_t>& vertex, const std::vector<uint8_t>& fragment)
+	VulkanShader::VulkanShader(const std::string& path)
 	{
-		shaderModules[ShaderType::VERTEX_SHADER] = createShader(vertex,ShaderType::VERTEX_SHADER);
-		shaderModules[ShaderType::FRAGMENT_SHADER] = createShader(fragment, ShaderType::FRAGMENT_SHADER);
+
+		auto buffer = File::read(path);
+		std::string str(buffer.begin(), buffer.end());
+
+
+		std::vector<std::string> lines;
+		StringUtils::split(str,"\n", lines);
+		std::unordered_map<ShaderType, std::string> sources;
+		parseSource(lines, sources);
+
+		for (auto & s : sources)
+		{
+			shaderModules[s.first] =   createShader(File::read(s.second), s.first);
+		}
 
 		for (auto [type, shaderModule] : shaderModules)
 		{
@@ -141,6 +175,23 @@ namespace Maple
 		}
 	}
 
+
+	auto VulkanShader::parseSource(const std::vector<std::string>& lines, std::unordered_map<ShaderType, std::string>& shaders) -> void
+	{
+		for (uint32_t i = 0; i < lines.size(); i++)
+		{
+			std::string str = lines[i];
+			if (StringUtils::startWith(str,"#")) {
+				auto path = StringUtils::split(str, " ");
+
+				auto type = getShaderTypeByName(path[0]);
+				if (type != UNKNOWN) {
+					StringUtils::trim(path[1],"\r");
+					shaders[type] = path[1];
+				}
+			}
+		}
+	}
 
 	auto VulkanShader::createShader(const std::vector<uint8_t>& code, ShaderType shaderType) -> VkShaderModule
 	{
