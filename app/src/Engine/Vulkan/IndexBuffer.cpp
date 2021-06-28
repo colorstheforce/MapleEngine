@@ -40,6 +40,11 @@ namespace Maple
 		}
 	}
 
+	auto IndexBuffer::create(uint32_t* data, uint32_t count) ->std::shared_ptr<IndexBuffer>
+	{
+		return std::make_shared<IndexBuffer>(data, count);
+	}
+
 	auto IndexBuffer::bind(CommandBuffer* commandBuffer) const -> void
 	{
 		vkCmdBindIndexBuffer(*static_cast<VulkanCommandBuffer*>(commandBuffer)

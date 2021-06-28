@@ -41,4 +41,10 @@ namespace Maple
 		return pos == other.pos && color == other.color && texCoord == other.texCoord
 			&& normal == other.normal && tangent == other.tangent;
 	}
+
+	auto Vertex2D::operator==(const Vertex2D& other) const-> bool
+	{
+		return vertex == other.vertex && uv == other.uv && color == other.color;
+	}
+
 };

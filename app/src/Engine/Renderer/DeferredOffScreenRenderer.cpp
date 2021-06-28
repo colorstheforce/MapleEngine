@@ -1,8 +1,8 @@
-
 //////////////////////////////////////////////////////////////////////////////
-// This file is part of the Maple Engine                              //
+// This file is part of the Maple Engine                                    //
 // Copyright ?2020-2022 Tian Zeng                                           //
 //////////////////////////////////////////////////////////////////////////////
+
 #include "DeferredOffScreenRenderer.h"
 #include "Engine/Mesh.h"
 #include "Engine/GBuffer.h"
@@ -78,6 +78,9 @@ namespace Maple
 		pipeline->bind(getCommandBuffer());
 		for (auto& cmd : commandQueue)
 		{
+			/*if (!cmd.material || !cmd.material->getShader())
+				continue;*/
+
 			const auto& sets = pipeline->getDescriptorSet();
 			const auto material = cmd.material != nullptr ? cmd.material->getDescriptorSet() : defaultMaterial->getDescriptorSet();
 			

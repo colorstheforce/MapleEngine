@@ -21,6 +21,7 @@
 #include "Scene/Component/Component.h"
 #include "Scene/Component/Transform.h"
 #include "Scene/Component/Light.h"
+#include "Scene/Component/Sprite.h"
 #include "Scene/Entity/Entity.h"
 #include "Devices/Input.h"
 #include "ImGui/ImGuiHelpers.h"
@@ -54,7 +55,8 @@ namespace Maple
 		iconMap[typeid(Light).hash_code()] = ICON_MDI_LIGHTBULB;
 		iconMap[typeid(Camera).hash_code()] = ICON_MDI_CAMERA;
 		iconMap[typeid(MeshRenderer).hash_code()] = ICON_MDI_SHAPE;
-		//iconMap[typeid(LuaComponent).hash_code()] = ICON_MDI_SCRIPT;
+		iconMap[typeid(Environment).hash_code()] = ICON_MDI_EARTH;
+		iconMap[typeid(Sprite).hash_code()] = ICON_MDI_IMAGE;
 
 		ImGuizmo::SetGizmoSizeClipSpace(0.25f);
 		auto winSize = window->getWidth() / (float) window->getHeight();

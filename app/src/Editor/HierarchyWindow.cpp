@@ -16,6 +16,7 @@
 #include "Scene/Entity/EntityManager.h"
 #include "Scene/Entity/Entity.h"
 #include "Scene/Component/Light.h"
+#include "Scene/Component/Sprite.h"
 #include "Scene/Component/MeshRenderer.h"
 #include "Engine/Mesh.h"
 
@@ -121,6 +122,14 @@ namespace Maple
 				camera.setAspectRatio(4 / 3.f);
 				entity.getOrAddComponent<Transform>();
 			}
+
+			if (ImGui::Selectable("Add Sprite"))
+			{
+				auto entity = scene->createEntity("Sprite");
+				entity.addComponent<Sprite>();
+				entity.getOrAddComponent<Transform>();
+			}
+
 			ImGui::EndPopup();
 		}
 	}

@@ -3,6 +3,7 @@
 // Copyright ?2020-2022 Tian Zeng                                           //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include <memory>
 #include "VulkanBuffer.h"
 
 namespace Maple 
@@ -30,6 +31,7 @@ namespace Maple
 
 		auto setData(uint32_t size, const void* data) -> void;
 
+		static auto create(uint32_t* data, uint32_t count)->std::shared_ptr<IndexBuffer>;
 	private:
 		uint32_t count;
 	};

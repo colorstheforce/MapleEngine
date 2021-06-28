@@ -18,6 +18,7 @@ namespace Maple
 		switch (format)
 		{
 		case VK_FORMAT_R8_SINT:
+		case VK_FORMAT_R32_SINT:
 			return sizeof(int);
 		case VK_FORMAT_R32_SFLOAT:
 			return sizeof(float);

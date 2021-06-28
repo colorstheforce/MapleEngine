@@ -31,6 +31,7 @@ namespace Maple
 		auto unload() const -> void;
 		auto bind(CommandBuffer* buffer) -> void override;
 		auto init(const PipelineInfo& info) -> bool;
+		//bind to layoutId = 0;
 		auto getDescriptorSet() -> std::shared_ptr<DescriptorSet> override { return descriptorSet; };
 
 

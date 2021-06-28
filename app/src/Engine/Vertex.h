@@ -15,23 +15,25 @@
 #include <vulkan/vulkan.h>
 namespace Maple
 {
-	struct Vertex {
+	struct Vertex 
+	{
 		glm::vec3 pos;
 		glm::vec4 color;
 		glm::vec2 texCoord;
 		glm::vec3 normal;
 		glm::vec3 tangent;
-
-
 		auto operator==(const Vertex& other) const -> bool;
-
 		auto operator-(const Vertex& right)->Vertex;
-
 		auto operator+(const Vertex& right)->Vertex;
-
 		auto operator*(float factor)->Vertex;
+	};
 
-
+	struct Vertex2D
+	{
+		glm::vec3 vertex;
+		glm::vec3 uv;
+		glm::vec4 color;
+		auto operator==(const Vertex2D& other) const-> bool;
 	};
 
 };

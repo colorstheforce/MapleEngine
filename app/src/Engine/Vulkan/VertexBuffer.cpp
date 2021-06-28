@@ -81,4 +81,10 @@ namespace Maple
 		}
 		return mapped;
 	}
+
+	auto VertexBuffer::create(const BufferUsage& usage) ->std::shared_ptr<VertexBuffer>
+	{
+		return std::make_shared<VertexBuffer>(usage);
+	}
+
 };

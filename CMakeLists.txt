@@ -106,7 +106,7 @@ add_executable(SampleApp ${VK_APP_SRC} ${KTX_SOURCES} ${SHADERS_GLSL})
 
 set_property(TARGET SampleApp PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${ASSET_DIR})
 
-set_target_properties(SampleApp PROPERTIES COMPILE_FLAGS "/MP /wd4819 /arch:SSE /std:c++17")
+set_target_properties(SampleApp PROPERTIES COMPILE_FLAGS "/MP /wd4819 /arch:SSE ")
 
 string(REPLACE "/" "\\" GLEW32_PATH ${LIB_SRC_DIR}/opengl/lib/${Arch}/glew32.dll)
 

@@ -4,6 +4,7 @@
 // Copyright ?2020-2022 Tian Zeng                                           //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include <memory>
 #include "VulkanBuffer.h"
 
 
@@ -33,6 +34,9 @@ namespace Maple
 		auto bind(CommandBuffer* commandBuffer, Pipeline* pipeline) -> void;
 		auto unbind() -> void;
 		auto getPointer() -> void*;
+
+		static auto create(const BufferUsage& usage)->std::shared_ptr<VertexBuffer>;
+
 	protected:
 		bool mappedBuffer = false;
 		BufferUsage bufferUsage = BufferUsage::STATIC;

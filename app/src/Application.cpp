@@ -18,6 +18,7 @@
 #include "Engine/Renderer/GridRenderer.h"
 #include "Engine/Renderer/PreProcessRenderer.h"
 #include "Engine/Renderer/OmniShadowRenderer.h"
+#include "Engine/Renderer/Renderer2D.h"
 
 #include "Engine/Terrain.h"
 #include "Terrain/TerrainBuilder.h"
@@ -59,6 +60,7 @@ namespace Maple
 		renderManager->addRender(std::make_unique<DeferredRenderer>(window->getWidth(), window->getHeight()));
 		renderManager->addRender(std::make_unique<SkyboxRenderer>(window->getWidth(), window->getHeight()));
 		renderManager->addRender(std::make_unique<GridRenderer>(window->getWidth(), window->getHeight()));
+		renderManager->addRender(std::make_unique<Renderer2D>(window->getWidth(), window->getHeight()));
 
 		debugRender.init(window->getWidth(), window->getHeight());
 		renderManager->init(window->getWidth(), window->getHeight());
@@ -116,13 +118,10 @@ namespace Maple
 
 	auto Application::onRender() -> void
 	{
-
-		rendererDevice->begin();
-		
 		renderManager->beginScene(sceneManager->getCurrentScene());
 		debugRender.beginScene(sceneManager->getCurrentScene());
+		rendererDevice->begin();
 		renderManager->onRender();
-		
 		onRenderDebug();
 		debugRender.renderScene();
 	}

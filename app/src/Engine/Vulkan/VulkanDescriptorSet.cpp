@@ -91,10 +91,14 @@ namespace Maple
 
 			for (auto& imageInfo : *imageInfos)
 			{
+				int32_t descriptorCount = 0;
 				for (auto i = 0; i < imageInfo.textures.size(); i++)
 				{
-					VkDescriptorImageInfo& des = *static_cast<VkDescriptorImageInfo*>(imageInfo.textures[i]->getHandle());
-					imageInfoPool[i + imageIndex] = des;
+					if (imageInfo.textures[i] != nullptr) {
+						VkDescriptorImageInfo& des = *static_cast<VkDescriptorImageInfo*>(imageInfo.textures[i]->getHandle());
+						imageInfoPool[i + imageIndex] = des;
+						descriptorCount++;
+					}
 				}
 
 
@@ -104,7 +108,7 @@ namespace Maple
 				writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 				writeDescriptorSet.dstBinding = imageInfo.binding;
 				writeDescriptorSet.pImageInfo = &imageInfoPool[imageIndex];
-				writeDescriptorSet.descriptorCount = imageInfo.textures.size();
+				writeDescriptorSet.descriptorCount = descriptorCount;
 
 				writeDescriptorSetPool[descriptorWritesCount] = writeDescriptorSet;
 				imageIndex++;
