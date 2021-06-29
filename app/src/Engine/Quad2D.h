@@ -31,12 +31,20 @@ namespace Maple
 		inline auto setScale(const glm::vec2& s) { scale = s; }
 		inline auto setTexture(const std::shared_ptr<Texture2D>& texture) { this->texture = texture; }
 		friend class Sprite;
+
+		auto setTexCoords(uint32_t x, uint32_t y, uint32_t w, uint32_t h) -> void;
+
+		inline auto getHeight() const { return h; }
+		inline auto getWidth() const { return w; }
+
 	protected:
 		std::shared_ptr<Texture2D> texture;
 		glm::vec2 position = {};
 		glm::vec2 scale = {};
 		glm::vec4 color = {};
 		std::array<glm::vec2, 4> texCoords = {};
+		uint32_t w = 0;
+		uint32_t h = 0;
 	};
 
 

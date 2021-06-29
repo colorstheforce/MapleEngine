@@ -14,7 +14,7 @@
 #include "PropertiesWindow.h"
 #include "AssetsWindow.h"
 
-
+#include "Engine/TextureAtlas.h"
 #include "Engine/Camera.h"
 #include "Scene/Scene.h"
 #include "Scene/SceneManager.h"
@@ -31,7 +31,6 @@
 #include "FileSystem/MeshLoader.h"
 #include "Others/StringUtils.h"
 #include "Scene/Component/MeshRenderer.h"
-
 #include "Engine/Renderer/GridRenderer.h"
 
 namespace Maple 
@@ -72,6 +71,8 @@ namespace Maple
 		}
 
 		processIcons();
+
+
 	}
 
 	auto Editor::onImGui() -> void
@@ -82,6 +83,8 @@ namespace Maple
 		{
 			win.second->onImGui();
 		}
+
+	
 		endDockSpace();
 		Application::onImGui();
 	}
@@ -575,12 +578,12 @@ namespace Maple
 		);//z*/
 	}
 
-	auto Editor::getIcon(FileType type) ->std::shared_ptr<Texture2D>
+	auto Editor::getIcon(FileType type)->Quad2D*
 	{
-		if (auto iter = cacneIcons.find(type); iter != cacneIcons.end()) {
-			return iter->second;
+		if (auto iter = cacheIcons.find(type); iter != cacheIcons.end()) {
+			return textureAtlas->addSprite(iter->second);
 		}
-		return cacneIcons[FileType::Normal];
+		return textureAtlas->addSprite(cacheIcons[FileType::Normal]);
 	}
 
 	auto Editor::processIcons() -> void
@@ -604,10 +607,12 @@ namespace Maple
 			"editor-icons/icons8-ttf-100.png",
 		};
 
+		textureAtlas = std::make_shared<TextureAtlas>(4096, 4096);
 		int32_t i = 0;
 		for (auto & str : files)
 		{
-			cacneIcons[static_cast<FileType>(i++)] = Texture2D::create(str, str);
+			cacheIcons[static_cast<FileType>(i++)] = str;
+			textureAtlas->addSprite(str);
 		}
 	}
 }

@@ -78,11 +78,7 @@ namespace Maple
 
 		resize(static_cast<uint32_t>(sceneViewSize.x), static_cast<uint32_t>(sceneViewSize.y));
 
-	
-
 		ImGuiHelper::image(previewTexture.get(), { static_cast<uint32_t>(sceneViewSize.x), static_cast<uint32_t>(sceneViewSize.y) });
-
-
 
 		auto windowSize = ImGui::GetWindowSize();
 		ImVec2 minBound = sceneViewPosition;

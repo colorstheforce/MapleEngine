@@ -23,6 +23,7 @@ namespace Maple
 {
 	auto ImageLoader::loadAsset(const std::string& name, bool mipmaps) -> std::unique_ptr<Image>
 	{
+
 		bool hdr = stbi_is_hdr(name.c_str());
 		stbi_set_flip_vertically_on_load(1);
 		int32_t width;
@@ -36,6 +37,26 @@ namespace Maple
 		uint32_t imageSize = width * height * 4 * (hdr ? sizeof(float) : sizeof(uint8_t));
 		assert(data);
 		return std::make_unique<Image>(format, width, height, data, imageSize, channels, mipmaps);
+	}
+
+	auto ImageLoader::loadAsset(const std::string& name, Image* image) -> void
+	{
+		bool hdr = stbi_is_hdr(name.c_str());
+		stbi_set_flip_vertically_on_load(1);
+		int32_t width;
+		int32_t height;
+		int32_t channels;
+		TextureFormat format = TextureFormat::RGBA8;
+		uint8_t* data = stbi_load(name.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+		uint32_t imageSize = width * height * 4;
+		assert(data);
+
+		image->setChannel(4);
+		image->setWidth(width);
+		image->setHeight(height);
+		image->setPixelFormat(format);
+		image->setData(data);
+		image->setSize(imageSize);
 	}
 
 }

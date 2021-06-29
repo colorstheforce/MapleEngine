@@ -42,6 +42,9 @@ namespace Maple
 		auto loadKTXFile(std::string filename, ktxTexture** target)->ktxResult;
 		inline auto getFilePath() const -> const std::string& { return fileName; };
 		inline auto getMipmapLevel() const { return mipLevels; }
+
+		virtual auto update(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const uint8_t* data) -> void{};
+
 	protected:
 		std::string fileName;
 		uint32_t mipLevels = 1;

@@ -572,7 +572,7 @@ namespace Maple
 		vkFreeCommandBuffers(*VulkanDevice::get(), *VulkanDevice::get()->getCommandPool(), 1, &commandBuffer);
 	}
 
-	auto VulkanHelper::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) -> void
+	auto VulkanHelper::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, int32_t offsetX , int32_t offsetY) -> void
 	{
 		VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -584,7 +584,7 @@ namespace Maple
 		region.imageSubresource.mipLevel = 0;
 		region.imageSubresource.baseArrayLayer = 0;
 		region.imageSubresource.layerCount = 1;
-		region.imageOffset = { 0, 0, 0 };
+		region.imageOffset = { offsetX, offsetY, 0 };
 		region.imageExtent = {
 			width,
 			height,

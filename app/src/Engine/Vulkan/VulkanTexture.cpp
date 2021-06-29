@@ -254,6 +254,17 @@ namespace Maple
 		}
 	}
 
+	auto VulkanTexture2D::update(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const uint8_t* data) -> void
+	{
+		auto stagingBuffer = std::make_unique<VulkanBuffer>(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, w * h * 4, data);
+		VulkanHelper::transitionImageLayout(textureImage, VkConverter::textureFormatToVK(parameters.format, parameters.srgb), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
+		VulkanHelper::copyBufferToImage(stagingBuffer->getBuffer(), textureImage, static_cast<uint32_t>(w), static_cast<uint32_t>(h),x,y);
+		VulkanHelper::transitionImageLayout(textureImage, VkConverter::textureFormatToVK(parameters.format),
+			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			mipLevels);
+	}
+
 	auto VulkanTexture2D::loadKTX() -> void
 	{
 		VkFormat format = VK_FORMAT_R8G8B8A8_UNORM;
@@ -373,7 +384,6 @@ namespace Maple
 			mipLevels = 1;
 		}
 
-		auto stagingBuffer = std::make_unique<VulkanBuffer>(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, imageSize, pixel);
 
 		auto size = VulkanHelper::createImage(width, height, mipLevels, 
 			VkConverter::textureFormatToVK(parameters.format, parameters.srgb), 
@@ -381,6 +391,7 @@ namespace Maple
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory, 1, 0);
 		
 		
+		auto stagingBuffer = std::make_unique<VulkanBuffer>(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, imageSize, pixel);
 		
 		VulkanHelper::transitionImageLayout(textureImage, VkConverter::textureFormatToVK(parameters.format, parameters.srgb), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
 		VulkanHelper::copyBufferToImage(stagingBuffer->getBuffer(), textureImage, static_cast<uint32_t>(width), static_cast<uint32_t>(height));

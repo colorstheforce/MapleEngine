@@ -19,8 +19,8 @@
 #include <filesystem>
 
 #include "ImGui/ImGuiHelpers.h"
-
 #include "Engine/Interface/Texture.h"
+#include "Engine/Quad2D.h"
 #include "Resources/MeshResource.h"
 
 namespace Maple 
@@ -202,9 +202,14 @@ namespace Maple
 
 			bool click = false;
 
-			if (ImGui::ImageButtonNoBg(icon ? icon->getHandle() : nullptr, { 80,80 },
-				ImVec2(0.0f, flipImage ? 1.0f : 0.0f), ImVec2(1.0f, flipImage ? 0.0f : 1.0f)
-				/*, { 1,1,1,1 }, ImGui::IsItemHovered() ? ImVec4{0, 1, 0, 1} : ImVec4{0,0,0,0}*/
+			auto& uv = icon->getTexCoords();
+			
+			bool flipY = false;
+
+			if (ImGui::ImageButtonNoBg(icon && icon->getTexture() ? icon->getTexture()->getHandle() : nullptr, 
+				{ 80,80 },
+				ImVec2(uv[3].x / (float)icon->getTexture()->getWidth(), uv[1].y / (float)icon->getTexture()->getHeight()),
+				ImVec2(uv[1].x / (float)icon->getTexture()->getWidth(), uv[3].y / (float)icon->getTexture()->getHeight())
 			)) {
 				click = false;
 			}

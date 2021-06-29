@@ -36,4 +36,15 @@ namespace Maple
 		}
 		return results;
 	}
+
+	auto Quad2D::setTexCoords(uint32_t x, uint32_t y, uint32_t w, uint32_t h) -> void
+	{
+		this->w = w;
+		this->h = h;
+		texCoords[0] = { x ,y+h };
+		texCoords[1] = { x + w,y + h };
+		texCoords[2] = { x + w,y };
+		texCoords[3] = { x,y };
+	}
+
 };

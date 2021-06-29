@@ -11,8 +11,8 @@ namespace Maple
 	public:
 		ISystem() = default;
 		virtual ~ISystem() = default;
-		virtual void onInit() = 0;
-		virtual void onUpdate(float dt, Scene* scene) = 0;
-		virtual void onImGui() = 0;
+		virtual auto onInit() -> void = 0 ;
+		virtual auto onUpdate(float dt, Scene* scene) -> void = 0;
+		virtual auto onImGui() -> void = 0;
 	};
 };

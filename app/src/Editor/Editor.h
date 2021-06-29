@@ -17,6 +17,9 @@ namespace Maple
 {
 	class Texture2D;
 	class SceneWindow;
+	class TextureAtlas;
+	class Quad2D;
+
 	class Editor : public Application 
 	{
 	public:
@@ -51,6 +54,7 @@ namespace Maple
 		inline auto& getCamera() { return camera; }
 		inline auto& getEditorCameraTransform() { return editorCameraTransform; }
 		inline auto& getEditorCameraController() { return editorCameraController; }
+		inline auto getTextureAtlas() { return textureAtlas; }
 
 		auto onImGuizmo() -> void;
 
@@ -63,7 +67,7 @@ namespace Maple
 
 		auto drawGrid() -> void;
 		
-		auto getIcon(FileType type)->std::shared_ptr<Texture2D>;
+		auto getIcon(FileType type)->Quad2D*;
 		auto processIcons() -> void;
 
 	private:
@@ -91,7 +95,9 @@ namespace Maple
 
 		
 		//need to be optimized. should use Atlats to cache.
-		std::unordered_map<FileType, std::shared_ptr<Texture2D>> cacneIcons;
+		std::unordered_map<FileType, std::string> cacheIcons;
+
+		std::shared_ptr<TextureAtlas> textureAtlas;
 
 	};
 };
