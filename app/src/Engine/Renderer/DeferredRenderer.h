@@ -41,7 +41,7 @@ namespace Maple
 		auto onResize(uint32_t width, uint32_t height) -> void override;
 		auto setRenderTarget(std::shared_ptr <Texture>, bool rebuildFramebuffer = true) -> void override;
 		auto createLightBuffer() -> void;
-
+		
 		auto onImGui() -> void override;
 
 	private:

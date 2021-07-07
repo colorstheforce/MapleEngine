@@ -44,7 +44,7 @@ namespace Maple
 
 	PreProcessRenderer::PreProcessRenderer()
 	{
-		app->getRenderManager()->setPreProcessRenderer(this);
+	
 	}
 
 	PreProcessRenderer::~PreProcessRenderer()
@@ -53,6 +53,7 @@ namespace Maple
 
 	auto PreProcessRenderer::init(const std::shared_ptr<GBuffer>& buffer) -> void
 	{
+		manager->setPreProcessRenderer(this);
 		gbuffer = buffer;
 
 		shader			 = Shader::create("shaders/CubeMap.shader");

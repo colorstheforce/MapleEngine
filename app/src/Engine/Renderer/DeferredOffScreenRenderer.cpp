@@ -112,11 +112,9 @@ namespace Maple
 
 	auto DeferredOffScreenRenderer::renderScene() -> void
 	{
-
 		begin();
 		present();
 		end();
-	/*	app->getRenderDevice()->present(commandBuffers[bufferId].get());*/
 	}
 
 	auto DeferredOffScreenRenderer::beginScene(Scene* scene) -> void
@@ -132,7 +130,7 @@ namespace Maple
 			auto view = glm::inverse(camera.second->getWorldMatrix());
 
 			if (omniIndex != -1) {
-				auto render = app->getRenderManager()->getOmniShadowRenderer();
+				auto render = manager->getOmniShadowRenderer();
 				view = render->getLightViews()[omniIndex];
 			}
 

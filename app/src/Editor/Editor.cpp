@@ -13,6 +13,7 @@
 #include "HierarchyWindow.h"
 #include "PropertiesWindow.h"
 #include "AssetsWindow.h"
+#include "DisplayZeroWindow.h"
 
 #include "Engine/TextureAtlas.h"
 #include "Engine/Camera.h"
@@ -46,9 +47,11 @@ namespace Maple
 	{
 		Application::init();
 		addWindow(SceneWindow);
+		addWindow(DisplayZeroWindow);
 		addWindow(HierarchyWindow);
 		addWindow(PropertiesWindow);
 		addWindow(AssetsWindow);
+
 		iconMap[typeid(Transform).hash_code()] = ICON_MDI_VECTOR_LINE;
 		iconMap[typeid(Editor).hash_code()] = ICON_MDI_SQUARE;
 		iconMap[typeid(Light).hash_code()] = ICON_MDI_LIGHTBULB;
@@ -100,19 +103,16 @@ namespace Maple
 		{
 			auto& registry = currentScene->getRegistry();
 
-			if (isSceneActive() && !currentScene->isPreviewMainCamera())
+			if (isSceneActive())
 			{
 				const auto mousePos = Input::getInput()->getMousePosition();
-
 				editorCameraController.handleMouse(editorCameraTransform, delta, mousePos.x, mousePos.y);
 				editorCameraController.handleKeyboard(editorCameraTransform, delta);
-
 			}
 
 			if (!Input::getInput()->isMouseHeld(KeyCode::MouseKey::ButtonRight)
 				&& !ImGuizmo::IsUsing() && isSceneActive()
-				&& selectedNode != entt::null
-				&& !currentScene->isPreviewMainCamera())
+				&& selectedNode != entt::null)
 			{
 				if (Input::getInput()->isKeyPressed(KeyCode::Id::Q))
 				{

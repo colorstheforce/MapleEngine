@@ -31,8 +31,8 @@ namespace Maple
 		auto addRender(std::unique_ptr<Renderer>&& render) -> void;
 		auto onImGui() -> void;
 
-		auto onResize(uint32_t width, uint32_t height) -> void;
-		auto setRenderTarget(std::shared_ptr<Texture> texture, bool rebuildTexture) -> void;
+		auto onResize(uint32_t width, uint32_t height, bool debug = false) -> void;
+		auto setRenderTarget(std::shared_ptr<Texture> texture, bool rebuildTexture,bool debug = false) -> void;
 		inline auto& getGBuffer()  { return gbuffer; }
 
 		inline auto& getRenderers() { return renders; }
@@ -54,10 +54,8 @@ namespace Maple
 		std::shared_ptr<GBuffer> gbuffer;
 		uint32_t width = 0;
 		uint32_t height = 0;
-
 		ShadowRenderer* shadowRenderer = nullptr;
 		OmniShadowRenderer* omniShadowRenderer = nullptr;
 		PreProcessRenderer* preProcessRenderer = nullptr;
-
 	};
 };

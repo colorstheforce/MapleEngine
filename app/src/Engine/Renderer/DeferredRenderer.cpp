@@ -1,6 +1,6 @@
 
 //////////////////////////////////////////////////////////////////////////////
-// This file is part of the Maple Engine                              //
+// This file is part of the Maple Engine									//
 // Copyright ?2020-2022 Tian Zeng                                           //
 //////////////////////////////////////////////////////////////////////////////
 #include "DeferredRenderer.h"
@@ -57,6 +57,7 @@ namespace Maple
 
 	auto DeferredRenderer::init(const std::shared_ptr<GBuffer> & buffer) -> void
 	{
+		deferredOffScreenRenderer->setRenderManager(manager);
 		eventHandler.deferredTypeHandler = [&](auto event) {
 			systemVsUniformBuffer.type = event->getDeferredType();
 			return true;
@@ -264,7 +265,7 @@ namespace Maple
 		imageInfo4.type = TextureType::DEPTH;
 		imageInfo4.name = "uDepthSampler";
 
-		auto shadowRender = app->getRenderManager()->getShadowRenderer();
+		auto shadowRender = manager->getShadowRenderer();
 
 		std::vector<ImageInfo> infos{ imageInfo,imageInfo2, imageInfo3, imageInfo4 };
 
@@ -280,7 +281,7 @@ namespace Maple
 		}
 
 
-		auto omniShadowRender = app->getRenderManager()->getOmniShadowRenderer();
+		auto omniShadowRender = manager->getOmniShadowRenderer();
 
 		if (omniShadowRender) {
 			ImageInfo imageInfo5 = {};
@@ -354,7 +355,7 @@ namespace Maple
 			systemVsUniformBuffer.cameraPos = glm::vec4(camera.second->getWorldPosition(),1.0);
 			systemVsUniformBuffer.prefilterLODLevel = environmentMap ? environmentMap->getMipLevel() : 0;
 
-			if (auto shadowRenderer = app->getRenderManager()->getShadowRenderer())
+			if (auto shadowRenderer = manager->getShadowRenderer())
 			{
 				systemVsUniformBuffer.lightSize = shadowRenderer->getLightSize();
 				systemVsUniformBuffer.lightView = shadowRenderer->getLightViewMatrix();

@@ -43,4 +43,10 @@ namespace Maple
 	{
 		return VulkanContext::get()->getSwapChain()->getCurrentCommandBuffer();
 	}
+
+	auto Renderer::setRenderManager(RenderManager* manager) -> void
+	{
+		this->manager = manager;
+	}
+
 };

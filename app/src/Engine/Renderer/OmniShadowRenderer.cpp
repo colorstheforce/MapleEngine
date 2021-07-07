@@ -47,7 +47,7 @@ namespace Maple
 
 		memset(&systemUniformBuffer, 0, sizeof(UniformBufferObject));
 		init(nullptr);
-		app->getRenderManager()->setOmniShadowRenderer(this);
+		manager->setOmniShadowRenderer(this);
 	}
 
 	OmniShadowRenderer::~OmniShadowRenderer()

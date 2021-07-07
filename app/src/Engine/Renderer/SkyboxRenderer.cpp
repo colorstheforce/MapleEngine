@@ -111,16 +111,21 @@ namespace Maple
 
 	auto SkyboxRenderer::beginScene(Scene* scene) -> void 
 	{
-		uniformBufferObj.proj = scene->getTargetCamera()->getProjectionMatrix();
-		uniformBufferObj.view = glm::inverse(scene->getCameraTransform()->getWorldMatrix());
-		uniformBufferObj.view[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		
-		auto& registry = scene->getRegistry();
-		auto view = registry.view<Environment>();
-		if (!view.empty()) {
-			auto & env = view.get<Environment>(view.front());
-			if (cubeMap != env.getEnvironmnet()) {
-				setCubeMap(env.getEnvironmnet());
+		auto camera = scene->getCamera();
+
+		if (camera.first != nullptr)  
+		{
+			uniformBufferObj.proj = camera.first->getProjectionMatrix();
+			uniformBufferObj.view = glm::inverse(camera.second->getWorldMatrix());
+			uniformBufferObj.view[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+			auto& registry = scene->getRegistry();
+			auto view = registry.view<Environment>();
+			if (!view.empty()) {
+				auto& env = view.get<Environment>(view.front());
+				if (cubeMap != env.getEnvironmnet()) {
+					setCubeMap(env.getEnvironmnet());
+				}
 			}
 		}
 	}

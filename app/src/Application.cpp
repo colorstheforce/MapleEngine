@@ -38,11 +38,12 @@ namespace Maple
 {
 	Application::Application()
 	{
-		window =			NativeWindow::newInstance(WindowInitData{ 1280,720,false,"SampleApp" });
-		sceneManager =		std::make_unique<SceneManager>();
-		rendererDevice =			std::make_unique<VkRenderDevice>(window->getWidth(), window->getHeight());
-		imGuiManager =		std::make_unique<ImGuiManager>(false);
-		renderManager =		std::make_unique<RenderManager>();
+		window				= NativeWindow::newInstance(WindowInitData{ 1280,720,false,"Maple-Engine" });
+		sceneManager		= std::make_unique<SceneManager>();
+		rendererDevice		= std::make_unique<VkRenderDevice>(window->getWidth(), window->getHeight());
+		imGuiManager		= std::make_unique<ImGuiManager>(false);
+		renderManager		= std::make_unique<RenderManager>();
+		renderManagerToGame = std::make_unique<RenderManager>();
 	}
 
 	auto Application::init() -> void
@@ -55,17 +56,23 @@ namespace Maple
 		//off-screen
 		renderManager->addRender(std::make_unique<PreProcessRenderer>());
 		renderManager->addRender(std::make_unique<ShadowRenderer>());
-
-	//	renderManager->addRender(std::make_unique<OmniShadowRenderer>());
 		renderManager->addRender(std::make_unique<DeferredRenderer>(window->getWidth(), window->getHeight()));
 		renderManager->addRender(std::make_unique<SkyboxRenderer>(window->getWidth(), window->getHeight()));
 		renderManager->addRender(std::make_unique<GridRenderer>(window->getWidth(), window->getHeight()));
 		renderManager->addRender(std::make_unique<Renderer2D>(window->getWidth(), window->getHeight()));
 
-		debugRender.init(window->getWidth(), window->getHeight());
-		renderManager->init(window->getWidth(), window->getHeight());
 
-		imGuiManager->init();
+
+		renderManagerToGame->addRender(std::make_unique<ShadowRenderer>());
+		renderManagerToGame->addRender(std::make_unique<DeferredRenderer>(window->getWidth(), window->getHeight()));
+		renderManagerToGame->addRender(std::make_unique<SkyboxRenderer>(window->getWidth(), window->getHeight()));
+		renderManagerToGame->addRender(std::make_unique<Renderer2D>(window->getWidth(), window->getHeight()));
+
+
+		debugRender.		 init(window->getWidth(), window->getHeight());
+		renderManager->		 init(window->getWidth(), window->getHeight());
+		renderManagerToGame->init(window->getWidth(), window->getHeight());
+		imGuiManager->		 init();
 	}
 
 	auto Application::start() -> int32_t
@@ -89,6 +96,8 @@ namespace Maple
 				onRender();
 
 				imGuiManager->onRender(sceneManager->getCurrentScene());
+
+				rendererDevice->end();
 				rendererDevice->present();//present all data
 			}
 		
@@ -118,10 +127,16 @@ namespace Maple
 
 	auto Application::onRender() -> void
 	{
+		sceneManager->getCurrentScene()->setGameView(false);
 		renderManager->beginScene(sceneManager->getCurrentScene());
 		debugRender.beginScene(sceneManager->getCurrentScene());
+
+		sceneManager->getCurrentScene()->setGameView(true);
+		renderManagerToGame->beginScene(sceneManager->getCurrentScene());
+
 		rendererDevice->begin();
 		renderManager->onRender();
+		renderManagerToGame->onRender();
 		onRenderDebug();
 		debugRender.renderScene();
 	}
@@ -159,8 +174,6 @@ namespace Maple
 
 	auto Application::onRenderDebug() ->void
 	{
-		
-
 	
 	}
 

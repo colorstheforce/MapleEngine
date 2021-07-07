@@ -47,8 +47,8 @@ namespace Maple
 
 
 		memset(&systemUniformBuffer, 0, sizeof(UniformBufferObject));
-		init(nullptr);
-		app->getRenderManager()->setShadowRenderer(this);
+		//init(nullptr);
+		
 	}
 
 	ShadowRenderer::~ShadowRenderer()
@@ -58,8 +58,8 @@ namespace Maple
 
 	auto ShadowRenderer::init(const std::shared_ptr<GBuffer> & buffer) -> void
 	{
+		manager->setShadowRenderer(this);
 		memset(&systemUniformBuffer, 0, sizeof(UniformBufferObject));
-
 		shader = Shader::create("shaders/Shadow.shader");
 		createRenderPass();
 		createPipeline();

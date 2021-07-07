@@ -33,8 +33,7 @@ namespace Maple
 
 		inline auto setOverrideCamera(Camera* overrideCamera) { this->overrideCamera = overrideCamera; }
 		inline auto setOverrideTransform(Transform* overrideTransform) { this->overrideTransform = overrideTransform; }
-		inline auto setForceCamera(bool forceShow) { this->forceShow = forceShow; }
-		inline auto isPreviewMainCamera() const { return forceShow; }
+		inline auto setGameView(bool gameView) { this->gameView = gameView; }
 
 		inline auto& getEntityManager() { return entityManager; }
 		inline auto& getName() const { return name; };
@@ -54,8 +53,7 @@ namespace Maple
 		auto duplicateEntity(const Entity& entity, const Entity& parent)-> void;
 		auto duplicateEntity(const Entity& entity)-> void;
 
-		auto getTargetCamera() ->Camera*;
-		auto getCameraTransform() ->Transform*;
+	
 		auto getCamera()->std::pair<Camera*, Transform*>;
 	
 
@@ -74,10 +72,10 @@ namespace Maple
 
 	private:
 
+
 		auto updateCameraController(float dt) -> void;
 		auto copyComponents(const Entity& from, const Entity& to )-> void;
 
-		bool forceShow = false;
 		std::shared_ptr<SceneGraph> sceneGraph;
 		std::shared_ptr<EntityManager> entityManager;
 		std::string name;
@@ -94,6 +92,6 @@ namespace Maple
 		int32_t version;
 
 		bool dirty = false;
-
+		bool gameView = false;
 	};
 };

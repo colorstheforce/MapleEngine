@@ -154,8 +154,8 @@ namespace Maple
 			editor.getCamera()->setAspectRatio(width / (float)height);
 			VulkanContext::get()->waiteIdle();
 			previewTexture->buildTexture(TextureFormat::RGBA8, width, height, false, false, false);
-			app->getRenderManager()->setRenderTarget(previewTexture, false);
-			app->getRenderManager()->onResize(width, height);
+			app->getRenderManager()->setRenderTarget(previewTexture, false, true);
+			app->getRenderManager()->onResize(width, height,true);
 			VulkanContext::get()->waiteIdle();
 		}
 
@@ -255,12 +255,6 @@ namespace Maple
 		ImGui::SameLine();
 
 
-		if (ImGui::Checkbox("Preview Camera", &showCamera))
-		{
-			auto currentScene = app->getSceneManager()->getCurrentScene();
-			currentScene->setForceCamera(showCamera);
-		}
-		ImGui::SameLine();
 
 		if (ImGui::Button("Gizmos " ICON_MDI_CHEVRON_DOWN))
 			ImGui::OpenPopup("GizmosPopup");

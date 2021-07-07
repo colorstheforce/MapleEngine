@@ -124,7 +124,7 @@ namespace Maple {
 	auto Scene::getCamera() ->std::pair<Camera*, Transform*>
 	{
 		auto camsEttView = entityManager->getEntitiesWithType<Camera>();
-		if ((!camsEttView.empty() && app->getEditorState() == EditorState::Play) || forceShow)
+		if (!camsEttView.empty() && gameView)
 		{
 			Camera& sceneCam = camsEttView.front().getComponent<Camera>();
 			Transform& sceneCamTr = camsEttView.front().getComponent<Transform>();
@@ -133,29 +133,6 @@ namespace Maple {
 		return { overrideCamera,overrideTransform };
 	}
 
-	auto Scene::getTargetCamera() -> Camera*
-	{
-		auto camsEttView = entityManager->getEntitiesWithType<Camera>();
-		if ((!camsEttView.empty() && app->getEditorState() == EditorState::Play) || forceShow)
-		{
-			Camera& sceneCam = camsEttView.front().getComponent<Camera>();
-			return &sceneCam;
-		}
-		return overrideCamera;
-	}
-
-	auto Scene::getCameraTransform() -> Transform*
-	{
-		auto camsEttView = entityManager->getEntitiesWithType<Camera>();
-		if ((!camsEttView.empty() && app->getEditorState() == EditorState::Play) || forceShow)
-		{
-			Transform& sceneCamTr = camsEttView[0].getComponent<Transform>();
-			return &sceneCamTr;
-		}
-		return overrideTransform;
-	}
-
-	
 
 	auto Scene::copyComponents(const Entity& from, const Entity& to) -> void
 	{

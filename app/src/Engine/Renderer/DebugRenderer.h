@@ -30,8 +30,6 @@ namespace Maple
 		auto onResize(uint32_t width, uint32_t height) -> void;
 		auto clear() -> void;
 
-
-
 		auto drawLine(const glm::vec3& start, const glm::vec3& end, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f }) -> void;
 		auto drawFrustum(const Frustum & frustum) -> void;
 

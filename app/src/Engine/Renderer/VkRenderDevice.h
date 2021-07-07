@@ -21,9 +21,9 @@ namespace Maple
 		auto begin() -> void override;
 		auto onResize(uint32_t width, uint32_t height) -> void override;
 		auto present() -> void override;
+		auto end() -> void override;
 		auto present(CommandBuffer* cmdBuffer) -> void override;
 		auto acquireNextImage() -> void;
-
 	private:
 		auto createSemaphores() -> void;
 		VkSemaphore imageAvailableSemaphore[NUM_SEMAPHORES];

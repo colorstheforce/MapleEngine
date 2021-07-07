@@ -46,6 +46,7 @@ namespace Maple
 		inline auto& getRenderDevice() { return rendererDevice; }
 		inline auto& getSceneManager() { return sceneManager; }
 		inline auto& getRenderManager() { return renderManager; }
+		inline auto& getRenderManagerGame() { return renderManagerToGame; }
 		auto setSceneActive(bool active) -> void;
 		inline auto& isSceneActive() const { return sceneActive; }
 
@@ -70,6 +71,7 @@ namespace Maple
 		std::unique_ptr<ImGuiManager> imGuiManager;
 		std::unique_ptr<SceneManager> sceneManager;
 		std::unique_ptr<RenderManager> renderManager;
+		std::unique_ptr<RenderManager> renderManagerToGame;
 
 
 		EventDispatcher dispatcher;
@@ -82,14 +84,8 @@ namespace Maple
 
 		DebugRenderer debugRender;
 
-	public:
-	
 
-public:
-
-
-
-};
+	};
 };
 
 extern Maple::Application * app;

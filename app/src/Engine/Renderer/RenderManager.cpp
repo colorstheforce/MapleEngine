@@ -49,9 +49,9 @@ namespace Maple
 		scene->onUpdate(step);
 	}
 
-
 	auto RenderManager::addRender(std::unique_ptr<Renderer>&& render) -> void
 	{
+		render->setRenderManager(this);
 		renders.emplace_back(std::move(render));
 	}
 
@@ -61,10 +61,9 @@ namespace Maple
 		{
 			renderer->onImGui();
 		}
-	
 	}
 
-	auto RenderManager::onResize(uint32_t width, uint32_t height) -> void
+	auto RenderManager::onResize(uint32_t width, uint32_t height, bool debug) -> void
 	{
 		this->width = width;
 		this->height = height;
@@ -73,17 +72,18 @@ namespace Maple
 		{
 			render->onResize(width, height);
 		}
-		app->getDebugRenderer().onResize(width, height);
+
+		if(debug)
+			app->getDebugRenderer().onResize(width, height);
 	}
 
-	auto RenderManager::setRenderTarget(std::shared_ptr<Texture>  texture,bool rebuildTexture) -> void
+	auto RenderManager::setRenderTarget(std::shared_ptr<Texture>  texture,bool rebuildTexture, bool debug) -> void
 	{
 		for (auto& render : renders)
 		{
 			render->setRenderTarget(texture, rebuildTexture);
 		}
-
-		app->getDebugRenderer().setRenderTarget(texture, rebuildTexture);
+		if (debug)
+			app->getDebugRenderer().setRenderTarget(texture, rebuildTexture);
 	}
-
 };

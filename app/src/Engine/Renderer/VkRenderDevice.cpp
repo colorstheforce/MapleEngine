@@ -82,7 +82,6 @@ namespace Maple
 	auto VkRenderDevice::present() -> void
 	{
 		auto vkSwapChain = std::static_pointer_cast<VulkanSwapChain>(VulkanContext::get()->getSwapChain());
-		vkSwapChain->getCurrentCommandBuffer()->endRecording();
 		auto result = vkSwapChain->present(nullptr);
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
 			onResize(width, height);
@@ -92,15 +91,19 @@ namespace Maple
 
 	auto VkRenderDevice::present(CommandBuffer * cmdBuffer) -> void
 	{
-
 		/*static_cast<VulkanCommandBuffer*>(cmdBuffer)->executeInternal(
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 			imageAvailableSemaphore[currentSemaphoreIndex],
 			imageAvailableSemaphore[currentSemaphoreIndex + 1],
 			true);*/
-
 	}
 
+
+	auto VkRenderDevice::end() -> void
+	{
+		auto vkSwapChain = std::static_pointer_cast<VulkanSwapChain>(VulkanContext::get()->getSwapChain());
+		vkSwapChain->getCurrentCommandBuffer()->endRecording();
+	}
 
 	auto VkRenderDevice::createSemaphores() -> void
 	{

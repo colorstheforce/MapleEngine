@@ -21,7 +21,7 @@ namespace Maple
 	class GBuffer;
 	class CommandBuffer;
 	class DescriptorSet;
-
+	class RenderManager;
 
 	class Renderer
 	{
@@ -44,7 +44,7 @@ namespace Maple
 
 
 		auto getCommandBuffer()->CommandBuffer*;
-
+		auto setRenderManager(RenderManager* manager) -> void;
 	protected:
 		uint32_t width;
 		uint32_t height;
@@ -58,7 +58,7 @@ namespace Maple
 		std::vector<RenderCommand> commandQueue;
 
 		std::vector <std::shared_ptr<FrameBuffer>> frameBuffers;
-
+		RenderManager * manager = nullptr;
 
 		bool depthTest = true;
 	};
