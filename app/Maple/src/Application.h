@@ -41,12 +41,11 @@ namespace Maple
 		
 		virtual auto onUpdate(const Timestep& delta) -> void;
 		virtual auto onRender() -> void;
+		virtual auto beginScene() -> void;
 		virtual auto onImGui()->void;
 
 		inline auto& getRenderDevice() { return rendererDevice; }
 		inline auto& getSceneManager() { return sceneManager; }
-		inline auto& getRenderManager() { return renderManager; }
-		inline auto& getRenderManagerGame() { return renderManagerToGame; }
 		auto setSceneActive(bool active) -> void;
 		inline auto& isSceneActive() const { return sceneActive; }
 
@@ -65,13 +64,15 @@ namespace Maple
 
 		auto serialize() -> void;
 
+		inline auto& getRenderManagers() const { return renderManagers; }
+
 	protected:
 		std::unique_ptr<NativeWindow> window;
 		std::unique_ptr<RenderDevice> rendererDevice;
 		std::unique_ptr<ImGuiManager> imGuiManager;
 		std::unique_ptr<SceneManager> sceneManager;
-		std::unique_ptr<RenderManager> renderManager;
-		std::unique_ptr<RenderManager> renderManagerToGame;
+		std::vector<std::unique_ptr<RenderManager>> renderManagers;
+
 
 
 		EventDispatcher dispatcher;

@@ -499,7 +499,6 @@ namespace Maple
 		auto& registry = editor.getSceneManager()->getCurrentScene()->getRegistry();
 		auto selected = editor.getSelected();
 
-		auto gbuffer = editor.getRenderManager()->getGBuffer();
 
 		if (ImGui::Begin(title.c_str(), &active))
 		{

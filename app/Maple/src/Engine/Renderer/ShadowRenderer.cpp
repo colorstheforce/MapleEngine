@@ -110,15 +110,12 @@ namespace Maple
 	{
 		hasLight = true;
 		auto& registry = scene->getRegistry();
-		auto view = registry.group<Light, Transform,ActiveComponent>();
+		auto view = registry.group<Light, Transform>();
 
 		Light* light = nullptr;
 		for (auto & entity : view)
 		{
-			auto& active = view.get<ActiveComponent>(entity);
-			if (!active.active) {
-				continue;
-			}
+		
 			auto & clight = view.get<Light>(entity);
 			auto & trans = view.get<Transform>(entity);
 			if (static_cast<LightType>(clight.lightData.type) == LightType::DirectionalLight) {
@@ -144,7 +141,7 @@ namespace Maple
 			cascadeCommandQueue[i].clear();
 		}
 	
-		auto group = registry.group<MeshRenderer>(entt::get<Transform, ActiveComponent>);
+		auto group = registry.group<MeshRenderer>(entt::get<Transform>);
 		for (uint32_t i = 0; i < SHADOWMAP_MAX; ++i)
 		{
 			if (group.empty())
@@ -152,9 +149,9 @@ namespace Maple
 
 			for (auto entity : group)
 			{
-				const auto& [render, trans,active] = group.get<MeshRenderer,Transform,ActiveComponent>(entity);
+				const auto& [render, trans] = group.get<MeshRenderer,Transform>(entity);
 
-				if (render.getMesh() && active.active)
+				if (render.getMesh())
 				{
 					auto& worldTransform = trans.getWorldMatrix();
 					//TODO calculate if the mesh is in the light view.

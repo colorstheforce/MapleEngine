@@ -154,8 +154,15 @@ namespace Maple
 			editor.getCamera()->setAspectRatio(width / (float)height);
 			VulkanContext::get()->waiteIdle();
 			previewTexture->buildTexture(TextureFormat::RGBA8, width, height, false, false, false);
-			app->getRenderManager()->setRenderTarget(previewTexture, false, true);
-			app->getRenderManager()->onResize(width, height,true);
+			
+			for (auto& r : app->getRenderManagers())
+			{
+				if (r->isEditor()) {
+					r->setRenderTarget(previewTexture, false, true);
+					r->onResize(width, height,true);
+				}
+			}
+
 			VulkanContext::get()->waiteIdle();
 		}
 

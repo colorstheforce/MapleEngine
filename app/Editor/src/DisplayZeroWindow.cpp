@@ -188,8 +188,13 @@ namespace Maple
 		{
 			VulkanContext::get()->waiteIdle();
 			previewTexture->buildTexture(TextureFormat::RGBA8, width, height, false, false, false);
-			app->getRenderManagerGame()->setRenderTarget(previewTexture, false);
-			app->getRenderManagerGame()->onResize(width, height);
+			for (auto & r : app->getRenderManagers())
+			{
+				if (!r->isEditor()) {
+					r->setRenderTarget(previewTexture, false);
+					r->onResize(width, height);
+				}
+			}
 			VulkanContext::get()->waiteIdle();
 		}
 	}

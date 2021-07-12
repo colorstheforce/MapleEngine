@@ -42,8 +42,6 @@ namespace Maple
 		sceneManager		= std::make_unique<SceneManager>();
 		rendererDevice		= std::make_unique<VkRenderDevice>(window->getWidth(), window->getHeight());
 		imGuiManager		= std::make_unique<ImGuiManager>(false);
-		renderManager		= std::make_unique<RenderManager>();
-		renderManagerToGame = std::make_unique<RenderManager>();
 	}
 
 	auto Application::init() -> void
@@ -53,26 +51,17 @@ namespace Maple
 		timer.start();
 		rendererDevice->init();
 
-		//off-screen
-		renderManager->addRender(std::make_unique<PreProcessRenderer>());
-		renderManager->addRender(std::make_unique<ShadowRenderer>());
-		renderManager->addRender(std::make_unique<DeferredRenderer>(window->getWidth(), window->getHeight()));
-		renderManager->addRender(std::make_unique<SkyboxRenderer>(window->getWidth(), window->getHeight()));
-		renderManager->addRender(std::make_unique<GridRenderer>(window->getWidth(), window->getHeight()));
-		renderManager->addRender(std::make_unique<Renderer2D>(window->getWidth(), window->getHeight()));
+		auto render = std::make_unique<RenderManager>();
 
-
-
-		renderManagerToGame->addRender(std::make_unique<ShadowRenderer>());
-		renderManagerToGame->addRender(std::make_unique<DeferredRenderer>(window->getWidth(), window->getHeight()));
-		renderManagerToGame->addRender(std::make_unique<SkyboxRenderer>(window->getWidth(), window->getHeight()));
-		renderManagerToGame->addRender(std::make_unique<Renderer2D>(window->getWidth(), window->getHeight()));
-
-
-		debugRender.		 init(window->getWidth(), window->getHeight());
-		renderManager->		 init(window->getWidth(), window->getHeight());
-		renderManagerToGame->init(window->getWidth(), window->getHeight());
-		imGuiManager->		 init();
+		render->addRender(std::make_unique<PreProcessRenderer>());
+		render->addRender(std::make_unique<ShadowRenderer>()) ;
+		render->addRender(std::make_unique<DeferredRenderer>(window->getWidth(), window->getHeight()));
+		render->addRender(std::make_unique<SkyboxRenderer>(window->getWidth(), window->getHeight()));
+		render->addRender(std::make_unique<Renderer2D>(window->getWidth(), window->getHeight()));
+		debugRender.  init(window->getWidth(), window->getHeight());
+		render->	  init(window->getWidth(), window->getHeight());
+		imGuiManager->init();
+		renderManagers.emplace_back(std::move(render));
 	}
 
 	auto Application::start() -> int32_t
@@ -121,26 +110,30 @@ namespace Maple
 		imGuiManager->onUpdate(delta);
 		window->onUpdate();
 		dispatcher.dispatchEvents();
-		renderManager->onUpdate(delta, sceneManager->getCurrentScene());
-		renderManagerToGame->onUpdate(delta, sceneManager->getCurrentScene());
+		for (auto& r : renderManagers)
+		{
+			r->onUpdate(delta, sceneManager->getCurrentScene());
+		}
 	}
 
 	auto Application::onRender() -> void
 	{
+		for (auto& r : renderManagers)
 		{
-			sceneManager->getCurrentScene()->setGameView(false);
-			renderManager->beginScene(sceneManager->getCurrentScene());
-			debugRender.beginScene(sceneManager->getCurrentScene());
+			sceneManager->getCurrentScene()->setGameView(!r->isEditor());
+			r->beginScene(sceneManager->getCurrentScene());
+			if (r->isEditor()) {
+				debugRender.beginScene(sceneManager->getCurrentScene());
+			}
 		}
-		{
-			sceneManager->getCurrentScene()->setGameView(true);
-			renderManagerToGame->beginScene(sceneManager->getCurrentScene());
-		}
-		
-		rendererDevice->begin();
-		renderManager->onRender();
-		renderManagerToGame->onRender();
 
+		rendererDevice->begin();
+
+		for (auto& r : renderManagers)
+		{
+			r->onRender();
+		}
+	
 		onRenderDebug();
 		debugRender.renderScene();
 
@@ -148,9 +141,17 @@ namespace Maple
 		imGuiManager->onRender(sceneManager->getCurrentScene());
 	}
 
+	auto Application::beginScene() -> void
+	{
+
+	}
+
 	auto Application::onImGui() ->void
 	{
-		renderManager->onImGui();
+		for (auto& r : renderManagers)
+		{
+			r->onImGui();
+		}
 	}
 
 	auto Application::setSceneActive(bool active) -> void
@@ -174,7 +175,10 @@ namespace Maple
 
 		rendererDevice->onResize(w, h);
 		imGuiManager->onResize(w, h);
-		renderManager->onResize(w, h);
+		for (auto & r : renderManagers)
+		{
+			r->onResize(w, h);
+		}
 
 		VulkanContext::get()->waiteIdle();
 	}

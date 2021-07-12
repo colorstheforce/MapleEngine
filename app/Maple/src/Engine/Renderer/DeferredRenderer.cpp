@@ -373,7 +373,7 @@ namespace Maple
 	auto DeferredRenderer::createFrameBuffers() -> void
 	{
 		frameBuffers.clear();
-		auto& buffers = VulkanContext::get()->getSwapChain()->getSwapChainBuffers();
+		
 	
 		if (renderTexture)
 		{
@@ -392,16 +392,16 @@ namespace Maple
 		}
 		else 
 		{
+			auto& buffers = VulkanContext::get()->getSwapChain()->getSwapChainBuffers();
+
 			for (size_t i = 0; i < buffers.size(); i++) {
 				FrameBufferInfo info;
-				info.width = width;
-				info.height = height;
-
+				info.width = buffers[i]->getWidth();
+				info.height = buffers[i]->getHeight();;
 				info.attachments = { buffers[i] };
 				info.types = {
 					TextureType::COLOR,
 				};
-
 				info.renderPass = renderPass;
 				frameBuffers.emplace_back(FrameBuffer::create(info));
 			}

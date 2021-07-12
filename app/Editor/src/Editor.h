@@ -18,6 +18,7 @@ namespace Maple
 	class Texture2D;
 	class SceneWindow;
 	class TextureAtlas;
+	class RenderManager;
 	class Quad2D;
 
 	class Editor : public Application 
@@ -27,6 +28,7 @@ namespace Maple
 		auto init() -> void override;
 		auto onImGui() -> void override;
 		auto onUpdate(const Timestep& delta) -> void override;
+
 
 		auto onRenderDebug() -> void override;
 
@@ -99,5 +101,9 @@ namespace Maple
 
 		std::shared_ptr<TextureAtlas> textureAtlas;
 
+
 	};
+
+
+
 };

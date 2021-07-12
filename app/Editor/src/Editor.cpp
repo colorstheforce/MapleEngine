@@ -3,6 +3,7 @@
 // Copyright ?2020-2022 Prime Zeng                                          // 
 ////////////////////////////////////////////////////////////////////////////// 
 
+#include "Main.h"
 #include "Editor.h"
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -32,7 +33,18 @@
 #include "FileSystem/MeshLoader.h"
 #include "Others/StringUtils.h"
 #include "Scene/Component/MeshRenderer.h"
+
+#include "Engine/Renderer/RenderManager.h"
+#include "Engine/Renderer/ForwardRenderer.h"
+#include "Engine/Renderer/DeferredRenderer.h"
+#include "Engine/Renderer/SkyboxRenderer.h"
+#include "Engine/Renderer/ShadowRenderer.h"
 #include "Engine/Renderer/GridRenderer.h"
+#include "Engine/Renderer/PreProcessRenderer.h"
+#include "Engine/Renderer/OmniShadowRenderer.h"
+#include "Engine/Renderer/Renderer2D.h"
+
+
 
 namespace Maple 
 {
@@ -46,6 +58,19 @@ namespace Maple
 	auto Editor::init() -> void
 	{
 		Application::init();
+		auto& renderManager = std::make_unique<RenderManager>();
+		renderManager->setEditor(true);
+		//off-screen
+
+		renderManager->addRender(std::make_unique<ShadowRenderer>());
+		renderManager->addRender(std::make_unique<DeferredRenderer>(window->getWidth(), window->getHeight()));
+		renderManager->addRender(std::make_unique<SkyboxRenderer>(window->getWidth(), window->getHeight()));
+		renderManager->addRender(std::make_unique<GridRenderer>(window->getWidth(), window->getHeight()));
+		renderManager->addRender(std::make_unique<Renderer2D>(window->getWidth(), window->getHeight()));
+		renderManager->init(window->getWidth(), window->getHeight());
+
+		renderManagers.emplace_back(std::move(renderManager));
+
 		addWindow(SceneWindow);
 		addWindow(DisplayZeroWindow);
 		addWindow(HierarchyWindow);
@@ -74,8 +99,6 @@ namespace Maple
 		}
 
 		processIcons();
-
-
 	}
 
 	auto Editor::onImGui() -> void
@@ -94,9 +117,7 @@ namespace Maple
 	{
 		Application::onUpdate(delta);
 
-
 		auto currentScene = sceneManager->getCurrentScene();
-
 		if (getEditorState() == EditorState::Preview)
 		{
 			auto& registry = currentScene->getRegistry();
@@ -149,6 +170,8 @@ namespace Maple
 			editorCameraTransform.setWorldMatrix(glm::mat4(1.f));
 		}
 	}
+
+
 
 	auto Editor::onRenderDebug() -> void
 	{
@@ -616,3 +639,8 @@ namespace Maple
 	}
 }
 
+
+Maple::Application* createApplication()
+{
+	return new Maple::Editor();
+}

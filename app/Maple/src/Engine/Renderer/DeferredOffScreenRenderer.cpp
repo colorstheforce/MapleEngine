@@ -125,7 +125,7 @@ namespace Maple
 		if (camera.first != nullptr)
 		{
 			auto& registry = scene->getRegistry();
-			auto group = registry.group<MeshRenderer>(entt::get<Transform, ActiveComponent>);
+			auto group = registry.group<MeshRenderer>(entt::get<Transform>);
 
 			auto view = glm::inverse(camera.second->getWorldMatrix());
 
@@ -141,11 +141,7 @@ namespace Maple
 
 			for (auto entity : group)
 			{
-				const auto& [mesh, trans,active] = group.get<MeshRenderer, Transform,ActiveComponent>(entity);
-
-				if (!active.active) {
-					continue;
-				}
+				const auto& [mesh, trans] = group.get<MeshRenderer, Transform>(entity);
 
 				auto material = mesh.getMesh()->getMaterial();
 				if (material)

@@ -36,7 +36,6 @@ namespace Maple {
 	{
 		LOGV("{0} {1}", __FUNCTION__,initName);
 		entityManager = std::make_shared<EntityManager>(this);
-		entityManager->addDependency<Transform,ActiveComponent>();
 		entityManager->addDependency<Camera, Transform>();
 		entityManager->addDependency<Light, Transform>();
 		entityManager->addDependency<MeshRenderer, Transform>();

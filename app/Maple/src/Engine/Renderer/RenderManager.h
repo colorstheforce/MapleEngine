@@ -49,6 +49,9 @@ namespace Maple
 		inline auto setPreProcessRenderer(PreProcessRenderer* preProcessRenderer) { this->preProcessRenderer = preProcessRenderer; }
 
 
+		inline auto isEditor() const { return editor; }
+		inline auto setEditor(bool val) { editor = val; }
+
 	private:
 		std::vector<std::unique_ptr<Renderer>> renders;
 		std::shared_ptr<GBuffer> gbuffer;
@@ -57,5 +60,7 @@ namespace Maple
 		ShadowRenderer* shadowRenderer = nullptr;
 		OmniShadowRenderer* omniShadowRenderer = nullptr;
 		PreProcessRenderer* preProcessRenderer = nullptr;
+
+		bool editor = false;
 	};
 };

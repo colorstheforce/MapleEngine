@@ -4,17 +4,17 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include "Editor/Editor.h"
-
 #include "Others/Console.h"
+#include "Application.h"
+
+extern Maple::Application * createApplication();
+
 auto main() -> int32_t
 {
 	Maple::Console::init();
-
-	//app = new Maple::Application();
-
-	app = new Maple::Editor();
-
-	return app->start();
+	app = createApplication();
+	auto retCode = app->start();
+	delete app;
+	return retCode;
 }
 
