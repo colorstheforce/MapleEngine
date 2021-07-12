@@ -2,23 +2,33 @@ cmake_minimum_required(VERSION 3.4.1)
 
 project(MapleEngine)
 
-get_filename_component(EDITOR_LIB_SRC_DIR
-                       ${CMAKE_CURRENT_LIST_DIR}/../lib
+get_filename_component(ENGINE_LIB_SRC_DIR
+                       ${CMAKE_CURRENT_LIST_DIR}/lib
                        ABSOLUTE)
 
 
-get_filename_component(ASSET_DIR
-					  ${CMAKE_SOURCE_DIR}/../../Resources
+get_filename_component(ENGINE_ASSET_DIR
+					  ${CMAKE_CURRENT_LIST_DIR}/../../Resources
                       ABSOLUTE)					   
 					   
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 
+
+add_subdirectory(lib/spdlog)
+add_subdirectory(lib/imgui)
+add_subdirectory(lib/stb_image)
+add_subdirectory(lib/tinyobjloader)
+add_subdirectory(lib/SPIRV-Cross)
+add_subdirectory(lib/ktx)
+
+
+
 file(GLOB SHADERS_GLSL 
-	"${ASSET_DIR}/shaders/*.vert" 
-	"${ASSET_DIR}/shaders/*.frag" 
-	"${ASSET_DIR}/shaders/*.bat" 
+	"${ENGINE_ASSET_DIR}/shaders/*.vert" 
+	"${ENGINE_ASSET_DIR}/shaders/*.frag" 
+	"${ENGINE_ASSET_DIR}/shaders/*.bat" 
 )
 
 
@@ -83,25 +93,25 @@ add_library(MapleEngine ${VK_APP_SRC} ${KTX_SOURCES} ${SHADERS_GLSL})
 
 target_include_directories(MapleEngine PUBLIC
 	src
-	${EDITOR_LIB_SRC_DIR}/opengl/include
-	${EDITOR_LIB_SRC_DIR}/imgui/src
-	${EDITOR_LIB_SRC_DIR}/spdlog/include
-	${EDITOR_LIB_SRC_DIR}/stb_image
-	${EDITOR_LIB_SRC_DIR}/vulkan/include
-	${EDITOR_LIB_SRC_DIR}/tinyobjloader
-	${EDITOR_LIB_SRC_DIR}/glm
-	${EDITOR_LIB_SRC_DIR}/entt
-	${EDITOR_LIB_SRC_DIR}/SPIRV-Cross
-	${EDITOR_LIB_SRC_DIR}/ktx/include
-	${EDITOR_LIB_SRC_DIR}/ktx/other_include
-	${EDITOR_LIB_SRC_DIR}/cereal/include
+	${ENGINE_LIB_SRC_DIR}/opengl/include
+	${ENGINE_LIB_SRC_DIR}/imgui/src
+	${ENGINE_LIB_SRC_DIR}/spdlog/include
+	${ENGINE_LIB_SRC_DIR}/stb_image
+	${ENGINE_LIB_SRC_DIR}/vulkan/include
+	${ENGINE_LIB_SRC_DIR}/tinyobjloader
+	${ENGINE_LIB_SRC_DIR}/glm
+	${ENGINE_LIB_SRC_DIR}/entt
+	${ENGINE_LIB_SRC_DIR}/SPIRV-Cross
+	${ENGINE_LIB_SRC_DIR}/ktx/include
+	${ENGINE_LIB_SRC_DIR}/ktx/other_include
+	${ENGINE_LIB_SRC_DIR}/cereal/include
 )
 
 target_link_libraries(MapleEngine 
-	${EDITOR_LIB_SRC_DIR}/opengl/lib/${Arch}/glfw3.lib
-	${EDITOR_LIB_SRC_DIR}/opengl/lib/${Arch}/opengl32.lib
-	${EDITOR_LIB_SRC_DIR}/vulkan/lib/${Arch}/vulkan-1.lib
-	${EDITOR_LIB_SRC_DIR}/vulkan/lib/${Arch}/VkLayer_utils.lib
+	${ENGINE_LIB_SRC_DIR}/opengl/lib/${Arch}/glfw3.lib
+	${ENGINE_LIB_SRC_DIR}/opengl/lib/${Arch}/opengl32.lib
+	${ENGINE_LIB_SRC_DIR}/vulkan/lib/${Arch}/vulkan-1.lib
+	${ENGINE_LIB_SRC_DIR}/vulkan/lib/${Arch}/VkLayer_utils.lib
 	tinyobjloader
 	imgui
 	spirvCross

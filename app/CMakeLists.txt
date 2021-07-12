@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-project(MapleEngine)
+project(Maple-Engine)
 
 get_filename_component(LIB_SRC_DIR
-                       ${CMAKE_SOURCE_DIR}/lib
+                       ${CMAKE_SOURCE_DIR}/Editor/lib
                        ABSOLUTE)
 
 get_filename_component(APP_SRC_DIR
@@ -22,13 +22,8 @@ get_filename_component(ASSET_DIR
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 
-add_subdirectory(lib/spdlog)
-add_subdirectory(lib/imgui)
-add_subdirectory(lib/stb_image)
-add_subdirectory(lib/tinyobjloader)
-add_subdirectory(lib/SPIRV-Cross)
-add_subdirectory(lib/ktx)
 add_subdirectory(Maple)
+
 
 
 file(GLOB VK_APP_SRC
@@ -78,37 +73,35 @@ add_custom_command(TARGET Editor Game
 
 target_include_directories(Editor PUBLIC
 	${APP_SRC_DIR}
-	lib/opengl/include
-	lib/imgui/src
-	lib/spdlog/include
-	lib/stb_image
-	lib/vulkan/include
-	lib/tinyobjloader
-	lib/glm
-	lib/entt
-	lib/SPIRV-Cross
-	lib/ktx/include
-	lib/ktx/other_include
-	lib/cereal/include
-	MapleEngine/src
+	${LIB_SRC_DIR}/opengl/include
+	${LIB_SRC_DIR}/imgui/src
+	${LIB_SRC_DIR}/spdlog/include
+	${LIB_SRC_DIR}/stb_image
+	${LIB_SRC_DIR}/vulkan/include
+	${LIB_SRC_DIR}/tinyobjloader
+	${LIB_SRC_DIR}/glm
+	${LIB_SRC_DIR}/entt
+	${LIB_SRC_DIR}/SPIRV-Cross
+	${LIB_SRC_DIR}/ktx/include
+	${LIB_SRC_DIR}/ktx/other_include
+	${LIB_SRC_DIR}/cereal/include
 )
 
 
 target_include_directories(Game PUBLIC
 	${GAME_APP_SRC}
-	lib/opengl/include
-	lib/imgui/src
-	lib/spdlog/include
-	lib/stb_image
-	lib/vulkan/include
-	lib/tinyobjloader
-	lib/glm
-	lib/entt
-	lib/SPIRV-Cross
-	lib/ktx/include
-	lib/ktx/other_include
-	lib/cereal/include
-	MapleEngine/src
+	${LIB_SRC_DIR}/opengl/include
+	${LIB_SRC_DIR}/imgui/src
+	${LIB_SRC_DIR}/spdlog/include
+	${LIB_SRC_DIR}/stb_image
+	${LIB_SRC_DIR}/vulkan/include
+	${LIB_SRC_DIR}/tinyobjloader
+	${LIB_SRC_DIR}/glm
+	${LIB_SRC_DIR}/entt
+	${LIB_SRC_DIR}/SPIRV-Cross
+	${LIB_SRC_DIR}/ktx/include
+	${LIB_SRC_DIR}/ktx/other_include
+	${LIB_SRC_DIR}/cereal/include
 )
 
 target_link_libraries(

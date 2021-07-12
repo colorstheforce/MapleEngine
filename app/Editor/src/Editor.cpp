@@ -640,7 +640,9 @@ namespace Maple
 }
 
 
-Maple::Application* createApplication()
-{
-	return new Maple::Editor();
-}
+#ifndef EDITOR_STATIC
+	Maple::Application* createApplication()
+	{
+		return new Maple::Editor();
+	}
+#endif

@@ -20,10 +20,10 @@ add_library(imgui ${IMGUI_SRC})
 
 
 target_include_directories(imgui PUBLIC
-	${CMAKE_SOURCE_DIR}/lib/opengl/include
+	../opengl/include
 )
 target_include_directories(imgui PUBLIC
-	${CMAKE_SOURCE_DIR}/lib/vulkan/include
+	../vulkan/include
 )
 
 target_include_directories(imgui PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>")
