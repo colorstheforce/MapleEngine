@@ -98,15 +98,13 @@ namespace Maple
 						if (strcmp("Cube", name) == 0) {
 							auto entity = scene->createEntity(name);
 							entity.addComponent<Model>().type = PrimitiveType::Cube;
-							auto& meshRender = entity.addComponent<MeshRenderer>();
-							meshRender.mesh = Mesh::createCube();
+							auto& meshRender = entity.addComponent<MeshRenderer>(Mesh::createCube());
 						}
 
 						if (strcmp("Sphere", name) == 0) {
 							auto entity = scene->createEntity(name);
 							entity.addComponent<Model>().type = PrimitiveType::Sphere;
-							auto& meshRender = entity.addComponent<MeshRenderer>();
-							meshRender.mesh = Mesh::createSphere();
+							auto& meshRender = entity.addComponent<MeshRenderer>(Mesh::createSphere());
 						}
 					}
 				}
@@ -439,26 +437,7 @@ namespace Maple
 				return;
 			}
 
-			/*if (m_SelectUp)
-			{
-				if (editor.GetSelected() == node && registry.valid(m_CurrentPrevious))
-				{
-					m_SelectUp = false;
-					editor.SetSelected(m_CurrentPrevious);
-				}
-			}
-
-			if (m_SelectDown)
-			{
-				if (registry.valid(m_CurrentPrevious) && m_CurrentPrevious == editor.GetSelected())
-				{
-					m_SelectDown = false;
-					editor.SetSelected(node);
-				}
-			}
-
-			m_CurrentPrevious = node;*/
-
+		
 			if (nodeOpen == false)
 			{
 				return;

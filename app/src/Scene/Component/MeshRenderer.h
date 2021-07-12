@@ -72,16 +72,18 @@ namespace Maple
 		template<class Archive>
 		auto load(Archive& archive) -> void
 		{
-			std::string name;
-			std::shared_ptr<Material> material;
-			archive(name, entity, cereal::make_nvp("material", material));
-			getMesh(name);
-			if(mesh)
-				mesh->setMaterial(material);
+			archive(meshName, entity, cereal::make_nvp("material", material));
 		}
-		std::shared_ptr<Mesh> mesh;
+
+		auto loadFromModel() -> void;
+
+		inline auto getMesh() { if (mesh == nullptr) getMesh(meshName);  return mesh; }
+
 	private:
+		std::shared_ptr<Mesh> mesh;
 		auto getMesh(const std::string& name) -> void;
+		std::string meshName;
+		std::shared_ptr<Material> material;
 
 	};
 

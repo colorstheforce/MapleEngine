@@ -6,7 +6,7 @@
 #ifndef BIT
 #define BIT(x) (1 << x)
 #endif
-
+#include <memory>
 #include <glm/glm.hpp>
 
 namespace Maple
@@ -95,7 +95,7 @@ namespace Maple
 	struct  RenderCommand
 	{
 		Mesh* mesh = nullptr;
-		Material* material = nullptr;
+		std::shared_ptr<Material> material;
 		glm::mat4 transform;
 	};
 };

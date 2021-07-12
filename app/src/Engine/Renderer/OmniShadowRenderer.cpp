@@ -181,11 +181,11 @@ namespace Maple
 			{
 				const auto& [render, trans] = group.get<MeshRenderer,Transform>(entity);
 
-				if (render.mesh) 
+				if (render.getMesh()) 
 				{
 					//TODO calculate if the mesh is in the light view.
 					RenderCommand command;
-					command.mesh = render.mesh.get();
+					command.mesh = render.getMesh().get();
 					command.transform = trans.getWorldMatrix();;
 					command.material = nullptr;
 					submit(command,i);

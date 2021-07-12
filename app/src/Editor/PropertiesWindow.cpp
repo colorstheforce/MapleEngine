@@ -305,14 +305,14 @@ namespace MM
 	{
 		auto& mesh = reg.get<MeshRenderer>(e);
 
-		auto material = mesh.mesh->getMaterial();
+		auto material = mesh.getMesh()->getMaterial();
 
 		std::string matName = "Material";
 		if (!material)
 		{
 			ImGui::TextUnformatted("Empty Material");
 			if (ImGui::Button("Add Material", ImVec2(ImGui::GetContentRegionAvail().x, 0.0f)))
-				mesh.mesh->setMaterial(std::make_shared<Material>());
+				mesh.getMesh()->setMaterial(std::make_shared<Material>());
 		}
 		else if (ImGui::TreeNodeEx(matName.c_str(), 0))
 		{

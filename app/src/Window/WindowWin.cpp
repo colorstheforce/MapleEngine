@@ -35,7 +35,6 @@ namespace Maple
 	auto WindowWin::onUpdate() -> void
 	{
 		glfwPollEvents();
-
 	}
 
 	auto WindowWin::setVSync(bool vsync) -> void 

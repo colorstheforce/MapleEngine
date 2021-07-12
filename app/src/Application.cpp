@@ -90,12 +90,11 @@ namespace Maple
 			ImGui::NewFrame();
 			{
 				sceneManager->apply();
-				auto tStart = std::chrono::high_resolution_clock::now();
+				//auto tStart = std::chrono::high_resolution_clock::now();
 				
 				onUpdate(timestep);
 				onRender();
 
-				imGuiManager->onRender(sceneManager->getCurrentScene());
 
 				rendererDevice->end();
 				rendererDevice->present();//present all data
@@ -123,22 +122,30 @@ namespace Maple
 		window->onUpdate();
 		dispatcher.dispatchEvents();
 		renderManager->onUpdate(delta, sceneManager->getCurrentScene());
+		renderManagerToGame->onUpdate(delta, sceneManager->getCurrentScene());
 	}
 
 	auto Application::onRender() -> void
 	{
-		sceneManager->getCurrentScene()->setGameView(false);
-		renderManager->beginScene(sceneManager->getCurrentScene());
-		debugRender.beginScene(sceneManager->getCurrentScene());
-
-		sceneManager->getCurrentScene()->setGameView(true);
-		renderManagerToGame->beginScene(sceneManager->getCurrentScene());
-
+		{
+			sceneManager->getCurrentScene()->setGameView(false);
+			renderManager->beginScene(sceneManager->getCurrentScene());
+			debugRender.beginScene(sceneManager->getCurrentScene());
+		}
+		{
+			sceneManager->getCurrentScene()->setGameView(true);
+			renderManagerToGame->beginScene(sceneManager->getCurrentScene());
+		}
+		
 		rendererDevice->begin();
 		renderManager->onRender();
 		renderManagerToGame->onRender();
+
 		onRenderDebug();
 		debugRender.renderScene();
+
+
+		imGuiManager->onRender(sceneManager->getCurrentScene());
 	}
 
 	auto Application::onImGui() ->void

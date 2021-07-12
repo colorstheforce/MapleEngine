@@ -195,9 +195,7 @@ namespace Maple
 		float stackStep = M_PI / stackCount;
 		float radius = 1.0f;
 
-		Mesh* mesh = new Mesh();
-		mesh->setName("Sphere");
-
+	
 
 		for (int i = 0; i <= stackCount; ++i)
 		{
@@ -251,7 +249,9 @@ namespace Maple
 		}
 
 		auto ib = std::make_shared<IndexBuffer>(indices.data(), indices.size());
-		return std::make_shared<Mesh>(vb, ib);
+		auto mesh = std::make_shared<Mesh>(vb, ib);
+		mesh->setName("Sphere");
+		return mesh;
 	}
 
 	auto Mesh::createPlane(float width, float height, const glm::vec3& normal) ->std::shared_ptr< Mesh>

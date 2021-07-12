@@ -11,6 +11,7 @@
 #include "Scene/Component/Light.h"
 #include "Scene/Component/CameraControllerComponent.h"
 #include "Scene/Component/MeshRenderer.h"
+#include "Scene/Component/Sprite.h"
 
 #include "Engine/Material.h"
 #include "Engine/CameraController.h"
@@ -35,11 +36,12 @@ namespace Maple {
 	{
 		LOGV("{0} {1}", __FUNCTION__,initName);
 		entityManager = std::make_shared<EntityManager>(this);
-
+		entityManager->addDependency<Transform,ActiveComponent>();
 		entityManager->addDependency<Camera, Transform>();
 		entityManager->addDependency<Light, Transform>();
 		entityManager->addDependency<MeshRenderer, Transform>();
 		entityManager->addDependency<Model, Transform>();
+		entityManager->addDependency<Sprite, Transform>();
 
 		sceneGraph = std::make_shared<SceneGraph>();
 		sceneGraph->init(entityManager->getRegistry());

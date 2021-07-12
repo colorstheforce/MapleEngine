@@ -2,10 +2,10 @@
 
 #include "Material.h"
 #include "Engine/Interface/Texture.h"
-#include "Engine/Vulkan/VulkanDescriptorSet.h"
-#include "Engine/Vulkan/VulkanPipeline.h"
-#include "Engine/Vulkan/VulkanUniformBuffer.h"
-#include "Engine/Vulkan/VulkanShader.h"
+#include "Engine/Interface/DescriptorSet.h"
+#include "Engine/Interface/Pipeline.h"
+#include "Engine/Interface/UniformBuffer.h"
+#include "Engine/Interface/Shader.h"
 
 namespace Maple
 {
@@ -14,14 +14,12 @@ namespace Maple
 		: pbrMaterialTextures(textures), shader(shader)
 	{
 		setRenderFlag(RenderFlags::DEFERREDRENDER);
-		descriptorSet = nullptr;
 		setMaterialProperites(properties);
 	}
 
 	Material::Material()
 	{
 		setRenderFlag(RenderFlags::DEFERREDRENDER);
-		descriptorSet = nullptr;
 	}
 
 	Material::~Material()
@@ -45,22 +43,24 @@ namespace Maple
 
 	auto Material::createDescriptorSet(Pipeline* pipeline, int32_t layoutID, bool pbr) -> void
 	{
-		if (descriptorSet)
-			descriptorSet.reset();
+		/*if (descriptorSet)
+			descriptorSet.reset();*/
 
-		this->pipeline = pipeline;
-
-		DescriptorInfo info;
-		info.pipeline = pipeline;
-		info.layoutIndex = layoutID;
-		info.shader = pipeline->getShader();
+		//this->pipeline = pipeline;
 
 		if (materialPropertiesBuffer == nullptr && pbr)
 		{
-			materialPropertiesBuffer = std::make_shared<VulkanUniformBuffer>(sizeof(MaterialProperties),nullptr);
+			materialPropertiesBuffer = UniformBuffer::create(sizeof(MaterialProperties),nullptr);
 		}
 
-		descriptorSet = std::make_shared<VulkanDescriptorSet>(info);
+		if (descriptorSets[pipeline] == nullptr) {
+			DescriptorInfo info;
+			info.pipeline = pipeline;
+			info.layoutIndex = layoutID;
+			info.shader = pipeline->getShader();
+			descriptorSets[pipeline] = DescriptorSet::create(info);
+		}
+
 
 		std::vector<ImageInfo> imageInfos;
 		std::vector<BufferInfo> bufferInfos;
@@ -105,7 +105,7 @@ namespace Maple
 			materialPropertiesBuffer->setData(sizeof(MaterialProperties), &materialProperties);
 		}
 
-		descriptorSet->update(imageInfos, bufferInfos);
+		descriptorSets[pipeline]->update(imageInfos, bufferInfos);
 	}
 
 	auto Material::setTextures(const PBRMataterialTextures& textures) -> void

@@ -86,8 +86,6 @@ namespace Maple
 		{
 			win.second->onImGui();
 		}
-
-	
 		endDockSpace();
 		Application::onImGui();
 	}
@@ -456,6 +454,7 @@ namespace Maple
 			ImGuiID DockMiddle = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.8f, nullptr, &dock_main_id);
 
 			ImGui::DockBuilderDockWindow("Scene", DockMiddle);
+			ImGui::DockBuilderDockWindow("Display", DockMiddle);
 
 			ImGui::DockBuilderDockWindow("Properties", DockRight);
 			ImGui::DockBuilderDockWindow("Console", DockingBottomLeftChild);

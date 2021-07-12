@@ -157,9 +157,14 @@ namespace Maple
 		submitInfo.pSignalSemaphores = &getFrameData().renderSemaphore;
 		
 		VK_CHECK_RESULT(vkResetFences(*VulkanDevice::get(), 1, &getFrameData().renderFence));
-		VK_CHECK_RESULT(vkQueueSubmit(VulkanDevice::get()->getGraphicsQueue(), 1, &submitInfo, getFrameData().renderFence));
 
+		VK_CHECK_RESULT(vkQueueSubmit(VulkanDevice::get()->getGraphicsQueue(), 1, &submitInfo, getFrameData().renderFence));
 		
+		VK_CHECK_RESULT(vkWaitForFences(*VulkanDevice::get(), 1, &getFrameData().renderFence, true, UINT32_MAX));
+
+		VK_CHECK_RESULT(vkResetCommandPool(*VulkanDevice::get(), getFrameData().commandPool, VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT));
+
+
 
 		VkPresentInfoKHR present;
 		present.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;

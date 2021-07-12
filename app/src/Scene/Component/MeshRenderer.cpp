@@ -20,6 +20,13 @@ namespace Maple
 
 	}
 
+	auto MeshRenderer::loadFromModel() -> void
+	{
+		getMesh(meshName);
+		if (mesh)
+			mesh->setMaterial(material);
+	}
+
 	auto MeshRenderer::getMesh(const std::string& name) -> void
 	{
 		Entity ent{entity,app->getSceneManager()->getCurrentScene()};
@@ -30,7 +37,9 @@ namespace Maple
 				case  PrimitiveType::Cube:
 					mesh = Mesh::createCube();
 				break;
-
+				case  PrimitiveType::Sphere:
+					mesh = Mesh::createSphere();
+					break;
 				case PrimitiveType::File:
 					mesh = model->resource->find(name);
 				break;

@@ -82,7 +82,7 @@ namespace Maple
 				continue;*/
 
 			const auto& sets = pipeline->getDescriptorSet();
-			const auto material = cmd.material != nullptr ? cmd.material->getDescriptorSet() : defaultMaterial->getDescriptorSet();
+			const auto material = cmd.material != nullptr ? cmd.material->getDescriptorSet(pipeline.get()) : defaultMaterial->getDescriptorSet(pipeline.get());
 			
 			auto& pushConstants = shader->getPushConstants();
 			memcpy(pushConstants[0].data.get(), &cmd.transform, sizeof(glm::mat4));
@@ -125,7 +125,7 @@ namespace Maple
 		if (camera.first != nullptr)
 		{
 			auto& registry = scene->getRegistry();
-			auto group = registry.group<MeshRenderer>(entt::get<Transform>);
+			auto group = registry.group<MeshRenderer>(entt::get<Transform, ActiveComponent>);
 
 			auto view = glm::inverse(camera.second->getWorldMatrix());
 
@@ -141,14 +141,16 @@ namespace Maple
 
 			for (auto entity : group)
 			{
-				const auto& [mesh, trans] = group.get<MeshRenderer, Transform>(entity);
-				auto material = mesh.mesh->getMaterial();
+				const auto& [mesh, trans,active] = group.get<MeshRenderer, Transform,ActiveComponent>(entity);
 
+				if (!active.active) {
+					continue;
+				}
+
+				auto material = mesh.getMesh()->getMaterial();
 				if (material)
 				{
-					if (material->getDescriptorSet() == nullptr
-						|| material->getPipeline() != pipeline.get()
-						|| material->getTexturesUpdated())
+					if (material->getDescriptorSet(pipeline.get()) == nullptr || material->getTexturesUpdated())
 					{
 						material->createDescriptorSet(pipeline.get(), 1);
 						material->setTexturesUpdated(false);
@@ -156,8 +158,8 @@ namespace Maple
 				}
 
 				RenderCommand command;
-				command.mesh = mesh.mesh.get();
-				command.material = material.get();
+				command.mesh = mesh.getMesh().get();
+				command.material = material;
 				command.transform = trans.getWorldMatrix();
 				submit(command);
 			}

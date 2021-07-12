@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <memory>
+#include <unordered_map>
 
 namespace Maple
 {
@@ -119,14 +120,12 @@ namespace Maple
 		{
 			return shader;
 		}
-		inline auto getDescriptorSet() const
+
+		inline auto getDescriptorSet(Pipeline * pipeline) 
 		{
-			return descriptorSet;
+			return descriptorSets[pipeline];
 		}
-		inline auto getPipeline() const
-		{
-			return pipeline;
-		}
+
 		inline auto getRenderFlags() const
 		{
 			return renderFlags;
@@ -228,10 +227,12 @@ namespace Maple
 
 		std::shared_ptr	<Shader> shader;
 		std::shared_ptr <UniformBuffer> materialPropertiesBuffer;
-		std::shared_ptr <DescriptorSet> descriptorSet;
-		Pipeline* pipeline = nullptr;
+		//std::shared_ptr <DescriptorSet> descriptorSet;
+		//Pipeline* pipeline = nullptr;
 		std::string name;
 		bool texturesUpdated = false;
+		std::unordered_map<Pipeline*, std::shared_ptr <DescriptorSet>> descriptorSets;
+
 	};
 
 
