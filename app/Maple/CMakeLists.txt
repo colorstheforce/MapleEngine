@@ -83,8 +83,6 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_RAND_S -D_CRT_SECURE_CPP_OVERLO
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "MapleEngine")
-
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${VK_APP_SRC})
 
 source_group("Shaders\\GLSL" FILES ${SHADERS_GLSL})
@@ -105,6 +103,7 @@ target_include_directories(MapleEngine PUBLIC
 	${ENGINE_LIB_SRC_DIR}/ktx/include
 	${ENGINE_LIB_SRC_DIR}/ktx/other_include
 	${ENGINE_LIB_SRC_DIR}/cereal/include
+	${ENGINE_LIB_SRC_DIR}/utf8/include
 )
 
 target_link_libraries(MapleEngine 
@@ -117,6 +116,8 @@ target_link_libraries(MapleEngine
 	spirvCross
 	ktx
 )
+
+set_target_properties(tinyobjloader imgui spirvCross ktx spdlog_headers_for_ide stb_image PROPERTIES FOLDER Library)
 
 endif()
 
