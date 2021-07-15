@@ -36,12 +36,14 @@ Maple::Application* app;
 
 namespace Maple 
 {
-	Application::Application()
+	Application::Application(AppDelegate* app)
 	{
+		appDelegate			= std::shared_ptr<AppDelegate>(app);
 		window				= NativeWindow::newInstance(WindowInitData{ 1280,720,false,"Maple-Engine" });
 		sceneManager		= std::make_unique<SceneManager>();
 		rendererDevice		= std::make_unique<VkRenderDevice>(window->getWidth(), window->getHeight());
 		imGuiManager		= std::make_unique<ImGuiManager>(false);
+		threadPool			= std::make_unique<ThreadPool>(4);
 	}
 
 	auto Application::init() -> void
@@ -62,6 +64,7 @@ namespace Maple
 		render->	  init(window->getWidth(), window->getHeight());
 		imGuiManager->init();
 		renderManagers.emplace_back(std::move(render));
+		appDelegate->onInit();
 	}
 
 	auto Application::start() -> int32_t
@@ -80,10 +83,9 @@ namespace Maple
 			{
 				sceneManager->apply();
 				//auto tStart = std::chrono::high_resolution_clock::now();
-				
+				executeAll();
 				onUpdate(timestep);
 				onRender();
-
 
 				rendererDevice->end();
 				rendererDevice->present();//present all data
@@ -99,6 +101,7 @@ namespace Maple
 				LOGI("FPS : {0}, Delta time : {1}", io.Framerate,io.DeltaTime * 1000);
 			}
 		}
+		appDelegate->onDestory();
 		return 0;
 	}
 
@@ -193,6 +196,33 @@ namespace Maple
 		if(sceneManager->getCurrentScene() != nullptr){
 			sceneManager->getCurrentScene()->saveTo();
 			window->setTitle(sceneManager->getCurrentScene()->getName());
+		}
+	}
+
+	auto Application::postOnMainThread(const std::function<bool()>& mainCallback) ->std::future<bool>
+	{
+		std::promise<bool> promise;
+		std::future<bool> future = promise.get_future();
+
+		std::lock_guard<std::mutex> locker(executeMutex);
+		executeQueue.emplace(std::move(promise), mainCallback);
+		return future;
+	}
+
+	auto Application::executeAll() -> void
+	{
+		std::pair<std::promise<bool>, std::function<bool(void)>> func;
+		for (;;) {
+			{
+				std::lock_guard<std::mutex> lock(executeMutex);
+				if (executeQueue.empty())
+					break;
+				func = std::move(executeQueue.front());
+				executeQueue.pop();
+			}
+			if (func.second) {
+				func.first.set_value(func.second());
+			}
 		}
 	}
 

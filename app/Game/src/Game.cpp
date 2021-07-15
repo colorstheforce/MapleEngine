@@ -7,6 +7,7 @@ namespace Maple
 	class Game : public Application
 	{
 	public:
+		Game(): Application(new DefaultDelegate()){}
 		auto init() -> void override 
 		{
 			Application::init();

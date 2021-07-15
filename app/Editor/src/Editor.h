@@ -15,16 +15,17 @@
 
 namespace Maple
 {
+	class EditorPlugin;
 	class Texture2D;
 	class SceneWindow;
 	class TextureAtlas;
 	class RenderManager;
 	class Quad2D;
 
-	class Editor : public Application 
+	class Editor final : public Application 
 	{
 	public:
-		Editor();
+		Editor(AppDelegate* appDelegate);
 		auto init() -> void override;
 		auto onImGui() -> void override;
 		auto onUpdate(const Timestep& delta) -> void override;
@@ -41,6 +42,9 @@ namespace Maple
 		inline auto getWindow() {
 			return std::static_pointer_cast<T>(editorWindows[typeid(T).hash_code()]);
 		}
+
+		template<class T>
+		auto addSubWindow() -> void;
 
 		inline auto& getSelected() const { return selectedNode; }
 		inline auto& getPrevSelected() const { return prevSelectedNode; }
@@ -72,6 +76,9 @@ namespace Maple
 		auto getIcon(FileType type)->Quad2D*;
 		auto processIcons() -> void;
 
+		auto addPlugin(EditorPlugin* plugin) -> void;
+		auto addFunctionalPlugin(const std::function<void(Editor*)> & callback) -> void;
+
 	private:
 		auto drawPlayButtons() -> void;
 		auto drawMenu() -> void;
@@ -98,12 +105,13 @@ namespace Maple
 		
 		//need to be optimized. should use Atlats to cache.
 		std::unordered_map<FileType, std::string> cacheIcons;
-
 		std::shared_ptr<TextureAtlas> textureAtlas;
-
-
+		std::vector<std::unique_ptr<EditorPlugin>> plugins;
 	};
 
-
-
+	template<class T>
+	auto Editor::addSubWindow() -> void
+	{
+		editorWindows.emplace(typeid(T).hash_code(), std::make_shared<T>());
+	}
 };

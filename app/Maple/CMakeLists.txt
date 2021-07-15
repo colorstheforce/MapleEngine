@@ -22,6 +22,7 @@ add_subdirectory(lib/stb_image)
 add_subdirectory(lib/tinyobjloader)
 add_subdirectory(lib/SPIRV-Cross)
 add_subdirectory(lib/ktx)
+add_subdirectory(lib/charset-detect)
 
 
 
@@ -71,6 +72,8 @@ file(GLOB VK_APP_SRC
 	src/Resources/*.h
 	src/Math/*.cpp
 	src/Math/*.h
+	src/Thread/*.cpp
+	src/Thread/*.h
 )
 
 
@@ -104,6 +107,7 @@ target_include_directories(MapleEngine PUBLIC
 	${ENGINE_LIB_SRC_DIR}/ktx/other_include
 	${ENGINE_LIB_SRC_DIR}/cereal/include
 	${ENGINE_LIB_SRC_DIR}/utf8/include
+	${ENGINE_LIB_SRC_DIR}/charset-detect
 )
 
 target_link_libraries(MapleEngine 
@@ -115,9 +119,10 @@ target_link_libraries(MapleEngine
 	imgui
 	spirvCross
 	ktx
+	tellenc
 )
 
-set_target_properties(tinyobjloader imgui spirvCross ktx spdlog_headers_for_ide stb_image PROPERTIES FOLDER Library)
+set_target_properties(tinyobjloader tellenc imgui spirvCross ktx spdlog_headers_for_ide stb_image PROPERTIES FOLDER Library)
 
 endif()
 

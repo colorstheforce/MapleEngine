@@ -44,13 +44,13 @@
 #include "Engine/Renderer/OmniShadowRenderer.h"
 #include "Engine/Renderer/Renderer2D.h"
 
+#include "EditorPlugin.h"
 
 
 namespace Maple 
 {
 
-	Editor::Editor()
-		:Application()
+	Editor::Editor(AppDelegate* appDelegate) : Application(appDelegate)
 	{
 
 	}
@@ -168,6 +168,17 @@ namespace Maple
 
 			}
 			editorCameraTransform.setWorldMatrix(glm::mat4(1.f));
+		}
+
+
+
+		for (auto& plugin : plugins)
+		{
+			if (!plugin->isInited())
+			{
+				plugin->process(this);
+				plugin->setInited(true);
+			}
 		}
 	}
 
@@ -637,12 +648,22 @@ namespace Maple
 			textureAtlas->addSprite(str);
 		}
 	}
+
+	auto Editor::addPlugin(EditorPlugin* plugin) -> void
+	{
+		plugins.emplace_back(std::unique_ptr<EditorPlugin>(plugin));
+	}
+
+	auto Editor::addFunctionalPlugin(const std::function<void(Editor*)>& callback) -> void
+	{
+		plugins.emplace_back(std::make_unique<FunctionalPlugin>(callback));
+	}
+
 }
 
-
-#ifndef EDITOR_STATIC
-	Maple::Application* createApplication()
+#if !defined(EDITOR_STATIC)
+	Maple::Application * createApplication()
 	{
-		return new Maple::Editor();
+		return new Editor(new Maple::DefaultDelegate());
 	}
 #endif

@@ -18,6 +18,7 @@
 #include "Event/EventDispatcher.h"
 #include "Others/Timer.h"
 #include "Engine/Renderer/DebugRenderer.h"
+#include "Thread/ThreadPool.h"
 
 namespace Maple 
 {
@@ -29,10 +30,24 @@ namespace Maple
 		Preview
 	};
 
+	class AppDelegate 
+	{
+	public:
+		virtual auto onInit() -> void = 0;
+		virtual auto onDestory() -> void = 0;
+	};
+
+	class DefaultDelegate final : public AppDelegate
+	{
+	public:
+		virtual auto onInit() -> void override {};
+		virtual auto onDestory() -> void override {};
+	};
+
 	class Application
 	{
 	public:
-		Application();
+		Application(AppDelegate * appDelegate);
 		virtual auto init() -> void;
 		auto start() -> int32_t ;
 
@@ -66,13 +81,20 @@ namespace Maple
 
 		inline auto& getRenderManagers() const { return renderManagers; }
 
+		auto postOnMainThread(const std::function<bool()>& mainCallback)->std::future<bool>;
+		auto executeAll() -> void;
+		inline auto& getThreadPool() { return threadPool; }
+		template<class T>
+		inline auto getAppDelegate() { return std::static_pointer_cast<T>(appDelegate); }
 	protected:
+
 		std::unique_ptr<NativeWindow> window;
 		std::unique_ptr<RenderDevice> rendererDevice;
 		std::unique_ptr<ImGuiManager> imGuiManager;
 		std::unique_ptr<SceneManager> sceneManager;
-		std::vector<std::unique_ptr<RenderManager>> renderManagers;
+		std::unique_ptr<ThreadPool>	  threadPool;
 
+		std::vector<std::unique_ptr<RenderManager>> renderManagers;
 
 
 		EventDispatcher dispatcher;
@@ -85,7 +107,10 @@ namespace Maple
 
 		DebugRenderer debugRender;
 
+		std::queue<std::pair<std::promise<bool>, std::function<bool()>>> executeQueue;
+		std::mutex executeMutex;
 
+		std::shared_ptr<AppDelegate> appDelegate;
 	};
 };
 

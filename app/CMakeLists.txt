@@ -59,7 +59,8 @@ add_executable(Game ${GAME_APP_SRC})
 
 set_property(TARGET Editor Game PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${ASSET_DIR})
 
-set_target_properties(Editor PROPERTIES COMPILE_FLAGS "/MP /wd4819 /arch:SSE ")
+set_target_properties(Editor PROPERTIES COMPILE_FLAGS "/MP /wd4819 /arch:SSE -DBuildEditor")
+
 set_target_properties(Game PROPERTIES COMPILE_FLAGS "/MP /wd4819 /arch:SSE ")
 
 string(REPLACE "/" "\\" GLEW32_PATH ${LIB_SRC_DIR}/opengl/lib/${Arch}/glew32.dll)
