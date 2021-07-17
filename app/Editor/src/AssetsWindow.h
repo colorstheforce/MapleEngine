@@ -8,6 +8,8 @@
 #include <imgui.h>
 #include <memory>
 #include <vector>
+#include <unordered_map>
+#include <map>
 
 #include "EditorWindow.h"
 #include "FileSystem/File.h"
@@ -21,6 +23,9 @@ namespace Maple
 		std::string absolutePath;
 		bool isFile;
 		FileType type;
+
+		FileInfo* parent = nullptr;
+		std::map<std::string,std::shared_ptr<FileInfo>> children;
 	};
 
 	class AssetsWindow : public EditorWindow
@@ -29,8 +34,8 @@ namespace Maple
 		AssetsWindow();
 		virtual void onImGui() override;
 
-		auto drawFile(int32_t dirIndex, bool folder, int32_t shownIndex, bool gridView) -> bool;
-		auto drawFolder(const FileInfo & dirInfo) -> void;
+		auto drawFile(FileInfo * file, bool folder, int32_t shownIndex, bool gridView) -> bool;
+		auto drawFolder(const std::shared_ptr<FileInfo>& dirInfo) -> void;
 		auto renderNavigationBar() -> void;
 		auto renderBottom() -> void;
 		auto getDirectories(const std::string& path) -> void;
@@ -50,8 +55,7 @@ namespace Maple
 
 		static auto parseFilename(const std::string& str, const char delim, std::vector<std::string>& out) -> std::string;
 		static auto parseFiletype(const std::string& filename)->std::string;
-		static auto getFsContents(const std::string& path) ->std::vector<FileInfo>;
-		static auto readDirectory(const std::string& path)->std::vector<FileInfo>;
+		static auto readDirectory(const std::string& path, FileInfo* fileInfo)->void;
 		static auto getParentPath(const std::string& path) -> std::string;
 
 
@@ -65,13 +69,10 @@ namespace Maple
 		static inline std::vector<std::string> assetTypes = {
 			"fbx", "obj", "wav", "mp3","png","jpg","bmp", "scene", "ogg", "lua" };
 
-		std::string currentDirPath;
 		std::string baseDirPath;
-		std::string previousDirPath;
-		std::string movePath;
-		std::string lastNavPath;
 		static std::string delimiter;
 
+		std::string movePath;
 		std::string directories[100];
 		int32_t directoryCount;
 
@@ -88,9 +89,12 @@ namespace Maple
 		char* inputHint = nullptr;
 		char inputBuffer[1024];
 
-		std::vector<FileInfo> currentDir;
-		std::vector<FileInfo> baseProjectDir;
+		//std::vector<FileInfo> currentDir;
+		FileInfo baseProjectDir;
 		std::vector<std::string> splitPath;
+		FileInfo* rootDir = nullptr;
+		FileInfo* currentDir = nullptr;
+		FileInfo* lastDir = nullptr;
 
 	};
 };

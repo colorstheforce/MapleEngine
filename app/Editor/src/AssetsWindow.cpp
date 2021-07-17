@@ -36,15 +36,13 @@ namespace Maple
 	AssetsWindow::AssetsWindow()
 	{
 		title = "Assets";
-
 		baseDirPath = ".";
-		currentDirPath = baseDirPath;
-		previousDirPath = currentDirPath;
-		lastNavPath = baseDirPath;
-		baseProjectDir = readDirectory(baseDirPath);
-		currentDir = readDirectory(baseDirPath);
+		readDirectory(baseDirPath,&baseProjectDir);
 		basePathLen = baseDirPath.length();
-
+		currentDir = &baseProjectDir;
+		baseProjectDir.absolutePath = baseDirPath;
+		lastDir = currentDir;
+		rootDir = currentDir;
 	}
 
 	auto AssetsWindow::onImGui() -> void
@@ -60,8 +58,8 @@ namespace Maple
 				{
 					ImGui::BeginChild("##folders");
 					{
-						for (auto i = 0; i < baseProjectDir.size(); i++)
-							drawFolder(baseProjectDir[i]);
+						for (auto & dir : rootDir->children)
+							drawFolder(dir.second);
 					}
 					ImGui::EndChild();
 				}
@@ -84,7 +82,7 @@ namespace Maple
 					if (this->move(file, movePath))
 					{
 						LOGV("Moved File: " + file + " to " + movePath);
-						currentDir = readDirectory(currentDirPath);
+						//currentDir = readDirectory(currentDirPath);
 					}
 					isDragging = false;
 				}
@@ -137,29 +135,26 @@ namespace Maple
 					gridItemsPerRow = (int32_t)std::floor(xAvail / 95.0f);
 					gridItemsPerRow = std::max(1, gridItemsPerRow);
 
-					for (int i = 0; i < currentDir.size(); i++)
+					for (auto & dir : currentDir->children)
 					{
-						if (currentDir.size() > 0)
+						if (!showHiddenFiles && StringUtils::isHiddenFile(dir.first))
 						{
-							if (!showHiddenFiles && StringUtils::isHiddenFile(currentDir[i].fileName))
+							continue;
+						}
+
+						if (filter.IsActive())
+						{
+							if (!filter.PassFilter(dir.first.c_str()))
 							{
 								continue;
 							}
-
-							if (filter.IsActive())
-							{
-								if (!filter.PassFilter(currentDir[i].fileName.c_str()))
-								{
-									continue;
-								}
-							}
-
-							bool doubleClicked = drawFile(i, !currentDir[i].isFile, shownIndex, !isInListView);
-
-							if (doubleClicked)
-								break;
-							shownIndex++;
 						}
+
+						bool doubleClicked = drawFile(dir.second.get(), !dir.second->isFile, shownIndex, !isInListView);
+
+						if (doubleClicked)
+							break;
+						shownIndex++;
 					}
 
 					ImGui::EndChild();
@@ -189,7 +184,7 @@ namespace Maple
 		}
 	}
 
-	auto AssetsWindow::drawFile(int32_t dirIndex, bool folder, int32_t shownIndex, bool gridView) -> bool
+	auto AssetsWindow::drawFile(FileInfo* file, bool folder, int32_t shownIndex, bool gridView) -> bool
 	{
 		bool doubleClicked = false;
 		auto& editor = static_cast<Editor&>(*app);
@@ -197,7 +192,7 @@ namespace Maple
 		if (gridView)
 		{
 			ImGui::BeginGroup();
-			auto icon = editor.getIcon(currentDir[dirIndex].type);
+			auto icon = editor.getIcon(file->type);
 			bool flipImage = true;//opengl is true 
 
 			bool click = false;
@@ -220,7 +215,7 @@ namespace Maple
 			}
 
 
-			auto& fname = currentDir[dirIndex].fileName;
+			auto& fname = file->fileName;
 			auto name = stripExtras(fname);
 
 			ImGui::TextWrapped("%s", name.c_str());
@@ -232,14 +227,14 @@ namespace Maple
 		}
 		else
 		{
-			ImGui::TextUnformatted(folder ? ICON_MDI_FOLDER : editor.getIconFontIcon(currentDir[dirIndex].absolutePath));
+			ImGui::TextUnformatted(folder ? ICON_MDI_FOLDER : editor.getIconFontIcon(file->absolutePath));
 			ImGui::SameLine();
 
-			if (StringUtils::endWith(currentDir[dirIndex].fileName, "obj")) 
+			if (StringUtils::endWith(file->fileName, "obj"))
 			{
-				if (ImGui::TreeNode(currentDir[dirIndex].fileName.c_str(), currentDir[dirIndex].fileName.c_str())) {
+				if (ImGui::TreeNode(file->fileName.c_str())) {
 				
-					auto res = MeshResource::get(currentDir[dirIndex].absolutePath);
+					auto res = MeshResource::get(file->absolutePath);
 
 					for (auto & mesh : res->getMeshes())
 					{
@@ -257,7 +252,7 @@ namespace Maple
 			}
 			else 
 			{
-				if (ImGui::Selectable(currentDir[dirIndex].fileName.c_str(), false, ImGuiSelectableFlags_AllowDoubleClick))
+				if (ImGui::Selectable(file->fileName.c_str(), false, ImGuiSelectableFlags_AllowDoubleClick))
 				{
 					if (ImGui::IsMouseDoubleClicked(0))
 					{
@@ -273,25 +268,24 @@ namespace Maple
 		{
 			if (folder)
 			{
-				previousDirPath = currentDir[dirIndex].absolutePath;
-				currentDirPath = currentDir[dirIndex].absolutePath;
-				currentDir = readDirectory(currentDir[dirIndex].absolutePath);
+				lastDir = file;
+				currentDir = file;
 			}
 
 			else
 			{
 				//LOGW("Open File {0} did not implementation {1}", currentDir[dirIndex].absolutePath, __FUNCTION__);
-				editor.openFile(currentDir[dirIndex].absolutePath);
+				editor.openFile(file->absolutePath);
 			}
 		}
 
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 		{
-			ImGui::TextUnformatted(editor.getIconFontIcon(currentDir[dirIndex].absolutePath));
+			ImGui::TextUnformatted(editor.getIconFontIcon(file->absolutePath));
 			ImGui::SameLine();
-			ImGui::TextUnformatted(currentDir[dirIndex].fileName.c_str());
-			size_t size = sizeof(const char*) + strlen(currentDir[dirIndex].absolutePath.c_str());
-			ImGui::SetDragDropPayload("AssetFile", currentDir[dirIndex].absolutePath.c_str(), size);
+			ImGui::TextUnformatted(file->fileName.c_str());
+			size_t size = sizeof(const char*) + strlen(file->absolutePath.c_str());
+			ImGui::SetDragDropPayload("AssetFile", file->absolutePath.c_str(), size);
 			isDragging = true;
 			ImGui::EndDragDropSource();
 		}
@@ -299,24 +293,23 @@ namespace Maple
 		return doubleClicked;
 	}
 
-	void AssetsWindow::drawFolder(const FileInfo& dirInfo)
+	void AssetsWindow::drawFolder(const std::shared_ptr<FileInfo> & dirInfo)
 	{
-		ImGuiTreeNodeFlags nodeFlags = ((dirInfo.absolutePath == currentDirPath) ? ImGuiTreeNodeFlags_Selected : 0);
+		ImGuiTreeNodeFlags nodeFlags = ((dirInfo.get() == currentDir) ? ImGuiTreeNodeFlags_Selected : 0);
 		nodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 
 		const ImColor TreeLineColor = ImColor(128, 128, 128, 128);
 		const float SmallOffsetX = 6.0f;
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-		if (!dirInfo.isFile)
+		if (!dirInfo->isFile)
 		{
-			auto dirData = readDirectory(dirInfo.absolutePath.c_str());
 
 			bool containsFolder = false;
 
-			for (auto& file : dirData)
+			for (auto& file : dirInfo->children)
 			{
-				if (!file.isFile)
+				if (!file.second->isFile)
 				{
 					containsFolder = true;
 					break;
@@ -327,15 +320,15 @@ namespace Maple
 
 			static std::string folderIcon = ICON_MDI_FOLDER " ";
 
-			bool isOpen = ImGui::TreeNodeEx((folderIcon + dirInfo.fileName).c_str(), nodeFlags);
+			bool isOpen = ImGui::TreeNodeEx((folderIcon + dirInfo->fileName).c_str(), nodeFlags);
 
 			ImVec2 verticalLineStart = ImGui::GetCursorScreenPos();
 
 			if (ImGui::IsItemClicked())
 			{
-				previousDirPath = getParentPath(currentDirPath);
-				currentDirPath = dirInfo.absolutePath;
-				currentDir = dirData;
+			
+				lastDir = dirInfo.get();
+				currentDir = dirInfo.get();
 			}
 
 			if (isOpen && containsFolder)
@@ -343,16 +336,16 @@ namespace Maple
 				verticalLineStart.x += SmallOffsetX; //to nicely line up with the arrow symbol
 				ImVec2 verticalLineEnd = verticalLineStart;
 
-				for (int i = 0; i < dirData.size(); i++)
+				for (auto & folder : dirInfo->children)
 				{
-					if (!dirData[i].isFile)
+					if (!folder.second->isFile)
 					{
 						float HorizontalTreeLineSize = 16.0f; //chosen arbitrarily
 						auto currentPos = ImGui::GetCursorScreenPos();
 
 						ImGui::Indent(10.0f);
 
-						auto dirDataTemp = readDirectory(dirData[i].absolutePath.c_str());
+					/*	auto dirDataTemp = readDirectory(dirData[i].absolutePath.c_str());
 
 						bool containsFolderTemp = false;
 						for (auto& file : dirDataTemp)
@@ -364,8 +357,8 @@ namespace Maple
 							}
 						}
 						if (containsFolderTemp)
-							HorizontalTreeLineSize *= 0.5f;
-						drawFolder(dirData[i]);
+							HorizontalTreeLineSize *= 0.5f;*/
+						drawFolder(folder.second);
 
 						const ImRect childRect(currentPos, ImVec2{ currentPos.x,  currentPos.y + ImGui::GetFontSize() });
 
@@ -388,7 +381,7 @@ namespace Maple
 
 		if (isDragging && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
 		{
-			movePath = dirInfo.absolutePath.c_str();
+			movePath = dirInfo->absolutePath.c_str();
 		}
 	}
 
@@ -398,30 +391,21 @@ namespace Maple
 		{
 			if (ImGui::Button(ICON_MDI_ARROW_LEFT))
 			{
-				if (currentDirPath.length() != basePathLen)
+				if (currentDir->parent != nullptr) 
 				{
-					previousDirPath = getParentPath(currentDirPath);
-					currentDirPath = previousDirPath;
-					currentDir = readDirectory(currentDirPath);
+					lastDir = currentDir;
+					currentDir = currentDir->parent;
 				}
 			}
 			ImGui::SameLine();
 			if (ImGui::Button(ICON_MDI_ARROW_RIGHT))
 			{
-				previousDirPath = getParentPath(currentDirPath);
-				currentDirPath = lastNavPath;
-				currentDir = readDirectory(lastNavPath);
+				if(lastDir != nullptr)
+					currentDir = lastDir;
 			}
 			ImGui::SameLine();
-
-			getDirectories(currentDirPath);
-
-			int32_t secIdx = 0, newPwdLastSecIdx = -1;
-			auto dir = std::filesystem::path(currentDirPath);
-
-			std::string filePath(dir.string());
 			
-			ImGui::TextUnformatted(filePath.c_str());
+			ImGui::TextUnformatted(currentDir->absolutePath.c_str());
 
 			ImGui::SameLine();
 		}
@@ -456,13 +440,11 @@ namespace Maple
 		if (ImGui::BeginPopupContextWindow("AssetsWindow::PopupWindow"))
 		{
 			bool isAdd = false;
-
-			if (ImGui::Selectable("..,,,,,"))
+			if (ImGui::Selectable("Refresh current folder"))
 			{
-				
+				currentDir->children.clear();
+				readDirectory(currentDir->absolutePath, currentDir);
 			}
-
-
 			ImGui::EndPopup();
 		}
 	}
@@ -496,37 +478,9 @@ namespace Maple
 		return out[out.size() - 1];
 	}
 
-	auto AssetsWindow::getFsContents(const std::string& path) -> std::vector<FileInfo>
+	
+	auto AssetsWindow::readDirectory(const std::string& path, FileInfo * parent) -> void
 	{
-		std::vector<FileInfo> dInfo;
-
-		for (const auto& entry : std::filesystem::directory_iterator(path))
-		{
-
-			bool isDir = std::filesystem::is_directory(entry);
-			auto test = std::vector<std::string>();
-			const char del = *delimiter.c_str();
-
-			auto dir_data = parseFilename(entry.path().string(), del, test);
-			auto fileExt =  parseFiletype(dir_data);
-
-			if (isDir)
-			{
-				dInfo.push_back({ dir_data, fileExt, entry.path().string(), false ,FileType::Folder });
-			}
-			else
-			{
-				dInfo.push_back({ dir_data, fileExt, entry.path().string(), true ,File::getFileType(dir_data) });
-			}
-		}
-
-		return dInfo;
-	}
-
-	auto AssetsWindow::readDirectory(const std::string& path) -> std::vector<FileInfo>
-	{
-		std::vector<FileInfo> dInfo;
-
 		for (const auto& entry : std::filesystem::directory_iterator(path))
 		{
 			bool isDir = std::filesystem::is_directory(entry);
@@ -534,20 +488,26 @@ namespace Maple
 			auto test = std::vector<std::string>();
 			const char del = *delimiter.c_str();
 
-			auto dir_data = parseFilename(entry.path().string(), del, test);
-			auto fileExt =  parseFiletype(dir_data);
+			auto dirData = parseFilename(entry.path().string(), del, test);
+			auto fileExt =  parseFiletype(dirData);
 
+			auto fileInfo = std::make_shared<FileInfo>();
+			fileInfo->fileName = dirData;
+			fileInfo->fileType = fileExt;
+			fileInfo->absolutePath = entry.path().string();
+			fileInfo->isFile = !isDir;
+			fileInfo->parent = parent;
 			if (isDir)
 			{
-				dInfo.push_back({ dir_data, fileExt, entry.path().string(), false,FileType::Folder});
+				fileInfo->type = FileType::Folder;
+				readDirectory(entry.path().string(), fileInfo.get());
 			}
 			else
 			{
-				dInfo.push_back({ dir_data, fileExt, entry.path().string(), true,File::getFileType(dir_data)});
+				fileInfo->type = File::getFileType(dirData);
 			}
+			parent->children[dirData] = fileInfo;
 		}
-
-		return dInfo;
 	}
 
 	
