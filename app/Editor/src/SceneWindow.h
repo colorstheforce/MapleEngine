@@ -24,6 +24,13 @@ namespace Maple
 		auto drawToolBar() -> void;
 		auto drawGizmos(float width, float height, float xpos, float ypos, Scene* scene) -> void;
 
+		auto draw2DGrid(ImDrawList* drawList,
+			const ImVec2& cameraPos,
+			const ImVec2& windowPos,
+			const ImVec2& canvasSize,
+			const float factor,
+			const float thickness) -> void;
+
 		bool showCamera = false;
 		uint32_t width;
 		uint32_t height;

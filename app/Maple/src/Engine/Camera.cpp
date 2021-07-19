@@ -14,7 +14,6 @@ namespace Maple
 		, near_(near)
 		, far_(far)
 		, orthographic(false)
-		, scale(1.0f)
 	{
 	}
 
@@ -37,7 +36,6 @@ namespace Maple
 		, near_(near)
 		, far_(far)
 		, orthographic(false)
-		, scale(1.0f)
 	{
 
 	}

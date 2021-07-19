@@ -87,6 +87,12 @@ namespace Maple
 		}
 	}
 
+	auto StringUtils::toLower(std::string& data) -> void
+	{
+		std::transform(data.begin(), data.end(), data.begin(),
+			[](unsigned char c) { return std::tolower(c); });
+	}
+
 	auto StringUtils::split(std::string input, const std::string& delimiter) -> std::vector<std::string>
 	{
 		std::vector<std::string> ret;

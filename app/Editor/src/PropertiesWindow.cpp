@@ -189,7 +189,7 @@ namespace MM
 		ImGui::Columns(2);
 		ImGui::Separator();
 
-		auto pos = sprite.getQuad().getPosition();
+		/*auto pos = sprite.getQuad().getPosition();
 		if (ImGuiHelper::property("Position", pos))
 			sprite.getQuad().setPosition(pos);
 
@@ -202,7 +202,7 @@ namespace MM
 	
 		auto color = sprite.getQuad().getColor();
 		if (ImGuiHelper::property("Colour", color,-1,1,false, ImGuiHelper::PropertyFlag::ColorProperty))
-			sprite.getQuad().setColor(color);
+			sprite.getQuad().setColor(color);*/
 
 		ImGui::Columns(1);
 	
@@ -214,7 +214,7 @@ namespace MM
 			
 
 			ImGui::AlignTextToFramePadding();
-			auto tex = sprite.getQuad().getTexture();
+			auto tex = sprite.getQuad()->getTexture();
 
 			ImVec2 imageButtonSize(64, 64);
 

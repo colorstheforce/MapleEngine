@@ -203,8 +203,8 @@ namespace Maple
 
 			if (ImGui::ImageButtonNoBg(icon && icon->getTexture() ? icon->getTexture()->getHandle() : nullptr, 
 				{ 80,80 },
-				ImVec2(uv[3].x / (float)icon->getTexture()->getWidth(), uv[1].y / (float)icon->getTexture()->getHeight()),
-				ImVec2(uv[1].x / (float)icon->getTexture()->getWidth(), uv[3].y / (float)icon->getTexture()->getHeight())
+				ImVec2(uv[3].x, uv[1].y ),
+				ImVec2(uv[1].x, uv[3].y )
 			)) {
 				click = false;
 			}
@@ -213,7 +213,6 @@ namespace Maple
 			{
 				doubleClicked = true;
 			}
-
 
 			auto& fname = file->fileName;
 			auto name = stripExtras(fname);

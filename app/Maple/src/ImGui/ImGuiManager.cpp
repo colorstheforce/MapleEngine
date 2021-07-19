@@ -33,8 +33,9 @@ namespace Maple
 
 		ImGui::CreateContext();
 		ImGui::StyleColorsDark();
-
+		
 		ImGuiIO& io = ImGui::GetIO();
+		
 		io.DisplaySize = ImVec2(static_cast<float>(app->getWindow()->getWidth()),
             static_cast<float>(app->getWindow()->getHeight()));
 

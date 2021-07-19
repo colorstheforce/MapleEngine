@@ -65,7 +65,7 @@ namespace Maple
 		auto updateProjectionMatrix() -> void;
 
 		float aspectRatio = 0.0f;
-		float scale = 1.0f;
+		float scale = 100.0f;
 		float zoom = 1.0f;
 
 		glm::mat4 projMatrix = glm::mat4(1.f);

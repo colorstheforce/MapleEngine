@@ -96,6 +96,11 @@ namespace Maple
 			const float* cameraViewPtr = glm::value_ptr(glm::inverse(transform->getWorldMatrix()));
 
 		
+			if (camera->isOrthographic()) {
+				draw2DGrid(ImGui::GetWindowDrawList(),
+					{ transform->getWorldPosition().x, transform->getWorldPosition().y }
+				, sceneViewPosition, { sceneViewSize.x, sceneViewSize.y }, 1.0f, 1.5f);
+			}
 
 			ImGui::GetWindowDrawList()->PushClipRect(sceneViewPosition, { sceneViewSize.x + sceneViewPosition.x, sceneViewSize.y + sceneViewPosition.y - 2.0f });
 
@@ -171,6 +176,60 @@ namespace Maple
 	auto SceneWindow::drawGizmos(float width, float height, float xpos, float ypos, Scene* scene) -> void
 	{
 
+	}
+
+	auto SceneWindow::draw2DGrid(ImDrawList* drawList, const ImVec2& cameraPos, const ImVec2& windowPos, const ImVec2& canvasSize, const float factor, const float thickness) -> void
+	{
+		static const auto graduation = 10;
+		float GRID_SZ = canvasSize.y * 0.5f / factor;
+		const ImVec2& offset = {
+			canvasSize.x * 0.5f - cameraPos.x * GRID_SZ, canvasSize.y * 0.5f + cameraPos.y * GRID_SZ
+		};
+
+		ImU32 GRID_COLOR = IM_COL32(200, 200, 200, 40);
+		float gridThickness = 1.0f;
+
+		const auto& gridColor = GRID_COLOR;
+		auto smallGraduation = GRID_SZ / graduation;
+		const auto& smallGridColor = IM_COL32(100, 100, 100, smallGraduation);
+
+		for (float x = -GRID_SZ; x < canvasSize.x + GRID_SZ; x += GRID_SZ)
+		{
+			auto localX = floorf(x + fmodf(offset.x, GRID_SZ));
+			drawList->AddLine(
+				ImVec2{ localX, 0.0f } + windowPos, ImVec2{ localX, canvasSize.y } + windowPos, gridColor, gridThickness);
+
+			if (smallGraduation > 5.0f)
+			{
+				for (int i = 1; i < graduation; ++i)
+				{
+					const auto graduation = floorf(localX + smallGraduation * i);
+					drawList->AddLine(ImVec2{ graduation, 0.0f } + windowPos,
+						ImVec2{ graduation, canvasSize.y } + windowPos,
+						smallGridColor,
+						1.0f);
+				}
+			}
+		}
+
+		for (float y = -GRID_SZ; y < canvasSize.y + GRID_SZ; y += GRID_SZ)
+		{
+			auto localY = floorf(y + fmodf(offset.y, GRID_SZ));
+			drawList->AddLine(
+				ImVec2{ 0.0f, localY } + windowPos, ImVec2{ canvasSize.x, localY } + windowPos, gridColor, gridThickness);
+
+			if (smallGraduation > 5.0f)
+			{
+				for (int i = 1; i < graduation; ++i)
+				{
+					const auto graduation = floorf(localY + smallGraduation * i);
+					drawList->AddLine(ImVec2{ 0.0f, graduation } + windowPos,
+						ImVec2{ canvasSize.x, graduation } + windowPos,
+						smallGridColor,
+						1.0f);
+				}
+			}
+		}
 	}
 
 	auto SceneWindow::drawToolBar() -> void
@@ -259,6 +318,43 @@ namespace Maple
 
 		ImGui::SameLine();
 		ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+		ImGui::SameLine();
+
+
+		auto &camera = editor.getCamera();
+
+		bool ortho = camera->isOrthographic();
+
+		selected = !ortho;
+		if (selected)
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0.4, 0.4, 1.f));
+		if (ImGui::Button(ICON_MDI_AXIS_ARROW " 3D"))
+		{
+			if (ortho)
+			{
+				camera->setOrthographic(false);
+				editor.getEditorCameraController().setTwoDMode(false);
+			}
+		}
+		if (selected)
+			ImGui::PopStyleColor();
+		ImGui::SameLine();
+
+		selected = ortho;
+		if (selected)
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 0.4, 0.4, 1.f));
+		if (ImGui::Button(ICON_MDI_ANGLE_RIGHT "2D"))
+		{
+			if (!ortho)
+			{
+				camera->setOrthographic(true);
+				editor.getEditorCameraController().setTwoDMode(true);
+				editor.getEditorCameraTransform().setLocalOrientation({ 0,0,0 });
+			}
+		}
+
+		if (selected)
+			ImGui::PopStyleColor();
 		ImGui::SameLine();
 
 

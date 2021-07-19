@@ -19,6 +19,7 @@
 #include "Others/Timer.h"
 #include "Engine/Renderer/DebugRenderer.h"
 #include "Thread/ThreadPool.h"
+#include "Engine/TexturePool.h"
 
 namespace Maple 
 {
@@ -86,6 +87,7 @@ namespace Maple
 		inline auto& getThreadPool() { return threadPool; }
 		template<class T>
 		inline auto getAppDelegate() { return std::static_pointer_cast<T>(appDelegate); }
+		inline auto& getTexturePool() { return texturePool; }
 	protected:
 
 		std::unique_ptr<NativeWindow> window;
@@ -93,6 +95,7 @@ namespace Maple
 		std::unique_ptr<ImGuiManager> imGuiManager;
 		std::unique_ptr<SceneManager> sceneManager;
 		std::unique_ptr<ThreadPool>	  threadPool;
+		std::unique_ptr<TexturePool>  texturePool;
 
 		std::vector<std::unique_ptr<RenderManager>> renderManagers;
 

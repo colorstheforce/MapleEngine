@@ -115,7 +115,7 @@ namespace Maple
 		auto bufferId = renderTexture != nullptr ? 0 : VulkanContext::get()->getSwapChain()->getCurrentBuffer();
 
 		renderPass->beginRenderPass(getCommandBuffer(),
-			{ 0.3,0.3,0.3,1 }, frameBuffers[bufferId].get(),
+			{ 0.3,0.3,1,1 }, frameBuffers[bufferId].get(),
 			SubPassContents::INLINE, width,height);
 	}
 

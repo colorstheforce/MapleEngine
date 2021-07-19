@@ -56,7 +56,7 @@ namespace Maple
 	public:
 		Renderer2D() = default;
 		//if use renderer2d in 3D model, depth should be enabled, otherwise.
-		Renderer2D(uint32_t width, uint32_t height,bool enableDepth = true);
+		Renderer2D(uint32_t width, uint32_t height,bool enableDepth = false);
 		~Renderer2D();
 
 		auto init(const std::shared_ptr<GBuffer>& buffer) -> void override;

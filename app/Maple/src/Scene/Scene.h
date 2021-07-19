@@ -70,7 +70,7 @@ namespace Maple
 			archive(version,name);
 		}
 
-	private:
+	protected:
 
 
 		auto updateCameraController(float dt) -> void;

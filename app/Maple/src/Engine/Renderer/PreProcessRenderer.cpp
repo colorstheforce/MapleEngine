@@ -106,7 +106,7 @@ namespace Maple
 	auto PreProcessRenderer::begin() -> void
 	{
 		renderPass->beginRenderPass(
-			commandBuffers[frameBufferId].get(), { 0,0,0,1 },
+			commandBuffers[frameBufferId].get(), { 0.3,0.3,0.8,1 },
 			frameBuffers[frameBufferId].get(), 
 			SubPassContents::INLINE, currentSize, currentSize ,true
 		);

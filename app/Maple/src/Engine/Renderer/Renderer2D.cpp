@@ -125,7 +125,7 @@ namespace Maple
 		auto bufferId = renderTexture != nullptr ? 0 : VulkanContext::get()->getSwapChain()->getCurrentBuffer();
 		renderPass->beginRenderPass(
 			VulkanContext::get()->getSwapChain()->getCurrentCommandBuffer(),
-			{ 1,1,1,1 }, frameBuffers[bufferId].get(), SubPassContents::INLINE, width,height
+			{ 0.3,0.3,0.8,1 }, frameBuffers[bufferId].get(), SubPassContents::INLINE, width,height
 		);
 		textureCount = 0;
 		buffer = static_cast<Vertex2D*>(vertexBuffers[batchDrawCallIndex]->getPointer());
@@ -174,8 +174,9 @@ namespace Maple
 			auto& quad2d = command.quad;
 			auto& transform = command.transform;
 
-			const auto& min = quad2d->getPosition();
-			const auto& max = quad2d->getPosition() + quad2d->getScale();
+			glm::vec2 min(0, 0);
+			glm::vec2 max(quad2d->getWidth(), quad2d->getHeight());
+
 
 			const auto& color = quad2d->getColor();
 			const auto& uv = quad2d->getTexCoords();
@@ -247,8 +248,15 @@ namespace Maple
 		for (auto entity : group)
 		{
 			const auto& [sprite, trans] = group.get<Sprite, Transform>(entity);
-			submit(&sprite.getQuad(), trans.getWorldMatrix());
+			submit(sprite.getQuad(), trans.getWorldMatrix());
 		}
+
+		std::sort(commands.begin(), commands.end(), [](Command2D & a,Command2D & b) {
+			return a.transform[3][2] < b.transform[3][2];
+		});
+
+		
+
 	}
 
 	auto Renderer2D::onResize(uint32_t width, uint32_t height) -> void

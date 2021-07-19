@@ -44,6 +44,7 @@ namespace Maple
 		rendererDevice		= std::make_unique<VkRenderDevice>(window->getWidth(), window->getHeight());
 		imGuiManager		= std::make_unique<ImGuiManager>(false);
 		threadPool			= std::make_unique<ThreadPool>(4);
+		texturePool			= std::make_unique<TexturePool>();
 	}
 
 	auto Application::init() -> void

@@ -89,7 +89,8 @@ namespace Maple
 		auto winSize = window->getWidth() / (float) window->getHeight();
 
 		camera = std::make_unique<Camera>(
-			60, 0.1, 1000, winSize);
+			60, 0.1, 32000, winSize);
+		editorCameraController.setCamera(camera.get());
 
 		setEditorState(EditorState::Preview);
 
@@ -186,7 +187,7 @@ namespace Maple
 
 	auto Editor::onRenderDebug() -> void
 	{
-		if (cameraSelected) 
+		if (cameraSelected || camera->isOrthographic()) 
 		{
 			auto& registry = getSceneManager()->getCurrentScene()->getRegistry();
 			auto view = registry.group<Camera>(entt::get<Transform>);

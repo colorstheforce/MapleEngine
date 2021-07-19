@@ -37,6 +37,7 @@ namespace Maple
 		auto trim(std::u16string& str) -> void;
 		auto replace(std::string& str, const std::string& old, const std::string& newStr) -> void;
 
+		auto toLower(std::string& data) -> void;
 
 
 		auto getExtension(const std::string& fileName) -> std::string;

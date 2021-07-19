@@ -222,7 +222,7 @@ namespace Maple
 
 		auto cmd = VulkanContext::get()->getSwapChain()->getCurrentCommandBuffer();
 
-		renderPass->beginRenderPass(cmd, { 0.1f, 0.1f, 0.1f, 1.0f }, frameBuffers[wd->FrameIndex].get(), SubPassContents::INLINE, wd->Width, wd->Height);
+		renderPass->beginRenderPass(cmd, { 0.3,0.3,0.8,1.0f }, frameBuffers[wd->FrameIndex].get(), SubPassContents::INLINE, wd->Width, wd->Height);
 
 		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), 
 			(*(VulkanCommandBuffer*)cmd)

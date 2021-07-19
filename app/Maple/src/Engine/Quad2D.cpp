@@ -3,7 +3,7 @@
 // Copyright ?2020-2022 Tian Zeng                                           //
 //////////////////////////////////////////////////////////////////////////////
 #include "Quad2D.h"
-
+#include "Engine/Interface/Texture.h"
 namespace Maple
 {
 	
@@ -23,6 +23,7 @@ namespace Maple
 	Quad2D::Quad2D()
 	{
 		texCoords = getDefaultTexCoords();
+		color = glm::vec4(1.f);
 	}
 
 	auto Quad2D::getTexCoords(const glm::vec2& min, const glm::vec2& max) -> const std::array<glm::vec2, 4>&
@@ -41,10 +42,10 @@ namespace Maple
 	{
 		this->w = w;
 		this->h = h;
-		texCoords[0] = { x ,y+h };
-		texCoords[1] = { x + w,y + h };
-		texCoords[2] = { x + w,y };
-		texCoords[3] = { x,y };
+		texCoords[0] = { x /		(float)texture->getWidth() ,(y + h) / (float)texture->getHeight() };
+		texCoords[1] = { (x + w) /  (float)texture->getWidth() ,(y + h) / (float)texture->getHeight() };
+		texCoords[2] = { (x + w) / (float)texture->getWidth() ,y / (float)texture->getHeight() };
+		texCoords[3] = { x		/ (float)texture->getWidth() ,y / (float)texture->getHeight() };
 	}
 
 };

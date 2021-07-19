@@ -70,7 +70,7 @@ namespace Maple
 	auto ShadowRenderer::begin() -> void
 	{
 		renderPass->beginRenderPass(getCommandBuffer(),
-			{ 0,0,0,1 }, shadowFrameBuffers[cascadeIndex].get(), SubPassContents::INLINE, shadowMapSize, shadowMapSize);
+			{ 0,0,0,0 }, shadowFrameBuffers[cascadeIndex].get(), SubPassContents::INLINE, shadowMapSize, shadowMapSize);
 	}
 
 	auto ShadowRenderer::present() -> void

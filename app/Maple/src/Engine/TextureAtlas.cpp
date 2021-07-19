@@ -39,19 +39,33 @@ namespace Maple
 
 	auto TextureAtlas::addSprite(const std::string& file) ->Quad2D *
 	{
-		auto image = ImageCache::get(file);
 		if (auto iter = offsets.find(file); iter != offsets.end()) {
 			return &iter->second;
 		}
-
+		auto image = ImageCache::get(file);
 		if (image->getWidth() <= 0 || image->getHeight() <= 0)
+			return nullptr;
+		return update(file, (uint8_t*)image->getData(), image->getWidth(), image->getHeight());
+	}
+
+	auto TextureAtlas::addSprite(const std::string& uniqueName, const std::vector<uint8_t>& buffer, uint32_t w, uint32_t h) -> Quad2D*
+	{
+		if (auto iter = offsets.find(uniqueName); iter != offsets.end()) {
+			return &iter->second;
+		}
+
+		return update(uniqueName, buffer.data(), w, h);
+	}
+
+	auto TextureAtlas::update(const std::string& uniqueName, const uint8_t* buffer, uint32_t width, uint32_t height) -> Quad2D*
+	{
+		if (width <= 0 || height <= 0)
 			return nullptr;
 
 		int16_t x = 0;
 		int16_t y = 0;
-		int16_t w = static_cast<int16_t>(image->getWidth());
-		int16_t h = static_cast<int16_t>(image->getHeight());
-
+		int16_t w = static_cast<int16_t>(width);
+		int16_t h = static_cast<int16_t>(height);
 
 		LeftOver value(x, y, w, h);
 		size_t lid = leftovers.findNode(value, [](const LeftOver& val, const LeftOver& leaf)
@@ -145,10 +159,13 @@ namespace Maple
 		}
 
 		texture->bind();
-		texture->update(x, y, w, h, (const uint8_t*)image->getData());
-		auto& offset = offsets[file];
-		offset.setTexCoords(x, y, w, h);
+		texture->update(x, y, w, h, buffer);
+		auto& offset = offsets[uniqueName];
 		offset.setTexture(texture);
+		offset.setTexCoords(x, y, w, h);
+
+		size_t used_i = texture->getWidth() * border.second + border.first * yRange.second;
+		usage = static_cast<double>(used_i) / (texture->getWidth() * texture->getHeight());
 		return &offset;
 	}
 
