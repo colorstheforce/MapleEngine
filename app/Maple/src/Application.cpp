@@ -19,11 +19,14 @@
 #include "Engine/Renderer/PreProcessRenderer.h"
 #include "Engine/Renderer/OmniShadowRenderer.h"
 #include "Engine/Renderer/Renderer2D.h"
-
 #include "Engine/Terrain.h"
+
+#include "Scripts/LuaSystem.h"
+#include "Scripts/LuaVirtualMachine.h"
+
 #include "Terrain/TerrainBuilder.h"
 #include "Devices/Input.h"
-#include "ImGui/ImGuiManager.h"
+#include "ImGui/ImGuiSystem.h"
 #include "Scene/SceneManager.h"
 #include "Scene/Scene.h"
 #include <imgui.h>
@@ -42,9 +45,11 @@ namespace Maple
 		window				= NativeWindow::newInstance(WindowInitData{ 1280,720,false,"Maple-Engine" });
 		sceneManager		= std::make_unique<SceneManager>();
 		rendererDevice		= std::make_unique<VkRenderDevice>(window->getWidth(), window->getHeight());
-		imGuiManager		= std::make_unique<ImGuiManager>(false);
+		imGuiManager		= std::make_unique<ImGuiSystem>(false);
 		threadPool			= std::make_unique<ThreadPool>(4);
 		texturePool			= std::make_unique<TexturePool>();
+		luaVm				= std::make_unique<LuaVirtualMachine>();
+		systemManager		= std::make_unique<SystemManager>();
 	}
 
 	auto Application::init() -> void
@@ -53,9 +58,9 @@ namespace Maple
 		window->init();
 		timer.start();
 		rendererDevice->init();
+		luaVm->init();
 
 		auto render = std::make_unique<RenderManager>();
-
 		render->addRender(std::make_unique<PreProcessRenderer>());
 		render->addRender(std::make_unique<ShadowRenderer>()) ;
 		render->addRender(std::make_unique<DeferredRenderer>(window->getWidth(), window->getHeight()));
@@ -63,9 +68,13 @@ namespace Maple
 		render->addRender(std::make_unique<Renderer2D>(window->getWidth(), window->getHeight()));
 		debugRender.  init(window->getWidth(), window->getHeight());
 		render->	  init(window->getWidth(), window->getHeight());
-		imGuiManager->init();
 		renderManagers.emplace_back(std::move(render));
 		appDelegate->onInit();
+		
+
+		systemManager->addSystem<LuaSystem>();
+		imGuiManager = systemManager->addSystem<ImGuiSystem>(false);
+		imGuiManager->onInit();
 	}
 
 	auto Application::start() -> int32_t
@@ -111,7 +120,7 @@ namespace Maple
 	auto Application::onUpdate(const Timestep& delta) -> void
 	{
 		onImGui();
-		imGuiManager->onUpdate(delta);
+		systemManager->onUpdate(delta, sceneManager->getCurrentScene());
 		window->onUpdate();
 		dispatcher.dispatchEvents();
 		for (auto& r : renderManagers)

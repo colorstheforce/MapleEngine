@@ -34,6 +34,8 @@
 #include "Scene/Component/Light.h"
 #include "Application.h"
 
+#include <imgui.h>
+
 namespace Maple 
 {
 	Renderer2D::Renderer2D(uint32_t width, uint32_t height, bool enableDepth)
@@ -174,9 +176,10 @@ namespace Maple
 			auto& quad2d = command.quad;
 			auto& transform = command.transform;
 
-			glm::vec2 min(0, 0);
-			glm::vec2 max(quad2d->getWidth(), quad2d->getHeight());
 
+			const glm::vec2 & min = quad2d->getOffset();
+
+			glm::vec2 max = min + glm::vec2{ quad2d->getWidth(), quad2d->getHeight() };
 
 			const auto& color = quad2d->getColor();
 			const auto& uv = quad2d->getTexCoords();
@@ -220,11 +223,18 @@ namespace Maple
 	{
 	}
 
-	auto Renderer2D::submit(Quad2D* quad, const glm::mat4 & transform) -> void
+	auto Renderer2D::submit(const Quad2D* quad, const glm::mat4 & transform) -> void
 	{
-		auto & cmd = commands.emplace_back();
-		cmd.quad = quad;
-		cmd.transform = transform;
+		if (quad != nullptr) {
+			auto& cmd = commands.emplace_back();
+			cmd.quad = quad;
+			cmd.transform = transform;
+		}
+	}
+
+	auto Renderer2D::onImGui() -> void
+	{
+		ImGui::DragInt("Pivot Type", &pivotType);
 	}
 
 	auto Renderer2D::renderScene() -> void
@@ -248,13 +258,21 @@ namespace Maple
 		for (auto entity : group)
 		{
 			const auto& [sprite, trans] = group.get<Sprite, Transform>(entity);
-			submit(sprite.getQuad(), trans.getWorldMatrix());
+			submit(&sprite.getQuad(), trans.getWorldMatrix());
+		}
+
+
+		auto group2 = registry.group<AnimatedSprite>(entt::get<Transform>);
+
+		for (auto entity : group2)
+		{
+			const auto& [anim, trans] = group2.get<AnimatedSprite, Transform>(entity);
+			submit(&anim.getQuad(), trans.getWorldMatrix());
 		}
 
 		std::sort(commands.begin(), commands.end(), [](Command2D & a,Command2D & b) {
 			return a.transform[3][2] < b.transform[3][2];
 		});
-
 		
 
 	}

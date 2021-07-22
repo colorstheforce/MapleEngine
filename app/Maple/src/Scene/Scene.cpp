@@ -41,6 +41,7 @@ namespace Maple {
 		entityManager->addDependency<MeshRenderer, Transform>();
 		entityManager->addDependency<Model, Transform>();
 		entityManager->addDependency<Sprite, Transform>();
+		entityManager->addDependency<AnimatedSprite, Transform>();
 
 		sceneGraph = std::make_shared<SceneGraph>();
 		sceneGraph->init(entityManager->getRegistry());
@@ -175,6 +176,12 @@ namespace Maple {
 	{
 		updateCameraController(dt);
 		sceneGraph->update(entityManager->getRegistry());
+		auto view = entityManager->getRegistry().group<AnimatedSprite>(entt::get<Transform>);
+		for (auto entity : view)
+		{
+			const auto& [anim, trans] = view.get<AnimatedSprite, Transform>(entity);
+			anim.onUpdate(dt);
+		}
 	}
 
 };

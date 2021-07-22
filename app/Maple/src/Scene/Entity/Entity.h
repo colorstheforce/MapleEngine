@@ -81,7 +81,7 @@ namespace Maple
 		}
 
 		template<typename T>
-		inline auto hasComponent()
+		inline auto hasComponent() const -> bool
 		{
 			return scene->getRegistry().has<T>(entityHandle);
 		}

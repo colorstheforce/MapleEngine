@@ -9,8 +9,15 @@
 #include <stdarg.h>
 #include <spdlog/spdlog.h>
 
+struct lua_State;
+
 namespace Maple 
 {
+	namespace LogExport
+	{
+		auto exportLua(lua_State* L) -> void;
+	};
+
 	class Console
 	{
 	public:

@@ -47,7 +47,7 @@ namespace Maple
 
 	struct Command2D 
 	{
-		Quad2D* quad;
+		const Quad2D* quad;
 		glm::mat4 transform;
 	};
 
@@ -69,8 +69,8 @@ namespace Maple
 		auto beginScene(Scene* scene) -> void override;
 		auto onResize(uint32_t width, uint32_t height) -> void override;
 		auto setRenderTarget(std::shared_ptr <Texture>, bool rebuildFramebuffer = true) -> void override;
-		auto submit(Quad2D * quad, const glm::mat4 & transform) -> void;
-		
+		auto submit(const Quad2D * quad, const glm::mat4 & transform) -> void;
+		auto onImGui() -> void override;
 
 	private:
 
@@ -101,6 +101,7 @@ namespace Maple
 
 		std::vector<uint32_t> indicesBatches;
 
-
+		///int32_t type;
+		int32_t pivotType = 0;
 	};
 };

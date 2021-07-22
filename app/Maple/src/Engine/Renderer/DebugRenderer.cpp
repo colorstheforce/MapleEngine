@@ -64,4 +64,15 @@ namespace Maple
 		drawLine(vertices[3], vertices[7]);
 	}
 
+	auto DebugRenderer::drawRect(int32_t x, int32_t y, int32_t width, int32_t height) -> void
+	{
+		auto right = x + width;
+		auto bottom = y + height;
+
+		drawLine({ x,y,0 }, { right,y,0 });
+		drawLine({ right,y,0 }, { right,bottom,0 } );
+		drawLine({ right,bottom,0 }, { x,bottom,0 });
+		drawLine({ x,bottom,0 }, { x,y,0 });
+	}
+
 };

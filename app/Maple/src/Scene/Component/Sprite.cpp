@@ -8,8 +8,9 @@ namespace Maple
 
 	Sprite::Sprite(const std::string& uniqueName, const std::vector<uint8_t>& data, uint32_t width, uint32_t height)
 	{
-		quad = app->getTexturePool()->addSprite(uniqueName, data, width, height);
-		
+		if (auto q = app->getTexturePool()->addSprite(uniqueName, data, width, height)) {
+			quad = *q;
+		}
 	}
 
 	Sprite::Sprite()
@@ -33,118 +34,78 @@ namespace Maple
         return /*quad.getTexture() ? quad.getTexture()->getFilePath() :*/ nullstr;
 	}
 
-/*
+	auto Sprite::loadQuad(const std::string& path) -> void
+	{
+		if (auto q = app->getTexturePool()->addSprite(path)) {
+			quad = *q;
+		}
+	}
+
 
     AnimatedSprite::AnimatedSprite()
     {
 
     }
 
-
-    AnimatedSprite::AnimatedSprite(const std::shared_ptr<Texture2D>& texture, const glm::vec2& position, const glm::vec2& scale, const std::vector<glm::vec2>& frames, float frameDuration, const std::string& stateName)
-        :Sprite(texture,position,scale), state(stateName)
-    {
-		AnimationState state;
-		state.frames = frames;
-		state.frameDuration = frameDuration;
-		state.mode = PlayMode::Loop;
-
-		animationStates[stateName] = state;
-
-		currentFrame = 0;
-    }
-
-
-    auto AnimatedSprite::onUpdate(float dt) -> void
-    {
-		if (animationStates.find(state) == animationStates.end())
-			return;
-
-		frameTimer += dt;
-
-		auto& currentState = animationStates[state];
-		if (frameTimer >= currentState.frameDuration)
+	auto AnimatedSprite::addFrame(const std::vector<uint8_t>& data, uint32_t width, uint32_t height, float delay, const std::string& uniqueKey, float xOffset, float yOffset, uint32_t color) -> void
+	{
+		auto quad = app->getTexturePool()->addSprite(uniqueKey, data, width, height);
+		if (quad != nullptr)
 		{
-			frameTimer = 0.0f;
-
-			if (forward)
+			auto& back = animationFrames.emplace_back();
+			back.width = width;
+			back.height = height;
+			back.delay = delay; 
+			back.uniqueKey = uniqueKey;
+			back.quad = *quad;
+		
+			struct color8888
 			{
+				uint8_t r : 8;
+				uint8_t g : 8;
+				uint8_t b : 8;
+				uint8_t a : 8;
+			};
 
-				if (currentFrame == currentState.frames.size() - 1)
-				{
-					if (currentState.mode == PlayMode::PingPong)
-					{
-						currentFrame--;
-						forward = false;
-					}
-					else
-					{
-						currentFrame = 0;
-					}
-				}
-				else
-					currentFrame++;
-			}
-			else
-			{
-				if (currentFrame == 0)
-				{
-					if (currentState.mode == PlayMode::PingPong)
-					{
-						currentFrame = 1;
-						forward = true;
-					}
-					else
-					{
-						currentFrame = 1;
-						forward = true;///???
-					}
-				}
-				else
-					currentFrame--;
-			}
+			color8888* c = reinterpret_cast<color8888*>(&color);
+			back.quad.setColor({ c->r / 255.f,c->g / 255.f,c->b / 255.f,c->a / 255.f });
+			back.quad.setOffset({ xOffset,-yOffset - height });
+		}
+	}
 
-			getAnimatedUVs();
+	auto AnimatedSprite::onUpdate(float dt) -> void
+	{
+		frameTimer += dt;
+		if (currentFrame < animationFrames.size()) {
+			auto& frame = animationFrames[currentFrame];
+			if (frameTimer >= frame.delay) {
+				frameTimer = 0;
+				currentFrame++;
+				if (currentFrame >= animationFrames.size()) {
+					currentFrame = loop ? 0 : animationFrames.size() - 1;
+				}
+			}
 		}
     }
 
-
-    auto AnimatedSprite::addState(const std::vector<glm::vec2>& frames, float frameDuration, const std::string& stateName) -> void
-    {
-		auto& state = animationStates[stateName];
-		state.frames = frames;
-		state.frameDuration = frameDuration;
-		state.mode = PlayMode::Loop;
-    }
-
-	auto AnimatedSprite::setState(const std::string& stateName) -> void
-	{
-		state = stateName;
-		currentFrame = 0;
-		frameTimer = 0.0f;
-		getAnimatedUVs();
-	}
-
 	auto AnimatedSprite::getAnimatedUVs() -> const std::array<glm::vec2, 4>&
 	{
-		auto& currentState = animationStates[state];
-        if (animationStates.find(state) == animationStates.end() || currentState.frames.empty())
-            return quad.getDefaultTexCoords();
-
-		auto min = currentState.frames[currentFrame];
-		auto max = currentState.frames[currentFrame] + quad.getScale();
-
-		min.x /= quad.getTexture()->getWidth();
-		min.y /= quad.getTexture()->getHeight();
-
-		max.x /= quad.getTexture()->getWidth();
-		max.y /= quad.getTexture()->getHeight();
-       
-
-		return quad.getTexCoords(min, max);
+		if (currentFrame < animationFrames.size()) {
+			auto& frame = animationFrames[currentFrame];
+			return frame.quad.getTexCoords();
+		}
+		return Quad2D::getTexCoords({ 0,0 }, {0, 0});
 	}
-*/
 
+
+	auto AnimatedSprite::getQuad() -> const Quad2D&
+	{
+		if (currentFrame < animationFrames.size()) {
+			auto& frame = animationFrames[currentFrame];
+			return frame.quad;
+		}
+		return Quad2D::nullQuad;
+	}
 }
 
 

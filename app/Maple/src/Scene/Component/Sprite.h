@@ -3,6 +3,8 @@
 #include <cereal/cereal.hpp>
 #include "Engine/Quad2D.h"
 #include "Component.h"
+#include <glm/glm.hpp>
+
 namespace Maple
 {
 	class Texture2D;
@@ -16,18 +18,15 @@ namespace Maple
 
 		auto setTextureFromFile(const std::string& filePath) -> void;
 
-		inline auto getQuad() { return quad; }
+		virtual auto getQuad() -> const Quad2D& { return quad; }
 
 		template <typename Archive>
 		auto save(Archive& archive) const -> void
 		{
 			std::string newPath = "";
-
 			archive(
 				cereal::make_nvp("TexturePath", getTexturePath()),
-				/*cereal::make_nvp("Position", quad.position),
-				cereal::make_nvp("Scale", quad.scale),
-				cereal::make_nvp("Color", quad.color)*/);
+			);
 		}
 
 		template <typename Archive>
@@ -36,95 +35,65 @@ namespace Maple
 			std::string textureFilePath;
 			archive(
 				cereal::make_nvp("TexturePath", textureFilePath)
-			/*	cereal::make_nvp("Position", quad.position),
-				cereal::make_nvp("Scale", quad.scale),
-				cereal::make_nvp("Color", quad.color)*/);
+			);
 
 			if (!textureFilePath.empty())
-				quad.setTexture(Texture2D::create(textureFilePath, textureFilePath));
+				loadQuad(textureFilePath);
 		}
 
-		auto getTexturePath() const -> const std::string&;
+		inline auto getWidth() const { return quad.getWidth(); }
+		inline auto getHeight() const { return quad.getHeight(); }
 
+		auto getTexturePath() const -> const std::string&;
 	protected:
-		Quad2D * quad = nullptr;
+		auto loadQuad(const std::string& path) -> void;
+		Quad2D quad;
 	};
 
 
-/*
+
 	class AnimatedSprite : public Sprite
 	{
 	public:
-		enum class PlayMode
+		
+		struct AnimationFrame
 		{
-			Loop = 0,
-			PingPong
-		};
-
-		struct AnimationState
-		{
-			PlayMode mode;
-			std::vector<glm::vec2> frames;
-			float frameDuration = 1.0f;
-
-			template <typename Archive>
-			auto serialize(Archive& archive) -> void
-			{
-				archive(cereal::make_nvp("PlayMode", mode),
-					cereal::make_nvp("Frames", frames),
-					cereal::make_nvp("FrameDuration", frameDuration));
-			}
+			uint32_t width;
+			uint32_t height;
+			float delay;
+			std::string uniqueKey;
+			Quad2D quad;
 		};
 
 		AnimatedSprite();
-		AnimatedSprite(const std::shared_ptr<Texture2D>& texture, 
-			const glm::vec2& position, 
-			const glm::vec2& scale, const std::vector<glm::vec2>& frames, float frameDuration, const std::string& stateName);
-
 		virtual ~AnimatedSprite() = default;
 
+		auto addFrame(const std::vector<uint8_t>& data, uint32_t width, uint32_t height, float delay, const std::string& uniqueKey,float xOffset,float yOffset,uint32_t color = UINT32_MAX) -> void;
 		auto onUpdate(float dt) -> void;
-		auto addState(const std::vector<glm::vec2>& frames, float frameDuration, const std::string& stateName) -> void;
-		auto setState(const std::string& state) -> void;
+		auto getAnimatedUVs() -> const std::array<glm::vec2, 4>&;
+		auto getQuad()->const Quad2D & override;
+		inline auto getCurrentFrame() const -> const AnimationFrame* {
+			if (currentFrame < animationFrames.size()) {
+				return &animationFrames[currentFrame];
+			} return nullptr;
+		};
+		inline auto setLoop(bool val) { loop = val; }
 
-		inline auto& getState() const { return state; }
-		inline auto& getAnimationStates() { return animationStates; }
-		inline auto getAnimatedUVs() -> const std::array<glm::vec2, 4>&;
 
-
-		template <typename Archive>
-		auto save(Archive& archive) const -> void
-		{
-			archive(cereal::make_nvp("TexturePath", getTexturePath()),
-				cereal::make_nvp("Position", quad.position),
-				cereal::make_nvp("Scale", quad.scale),
-				cereal::make_nvp("Color", quad.color),
-				cereal::make_nvp("AnimationFrames", animationStates),
-				cereal::make_nvp("State", state));
+		inline auto getWidth() const { 
+			auto frame = getCurrentFrame();
+			return frame ? frame->width : 0;
+		}
+		inline auto getHeight() const { 
+			auto frame = getCurrentFrame();
+			return frame ? frame->height : 0;
 		}
 
-		template <typename Archive>
-		auto load(Archive& archive) -> void
-		{
-			std::string textureFilePath;
-			archive(cereal::make_nvp("TexturePath", textureFilePath),
-				cereal::make_nvp("Position", quad.position),
-				cereal::make_nvp("Scale", quad.scale),
-				cereal::make_nvp("Color", quad.color),
-				cereal::make_nvp("AnimationFrames", animationStates),
-				cereal::make_nvp("State", state));
-
-			if (!textureFilePath.empty())
-				quad.setTexture(Texture2D::create("Animation", textureFilePath));
-
-			setState(state);
-		}
-
-		std::unordered_map<std::string, AnimationState> animationStates;
+	private:
 		uint32_t currentFrame = 0;
 		float frameTimer = 0.0f;
-		std::string state;
-		bool forward = true;
-	};*/
+		bool loop = true;
+		std::vector<AnimationFrame> animationFrames;
+	};
 
 }

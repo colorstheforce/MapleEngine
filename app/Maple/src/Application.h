@@ -11,7 +11,7 @@
 #include "ImGui/VkImGUIRenderer.h"
 #include "Engine/Renderer/RenderManager.h"
 #include "Scene/SceneManager.h"
-#include "ImGui/ImGuiManager.h"
+#include "ImGui/ImGuiSystem.h"
 
 #include "Engine/Timestep.h"
 #include "Window/NativeWindow.h"
@@ -20,6 +20,8 @@
 #include "Engine/Renderer/DebugRenderer.h"
 #include "Thread/ThreadPool.h"
 #include "Engine/TexturePool.h"
+#include "Scene/System/SystemManager.h"
+#include "Scripts/LuaVirtualMachine.h"
 
 namespace Maple 
 {
@@ -44,6 +46,7 @@ namespace Maple
 		virtual auto onInit() -> void override {};
 		virtual auto onDestory() -> void override {};
 	};
+
 
 	class Application
 	{
@@ -88,17 +91,19 @@ namespace Maple
 		template<class T>
 		inline auto getAppDelegate() { return std::static_pointer_cast<T>(appDelegate); }
 		inline auto& getTexturePool() { return texturePool; }
+		inline auto& getLuaVirtualMachine() { return luaVm; }
 	protected:
 
 		std::unique_ptr<NativeWindow> window;
 		std::unique_ptr<RenderDevice> rendererDevice;
-		std::unique_ptr<ImGuiManager> imGuiManager;
 		std::unique_ptr<SceneManager> sceneManager;
 		std::unique_ptr<ThreadPool>	  threadPool;
 		std::unique_ptr<TexturePool>  texturePool;
-
+		std::unique_ptr<LuaVirtualMachine>  luaVm;
+		std::unique_ptr<SystemManager> systemManager;
 		std::vector<std::unique_ptr<RenderManager>> renderManagers;
 
+		std::shared_ptr<ImGuiSystem> imGuiManager;
 
 		EventDispatcher dispatcher;
 		Timer timer;

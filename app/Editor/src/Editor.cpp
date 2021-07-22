@@ -187,9 +187,13 @@ namespace Maple
 
 	auto Editor::onRenderDebug() -> void
 	{
+		if (selectedNode == entt::null) {
+			return;
+		}
+
+		auto& registry = getSceneManager()->getCurrentScene()->getRegistry();
 		if (cameraSelected || camera->isOrthographic()) 
 		{
-			auto& registry = getSceneManager()->getCurrentScene()->getRegistry();
 			auto view = registry.group<Camera>(entt::get<Transform>);
 
 			for (auto v : view)
@@ -197,6 +201,22 @@ namespace Maple
 				auto & [camera, trans] = registry.get<Camera, Transform>(v);
 				debugRender.drawFrustum(camera.getFrustum(glm::inverse(trans.getWorldMatrix())));
 			}
+		}
+
+		if (auto sprite = registry.try_get<Sprite>(selectedNode)) {
+			auto& transform = registry.get<Transform>(selectedNode);
+			auto pos = transform.getWorldPosition() + glm::vec3(sprite->getQuad().getOffset(), 0);
+			auto w = sprite->getQuad().getWidth();
+			auto h = sprite->getQuad().getHeight();
+			debugRender.drawRect(pos.x, pos.y, w, h);
+		}
+
+		if (auto sprite = registry.try_get<AnimatedSprite>(selectedNode)) {
+			auto& transform = registry.get<Transform>(selectedNode);
+			auto pos = transform.getWorldPosition() + glm::vec3(sprite->getQuad().getOffset(), 0);
+			auto w = sprite->getQuad().getWidth();
+			auto h = sprite->getQuad().getHeight();
+			debugRender.drawRect(pos.x, pos.y, w, h);
 		}
 
 		drawGrid();
@@ -601,7 +621,7 @@ namespace Maple
 
 	auto Editor::drawGrid() -> void
 	{
-		/*debugRender.drawLine(
+		debugRender.drawLine(
 			{ -5000,0,0 }, { 5000,0,0 }, {1,0,0,1.f}
 		);//x
 		debugRender.drawLine(
@@ -609,7 +629,7 @@ namespace Maple
 		);//y
 		debugRender.drawLine(
 			{ 0,0,-5000 }, { 0,0,5000 }, { 0,0,1,1.f }
-		);//z*/
+		);//z
 	}
 
 	auto Editor::getIcon(FileType type)->Quad2D*

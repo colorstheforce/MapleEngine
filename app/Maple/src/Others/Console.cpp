@@ -27,6 +27,7 @@ namespace Maple
 
 	}
 	std::shared_ptr<spdlog::logger> Console::logger;
+
 };
 
 

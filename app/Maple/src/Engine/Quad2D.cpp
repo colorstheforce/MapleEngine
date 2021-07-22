@@ -48,4 +48,6 @@ namespace Maple
 		texCoords[3] = { x		/ (float)texture->getWidth() ,y / (float)texture->getHeight() };
 	}
 
+	Maple::Quad2D Quad2D::nullQuad;
+
 };

@@ -214,7 +214,7 @@ namespace MM
 			
 
 			ImGui::AlignTextToFramePadding();
-			auto tex = sprite.getQuad()->getTexture();
+			auto tex = sprite.getQuad().getTexture();
 
 			ImVec2 imageButtonSize(64, 64);
 
@@ -246,6 +246,124 @@ namespace MM
 				{
 					
 					
+				}
+			}
+
+			if (payload != NULL && payload->IsDataType("AssetFile"))
+			{
+				auto filePath = std::string(reinterpret_cast<const char*>(payload->Data));
+				if (StringUtils::isTextureFile(filePath))
+				{
+					if (ImGui::BeginDragDropTarget())
+					{
+						// Drop directly on to node and append to the end of it's children list.
+						if (ImGui::AcceptDragDropPayload("AssetFile"))
+						{
+							callback(filePath);
+							ImGui::EndDragDropTarget();
+
+							ImGui::Columns(1);
+							ImGui::Separator();
+							ImGui::PopStyleVar(2);
+
+							ImGui::TreePop();
+							return;
+						}
+
+						ImGui::EndDragDropTarget();
+					}
+				}
+			}
+
+			ImGui::NextColumn();
+			ImGui::PushItemWidth(-1);
+			ImGui::TextUnformatted(tex ? tex->getFilePath().c_str() : "No Texture");
+			if (tex)
+			{
+				ImGuiHelper::tooltip(tex->getFilePath().c_str());
+				ImGui::Text("%u x %u", tex->getWidth(), tex->getHeight());
+				ImGui::Text("Mip Levels : %u", tex->getMipmapLevel());
+			}
+
+			ImGui::PopItemWidth();
+			ImGui::NextColumn();
+
+			ImGui::Columns(1);
+			ImGui::Separator();
+			ImGui::PopStyleVar();
+			ImGui::TreePop();
+		}
+
+		ImGui::Columns(1);
+		ImGui::Separator();
+		ImGui::PopStyleVar();
+	}
+
+	template<>
+	void ComponentEditorWidget<AnimatedSprite>(entt::registry& reg, entt::registry::entity_type e)
+	{
+		auto& sprite = reg.get<AnimatedSprite>(e);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
+		ImGui::Columns(2);
+		ImGui::Separator();
+
+		auto pos = sprite.getQuad().getOffset();
+		if (ImGuiHelper::property("Offset", pos)) {}
+
+		/*
+
+		auto scale = sprite.getQuad().getScale();
+		if (ImGuiHelper::property("Scale", scale))
+			sprite.getQuad().setScale(scale);
+
+
+		auto color = sprite.getQuad().getColor();
+		if (ImGuiHelper::property("Colour", color,-1,1,false, ImGuiHelper::PropertyFlag::ColorProperty))
+			sprite.getQuad().setColor(color);*/
+
+		ImGui::Columns(1);
+
+		if (ImGui::TreeNode("Texture"))
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
+			ImGui::Columns(2);
+			ImGui::Separator();
+
+
+			ImGui::AlignTextToFramePadding();
+			auto tex = sprite.getQuad().getTexture();
+
+			ImVec2 imageButtonSize(64, 64);
+
+			auto callback = std::bind(&Sprite::setTextureFromFile, &sprite, std::placeholders::_1);
+			const ImGuiPayload* payload = ImGui::GetDragDropPayload();
+			auto min = ImGui::GetCursorPos();
+			auto max = min + imageButtonSize + ImGui::GetStyle().FramePadding;
+
+			bool hoveringButton = ImGui::IsMouseHoveringRect(min, max, false);
+			bool showTexture = !(hoveringButton && (payload != NULL && payload->IsDataType("AssetFile")));
+			bool flipImage = false;
+			if (tex && showTexture)
+			{
+				if (ImGui::ImageButton(tex->getHandle(), imageButtonSize, ImVec2(0.0f, flipImage ? 1.0f : 0.0f), ImVec2(1.0f, flipImage ? 0.0f : 1.0f)))
+				{
+
+				}
+
+				if (ImGui::IsItemHovered() && tex)
+				{
+					ImGui::BeginTooltip();
+					ImGui::Image(tex->getHandle(), ImVec2(256, 256), ImVec2(0.0f, flipImage ? 1.0f : 0.0f), ImVec2(1.0f, flipImage ? 0.0f : 1.0f));
+					ImGui::EndTooltip();
+				}
+			}
+			else
+			{
+				if (ImGui::Button(tex ? "" : "Empty", imageButtonSize))
+				{
+
+
 				}
 			}
 
@@ -429,7 +547,7 @@ namespace MM
 			camera.setFar(far_);
 
 		float scale = camera.getScale();
-		if (ImGuiHelper::property("Scale", scale, 0.0f, 100.0f))
+		if (ImGuiHelper::inputFloat("Scale", scale, 0.0f, 10000.f))
 			camera.setScale(scale);
 
 		bool ortho = camera.isOrthographic();
@@ -576,6 +694,7 @@ namespace Maple
 		TRIVIAL_COMPONENT(CameraControllerComponent, true);
 		TRIVIAL_COMPONENT(Environment, true);
 		TRIVIAL_COMPONENT(Sprite, true);
+		TRIVIAL_COMPONENT(AnimatedSprite, true);
 		TRIVIAL_COMPONENT(MeshRenderer, false);
 	}
 

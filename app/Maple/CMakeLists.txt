@@ -24,7 +24,7 @@ add_subdirectory(lib/SPIRV-Cross)
 add_subdirectory(lib/ktx)
 add_subdirectory(lib/charset-detect)
 add_subdirectory(lib/zlib)
-
+add_subdirectory(lib/lua)
 
 file(GLOB SHADERS_GLSL 
 	"${ENGINE_ASSET_DIR}/shaders/*.vert" 
@@ -109,6 +109,8 @@ target_include_directories(MapleEngine PUBLIC
 	${ENGINE_LIB_SRC_DIR}/utf8/include
 	${ENGINE_LIB_SRC_DIR}/zlib/src
 	${ENGINE_LIB_SRC_DIR}/charset-detect
+	${ENGINE_LIB_SRC_DIR}/LuaBridge
+	${ENGINE_LIB_SRC_DIR}/lua/include
 )
 
 target_link_libraries(MapleEngine 
@@ -122,9 +124,10 @@ target_link_libraries(MapleEngine
 	ktx
 	tellenc
 	zlib
+	lua
 )
 
-set_target_properties(zlib tinyobjloader tellenc imgui spirvCross ktx spdlog_headers_for_ide stb_image PROPERTIES FOLDER Library)
+set_target_properties(lua zlib tinyobjloader tellenc imgui spirvCross ktx spdlog_headers_for_ide stb_image PROPERTIES FOLDER Library)
 
 endif()
 
