@@ -21,6 +21,7 @@ namespace Maple
 	class TextureAtlas;
 	class RenderManager;
 	class Quad2D;
+	class Ray;
 
 	class Editor final : public Application 
 	{
@@ -36,6 +37,7 @@ namespace Maple
 		auto setSelected(const entt::entity& selectedNode) -> void;
 		auto setCopiedEntity(const entt::entity& selectedNode, bool cut = false) -> void;
 
+		auto getScreenRay(int32_t x, int32_t y, Camera* camera, int32_t width, int32_t height)->Ray;
 
 
 		template<class T>
@@ -79,6 +81,8 @@ namespace Maple
 		auto addPlugin(EditorPlugin* plugin) -> void;
 		auto addFunctionalPlugin(const std::function<void(Editor*)> & callback) -> void;
 
+		auto clickObject(const Ray& ray) -> void;
+		auto focusCamera(const glm::vec3& point, float distance, float speed = 1.0f) -> void;
 	private:
 		auto drawPlayButtons() -> void;
 		auto drawMenu() -> void;
@@ -107,6 +111,15 @@ namespace Maple
 		std::unordered_map<FileType, std::string> cacheIcons;
 		std::shared_ptr<TextureAtlas> textureAtlas;
 		std::vector<std::unique_ptr<EditorPlugin>> plugins;
+
+
+	private:
+		bool transitioningCamera = false;
+		glm::vec3 cameraDestination;
+		glm::vec3 cameraStartPosition;
+		float cameraTransitionStartTime = 0.0f;
+		float cameraTransitionSpeed = 0.0f;
+
 	};
 
 	template<class T>

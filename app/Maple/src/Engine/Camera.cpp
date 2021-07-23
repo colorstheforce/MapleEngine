@@ -60,6 +60,30 @@ namespace Maple
 		return frustum;
 	}
 
+	auto Camera::sendRay(float x, float y, const glm::mat4& viewMatrix, bool invertY /*= false*/) const -> Ray
+	{
+		Ray ret;
+		auto viewProjInverse = glm::inverse(projMatrix * viewMatrix);
+
+		x = 2.0f * x - 1.0f;
+		y = 2.0f * y - 1.0f;
+
+		if (invertY)
+			y *= -1.0f;
+		
+
+		glm::vec4 nearPlane(x, y, 0,1.f);
+		glm::vec4 farPlane(x, y,  1, 1.f);
+
+		auto pos = viewProjInverse* nearPlane;
+		auto pos2 = viewProjInverse * farPlane;
+
+		ret.origin =  pos / pos.w;
+		ret.direction = glm::normalize(glm::vec3(pos2 / pos2.w) - ret.origin);
+
+		return ret;
+	}
+
 	auto Camera::updateProjectionMatrix() -> void
 	{
 		if (orthographic) 

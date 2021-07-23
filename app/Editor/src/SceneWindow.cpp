@@ -111,10 +111,11 @@ namespace Maple
 
 			editor.onImGuizmo();
 
-			if (editor.isSceneActive() && !ImGuizmo::IsUsing() && Input::getInput()->isMouseClicked(KeyCode::MouseKey::ButtonLeft))
+
+			if (editor.isSceneActive() && !ImGuizmo::IsUsing() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			{
 				auto clickPos = Input::getInput()->getMousePosition() - glm::vec2(sceneViewPosition.x, sceneViewPosition.y);
-				//editor.SelectObject(editor.sendScreenRay(int32_t(clickPos.x), int32_t(clickPos.y), camera, int32_t(sceneViewSize.x), int32_t(sceneViewSize.y)));
+				editor.clickObject(editor.getScreenRay(int32_t(clickPos.x), int32_t(clickPos.y), camera, int32_t(sceneViewSize.x), int32_t(sceneViewSize.y)));
 			}
 			drawGizmos(sceneViewSize.x, sceneViewSize.y, offset.x, offset.y, currentScene);
 		}

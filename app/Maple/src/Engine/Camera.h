@@ -8,7 +8,7 @@
 #include <glm/glm.hpp>
 #include "Scene/Component/Component.h"
 #include "Scene/Component/Transform.h"
-
+#include "Math/Ray.h"
 #include "Math/Frustum.h"
 
 namespace Maple 
@@ -42,6 +42,7 @@ namespace Maple
 
 		auto getFrustum(const glm::mat4& viewMatrix) -> const Frustum&;
 
+		auto sendRay(float x, float y, const glm::mat4 & viewMatrix, bool invertY = false) const -> Ray;
 
 
 		template<typename Archive>

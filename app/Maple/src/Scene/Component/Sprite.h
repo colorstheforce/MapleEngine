@@ -72,18 +72,36 @@ namespace Maple
 		auto onUpdate(float dt) -> void;
 		auto getAnimatedUVs() -> const std::array<glm::vec2, 4>&;
 		auto getQuad()->const Quad2D & override;
+		
 		inline auto getCurrentFrame() const -> const AnimationFrame* {
 			if (currentFrame < animationFrames.size()) {
 				return &animationFrames[currentFrame];
 			} return nullptr;
 		};
-		inline auto setLoop(bool val) { loop = val; }
 
+		inline auto getCurrentId() const { return currentFrame; };
+
+		inline auto getDelay() const {
+			auto frame = getCurrentFrame();
+			return frame ? frame->delay : 0;
+		};
+
+		inline auto getTimer() const {
+			return frameTimer;
+		};
+
+		inline auto setCurrentFrame(uint32_t frame) { currentFrame = frame; }
+
+		inline auto getFrames() const -> int32_t { return animationFrames.size(); };
+
+		inline auto setLoop(bool val) { loop = val; }
+		inline auto isLoop() const { return loop; }
 
 		inline auto getWidth() const { 
 			auto frame = getCurrentFrame();
 			return frame ? frame->width : 0;
 		}
+
 		inline auto getHeight() const { 
 			auto frame = getCurrentFrame();
 			return frame ? frame->height : 0;

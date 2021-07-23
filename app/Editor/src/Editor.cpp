@@ -46,6 +46,10 @@
 
 #include "EditorPlugin.h"
 
+#include "Math/BoundingBox.h"
+#include "Math/Ray.h"
+#include "Math/MathUtils.h"
+
 
 namespace Maple 
 {
@@ -173,6 +177,21 @@ namespace Maple
 
 
 
+/*
+		if (transitioningCamera)
+		{
+			if (cameraTransitionStartTime < 0.0f)
+				cameraTransitionStartTime = delta.getMilliseconds();
+
+			float focusProgress = std::min((delta.getMilliseconds() - cameraTransitionStartTime) / cameraTransitionSpeed, 1.f);
+			auto newCameraPosition = MathUtils::lerp(cameraStartPosition,cameraDestination, focusProgress);
+			editorCameraTransform.setLocalPosition(newCameraPosition);
+
+			if (MathUtils::equals(editorCameraTransform.getLocalPosition(),cameraDestination))
+				transitioningCamera = false;
+		}
+*/
+
 		for (auto& plugin : plugins)
 		{
 			if (!plugin->isInited())
@@ -219,7 +238,18 @@ namespace Maple
 			debugRender.drawRect(pos.x, pos.y, w, h);
 		}
 
-		drawGrid();
+		if (auto meshRender = registry.try_get<MeshRenderer>(selectedNode)) {
+			auto& transform = registry.get<Transform>(selectedNode);
+			if (auto mesh = meshRender->getMesh(); mesh != nullptr) {
+				auto& worldTransform = transform.getWorldMatrix();
+				auto bbCopy = mesh->getBoundingBox()->transform(worldTransform);
+				debugRender.drawBox(bbCopy, { 1,1,1,1 });
+			}
+		}
+
+
+		//drawGrid();
+
 
 	}
 
@@ -678,6 +708,151 @@ namespace Maple
 	auto Editor::addFunctionalPlugin(const std::function<void(Editor*)>& callback) -> void
 	{
 		plugins.emplace_back(std::make_unique<FunctionalPlugin>(callback));
+	}
+
+	auto Editor::clickObject(const Ray& ray) -> void
+	{
+		auto& registry = getSceneManager()->getCurrentScene()->getRegistry();
+	
+		float closestDist = INFINITY;
+		entt::entity closestEntity = entt::null;
+
+		auto group = registry.group<MeshRenderer>(entt::get<Transform>);
+		for (auto entity : group)
+		{
+			const auto& [mesh, trans] = group.get<MeshRenderer, Transform>(entity);
+			if (mesh.getMesh() != nullptr)
+			{
+				auto& worldTransform = trans.getWorldMatrix();
+
+				auto bbCopy = mesh.getMesh()->getBoundingBox()->transform(worldTransform);
+				float dist = ray.hit(bbCopy);
+				LOGI("dist {0} {1}", (int32_t)entity, dist);
+				if (dist < INFINITY && dist < closestDist)
+				{
+					closestDist = dist;
+					closestEntity = entity;
+				}
+			}
+		}
+
+	
+		static auto lastClick = timer.current();
+		
+		if (selectedNode != entt::null && selectedNode == closestEntity)
+		{
+			if (timer.elapsed(timer.current(), lastClick) / 1000000.f < 1.f)
+			{
+				auto& trans = registry.get<Transform>(selectedNode);
+				auto& model = registry.get<MeshRenderer>(selectedNode);
+				if (auto mesh = model.getMesh(); mesh != nullptr) {
+					auto bb = mesh->getBoundingBox()->transform(trans.getWorldMatrix());
+					focusCamera(trans.getWorldPosition(), glm::length(bb.max - bb.min));
+				}
+			}
+			else
+			{
+				closestEntity = entt::null;
+			}
+
+			lastClick = timer.current();
+			selectedNode = closestEntity;
+			return;
+		}
+
+
+
+
+
+		auto spriteGroup = registry.group<Sprite>(entt::get<Transform>);
+
+
+
+		for (auto entity : spriteGroup)
+		{
+			const auto& [sprite, trans] = spriteGroup.get<Sprite, Transform>(entity);
+			auto& worldTransform = trans.getWorldMatrix();
+			const glm::vec2& min = sprite.getQuad().getOffset();
+			glm::vec2 max = min + glm::vec2{ sprite.getQuad().getWidth(), sprite.getQuad().getHeight() };
+			BoundingBox bb{ Rect2D(min,max)};
+			bb.transform(trans.getWorldMatrix());
+
+			float dist = ray.hit(bb);
+
+			if (dist < INFINITY && dist < closestDist)
+			{
+				closestDist = dist;
+				closestEntity = entity;
+			}
+		}
+
+		auto animSpriteGroup = registry.group<AnimatedSprite>(entt::get<Transform>);
+
+		for (auto entity : animSpriteGroup)
+		{
+			const auto& [sprite, trans] = animSpriteGroup.get<AnimatedSprite, Transform>(entity);
+			auto& worldTransform = trans.getWorldMatrix();
+			const glm::vec2& min = sprite.getQuad().getOffset();
+			glm::vec2 max = min + glm::vec2{ sprite.getQuad().getWidth(), sprite.getQuad().getHeight() };
+			BoundingBox bb{ Rect2D(min,max) };
+			bb = bb.transform(trans.getWorldMatrix());
+
+			float dist = ray.hit(bb);
+
+			if (dist < INFINITY && dist < closestDist)
+			{
+				closestDist = dist;
+				closestEntity = entity;
+			}
+		}
+
+
+		if (selectedNode != entt::null && selectedNode == closestEntity)
+		{
+			auto& trans = registry.get<Transform>(selectedNode);
+			Sprite * sprite = registry.try_get<Sprite>(selectedNode);
+			if (sprite == nullptr) {
+				sprite = registry.try_get<AnimatedSprite>(selectedNode);
+			}
+			if (sprite != nullptr) {
+				const glm::vec2& min = sprite->getQuad().getOffset();
+				const glm::vec2 max = min + glm::vec2{ sprite->getQuad().getWidth(), sprite->getQuad().getHeight() };
+				BoundingBox bb(Rect2D(min, max));
+				bb = bb.transform(trans.getWorldMatrix());
+				focusCamera(trans.getWorldPosition(), glm::length(bb.max - bb.min));
+			}
+		}
+
+		selectedNode = closestEntity;
+
+	}
+
+	auto Editor::focusCamera(const glm::vec3& point, float distance, float speed /*= 1.0f*/) -> void
+	{
+		if (camera->isOrthographic())
+		{
+			editorCameraTransform.setLocalPosition(point + glm::vec3{0,0,0.1});
+		}
+		else
+		{
+			cameraDestination = point + editorCameraTransform.getForwardDirection() * distance;
+
+			editorCameraTransform.setLocalPosition(cameraDestination);
+		}
+	}
+
+	auto Editor::getScreenRay(int32_t x, int32_t y, Camera* camera, int32_t width, int32_t height) ->Ray
+	{
+		if (!camera)
+			return {};
+
+		float screenX = (float)x / (float)width;
+		float screenY = (float)y / (float)height;
+
+		bool flipY = true;
+
+		return camera->sendRay(screenX, screenY, glm::inverse(editorCameraTransform.getWorldMatrix()), flipY);
+
 	}
 
 }

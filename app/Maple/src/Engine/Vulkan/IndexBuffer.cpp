@@ -7,14 +7,14 @@
 
 namespace Maple
 {
-	IndexBuffer::IndexBuffer(uint16_t* data, uint32_t count)
+	IndexBuffer::IndexBuffer(const uint16_t* data, uint32_t count)
 		: VulkanBuffer(VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 			count * sizeof(uint16_t), data)
 		, count(count)
 	{
 	}
 
-	IndexBuffer::IndexBuffer(uint32_t* data, uint32_t count)
+	IndexBuffer::IndexBuffer(const uint32_t* data, uint32_t count)
 		: VulkanBuffer(VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 			count * sizeof(uint32_t), data),
 		 count(count)

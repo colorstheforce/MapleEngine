@@ -23,7 +23,7 @@ namespace Maple
 
 	class DescriptorSet;
 	class Camera;
-
+	class BoundingBox;
 
 	class Mesh
 	{
@@ -31,6 +31,9 @@ namespace Maple
 		Mesh() = default;
 		Mesh(const std::shared_ptr<VertexBuffer> & vertexBuffer,
 			const std::shared_ptr<IndexBuffer> & indexBuffer);
+		Mesh(const std::vector<uint32_t>& indices, const std::vector<Vertex>& vertices);
+
+
 		inline auto setMaterial(const std::shared_ptr<Material>& material) {this->material = material;}
 
 		inline auto setIndicesSize(uint32_t size) { this->size = size; }
@@ -42,6 +45,8 @@ namespace Maple
 		inline void setDescriptorSet(const std::shared_ptr<DescriptorSet> & set) { descriptorSet = set; }
 		inline auto& isActive() const { return active; }
 		inline auto setActive(bool active) { this->active = active; }
+
+		inline auto& getBoundingBox() const { return boundingBox; }
 
 		inline auto& getName() const { return name; }
 		inline auto setName(const std::string & name) { this->name = name; }
@@ -66,6 +71,8 @@ namespace Maple
 		std::shared_ptr<Texture> texture;
 		std::shared_ptr<DescriptorSet> descriptorSet;
 		std::shared_ptr<Material> material;
+
+		std::shared_ptr<BoundingBox> boundingBox;
 
 		uint32_t size = 0;
 		bool active = true;

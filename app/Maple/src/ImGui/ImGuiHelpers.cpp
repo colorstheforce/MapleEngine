@@ -219,6 +219,23 @@ namespace Maple
 			return updated;
 		}
 
+		auto property(const std::string& name, uint32_t& value, uint32_t min /*= 0*/, uint32_t max /*= 1*/, PropertyFlag flags /*= PropertyFlag::None*/) -> bool
+		{
+			bool updated = false;
+			ImGui::TextUnformatted(name.c_str());
+			ImGui::NextColumn();
+			ImGui::PushItemWidth(-1);
+
+			std::string id = "##" + name;
+			if (ImGui::SliderInt(id.c_str(), (int32_t*)&value, min, max))
+				updated = true;
+
+			ImGui::PopItemWidth();
+			ImGui::NextColumn();
+
+			return updated;
+		}
+
 		auto inputFloat(const std::string& name, float& value, float min /*= -1.0f*/, float max /*= 1.0f*/) -> bool
 		{
 			bool updated = false;

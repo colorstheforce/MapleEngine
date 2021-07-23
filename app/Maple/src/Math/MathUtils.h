@@ -23,6 +23,8 @@ namespace Maple
 			return from + (to - from) * t;
 		}
 
+		inline auto lerp(const glm::vec3 & from,const glm::vec3& to, float t) { return from * (1.0f - t) + to * t; }
+
 
 		// vec4 comparators
 		inline bool operator >=(const glm::vec4& left, const glm::vec4& other)

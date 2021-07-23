@@ -17,7 +17,8 @@ namespace Maple
 	class Texture;
 	class Scene;
 	class LineRenderer;
-	
+	class BoundingBox;
+
 	class DebugRenderer
 	{
 	public:
@@ -33,6 +34,7 @@ namespace Maple
 		auto drawLine(const glm::vec3& start, const glm::vec3& end, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f }) -> void;
 		auto drawFrustum(const Frustum& frustum) -> void;
 		auto drawRect(int32_t x, int32_t y,int32_t width, int32_t height) -> void;
+		auto drawBox(const BoundingBox& box, const glm::vec4& color)-> void;
 
 	private:
 		LineRenderer* lineRenderer = nullptr;

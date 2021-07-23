@@ -1,8 +1,8 @@
 
 
-
 #include "DebugRenderer.h"
 #include "LineRenderer.h"
+#include "Math/BoundingBox.h"
 
 namespace Maple 
 {
@@ -74,5 +74,32 @@ namespace Maple
 		drawLine({ right,bottom,0 }, { x,bottom,0 });
 		drawLine({ x,bottom,0 }, { x,y,0 });
 	}
+
+	auto DebugRenderer::drawBox(const BoundingBox& box, const glm::vec4& color) -> void
+	{
+		glm::vec3 uuu = box.max;
+		glm::vec3 lll = box.min;
+		glm::vec3 ull(uuu.x, lll.y, lll.z);
+		glm::vec3 uul(uuu.x, uuu.y, lll.z);
+		glm::vec3 ulu(uuu.x, lll.y, uuu.z);
+		glm::vec3 luu(lll.x, uuu.y, uuu.z);
+		glm::vec3 llu(lll.x, lll.y, uuu.z);
+		glm::vec3 lul(lll.x, uuu.y, lll.z);
+
+	
+		drawLine(luu, uuu, color);
+		drawLine(lul, uul, color);
+		drawLine(llu, ulu, color);
+		drawLine(lll, ull, color);
+		drawLine(lul, lll, color);
+		drawLine(uul, ull, color);
+		drawLine(luu, llu, color);
+		drawLine(uuu, ulu, color);
+		drawLine(lll, llu, color);
+		drawLine(ull, ulu, color);
+		drawLine(lul, luu, color);
+		drawLine(uul, uuu, color);
+	}
+
 
 };

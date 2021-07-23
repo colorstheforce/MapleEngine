@@ -12,13 +12,26 @@
 #include "Vertex.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include "Math/BoundingBox.h"
 
 namespace Maple 
 {
 	Mesh::Mesh(const std::shared_ptr<VertexBuffer>& vertexBuffer, const std::shared_ptr<IndexBuffer>& indexBuffer)
 		:vertexBuffer(vertexBuffer),indexBuffer(indexBuffer)
 	{
+		
+	}
 
+	Mesh::Mesh(const std::vector<uint32_t>& indices, const std::vector<Vertex>& vertices)
+	{
+		boundingBox = std::make_shared<BoundingBox>();
+		for (auto& vertex : vertices)
+		{
+			boundingBox->merge(vertex.pos);
+		}
+		vertexBuffer = std::make_shared<VertexBuffer>();
+		vertexBuffer->setData(sizeof(Vertex) * vertices.size(), vertices.data());
+		indexBuffer = std::make_shared<IndexBuffer>(indices.data(), indices.size());
 	}
 
 	auto Mesh::createQuad() ->std::shared_ptr<Mesh>
@@ -42,17 +55,16 @@ namespace Maple
 		data[3].color = glm::vec4(0.2f);
 
 
-		auto vb = std::make_shared<VertexBuffer>();
-		vb->setData(sizeof(Vertex) * 4, data.data());
-		uint32_t indices[6] = { 0, 1, 2, 2, 3, 0, };
-		auto mesh = std::make_shared<Mesh>(vb, std::make_shared<IndexBuffer>(indices, 6));
-		return mesh;
+		std::vector<uint32_t> indices = { 0, 1, 2, 2, 3, 0, };
+
+		return std::make_shared<Mesh>(indices, data);
 	}
 
 	auto Mesh::createCube() ->std::shared_ptr< Mesh>
 	{
 	
-		Vertex* data = new Vertex[24];
+		std::vector<Vertex> data;
+		data.resize(24);
 
 		data[0].pos = glm::vec3(1.0f, 1.0f, 1.0f);
 		data[0].color = glm::vec4(0.0f);
@@ -160,7 +172,7 @@ namespace Maple
 			data[i * 4 + 3].texCoord =glm::vec2(0.0f, 1.0f);
 		}
 
-		uint32_t indices[36]
+		std::vector<uint32_t> indices
 		{
 			0,1,2,
 			0,2,3,
@@ -176,26 +188,18 @@ namespace Maple
 			20,22,23
 		};
 
-		auto vb = std::make_shared<VertexBuffer>();
-		vb->setData(sizeof(Vertex) * 24, data);
-		auto defaultCube = std::make_shared<Mesh>(vb, std::make_shared<IndexBuffer>(indices, 36));
-		defaultCube->setIndicesSize(36);
-		defaultCube->setName("Cube");
-		delete[] data;
-		return defaultCube;
+		return std::make_shared<Mesh>(indices,data);
 	}
 
 
 	auto Mesh::createSphere(uint32_t xSegments /*= 64*/, uint32_t ySegments /*= 64*/) ->std::shared_ptr< Mesh>
 	{
-		auto data = std::vector<Vertex>();
+		std::vector<Vertex> data;
 		float sectorCount = static_cast<float>(xSegments);
 		float stackCount = static_cast<float>(ySegments);
 		float sectorStep = 2 * M_PI / sectorCount;
 		float stackStep = M_PI / stackCount;
 		float radius = 1.0f;
-
-	
 
 		for (int i = 0; i <= stackCount; ++i)
 		{
@@ -218,10 +222,7 @@ namespace Maple
 				vertex.normal = glm::normalize(glm::vec3(x, y, z));
 			}
 		}
-
-
-		auto vb = std::make_shared<VertexBuffer>();
-		vb->setData(data.size() * sizeof(Vertex), data.data());
+		
 
 		std::vector<uint32_t> indices;
 		uint32_t k1, k2;
@@ -248,10 +249,7 @@ namespace Maple
 			}
 		}
 
-		auto ib = std::make_shared<IndexBuffer>(indices.data(), indices.size());
-		auto mesh = std::make_shared<Mesh>(vb, ib);
-		mesh->setName("Sphere");
-		return mesh;
+		return std::make_shared<Mesh>(indices,data);
 	}
 
 	auto Mesh::createPlane(float width, float height, const glm::vec3& normal) ->std::shared_ptr< Mesh>
@@ -262,9 +260,8 @@ namespace Maple
 			glm::angleAxis(vec.y, glm::vec3(0.0f, 1.0f, 0.0f)) *
 			glm::angleAxis(vec.x, glm::vec3(0.0f, 0.0f, 1.0f));
 
-
-		Vertex* data = new Vertex[4];
-
+		std::vector<Vertex> data;
+		data.resize(4);
 		data[0].pos = rotation * glm::vec3(-width / 2.0f, -1.0f, -height / 2.0f);
 		data[0].normal = normal;
 		data[0].texCoord = glm::vec2(0.0f, 0.0f);
@@ -281,19 +278,15 @@ namespace Maple
 		data[3].normal = normal;
 		data[3].texCoord = glm::vec2(1.0f, 0.0f);
 
-		auto vb = std::make_shared<VertexBuffer>(BufferUsage::STATIC);
-		vb->setData(4 * sizeof(Vertex), data);
-		delete[] data;
 
-		uint32_t indices[6]
+		std::vector<uint32_t> indices
 		{
 			0, 1, 2,
 			2, 3, 0
 		};
 
-		auto ib = std::make_shared<IndexBuffer>(indices, 6);
 
-		return std::make_shared<Mesh>(vb, ib);
+		return std::make_shared<Mesh>(indices, data);
 	}
 
 	auto Mesh::generateNormals(std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) -> void

@@ -16,8 +16,8 @@ namespace Maple
 	class IndexBuffer : public VulkanBuffer
 	{
 	public:
-		IndexBuffer(uint16_t* data, uint32_t count);
-		IndexBuffer(uint32_t* data, uint32_t count);
+		IndexBuffer(const uint16_t* data, uint32_t count);
+		IndexBuffer(const uint32_t* data, uint32_t count);
 		~IndexBuffer();
 
 		/**
