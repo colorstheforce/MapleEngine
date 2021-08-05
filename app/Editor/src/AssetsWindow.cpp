@@ -22,6 +22,7 @@
 #include "Engine/Interface/Texture.h"
 #include "Engine/Quad2D.h"
 #include "Resources/MeshResource.h"
+#include "Window/NativeWindow.h"
 
 namespace Maple 
 {
@@ -94,7 +95,7 @@ namespace Maple
 			ImGui::BeginChild("##directory_structure");
 			{
 				{
-					ImGui::BeginChild("##directory_navigation_bar", ImVec2(ImGui::GetColumnWidth(), 30));
+					ImGui::BeginChild("##directory_navigation_bar", ImVec2(ImGui::GetColumnWidth(), 50));
 					if (isInListView)
 					{
 						if (ImGui::Button(ICON_MDI_VIEW_GRID))
@@ -132,7 +133,7 @@ namespace Maple
 					int shownIndex = 0;
 
 					float xAvail = ImGui::GetContentRegionAvail().x;
-					gridItemsPerRow = (int32_t)std::floor(xAvail / 95.0f);
+					gridItemsPerRow = (int32_t)std::floor(xAvail / (95.0f * app->getWindow()->getScale()));
 					gridItemsPerRow = std::max(1, gridItemsPerRow);
 
 					for (auto & dir : currentDir->children)
@@ -189,6 +190,7 @@ namespace Maple
 		bool doubleClicked = false;
 		auto& editor = static_cast<Editor&>(*app);
 
+		
 		if (gridView)
 		{
 			ImGui::BeginGroup();
@@ -202,7 +204,7 @@ namespace Maple
 			bool flipY = false;
 
 			if (ImGui::ImageButtonNoBg(icon && icon->getTexture() ? icon->getTexture()->getHandle() : nullptr, 
-				{ 80,80 },
+				{ 80 * editor.getWindow()->getScale(),80 * editor.getWindow()->getScale() },
 				ImVec2(uv[3].x, uv[1].y ),
 				ImVec2(uv[1].x, uv[3].y )
 			)) {
@@ -386,7 +388,7 @@ namespace Maple
 
 	auto AssetsWindow::renderNavigationBar() -> void
 	{
-		ImGui::BeginChild("##directory_navigation_bar", ImVec2(ImGui::GetColumnWidth(), 30));
+		ImGui::BeginChild("##directory_navigation_bar", ImVec2(ImGui::GetColumnWidth(), 50));
 		{
 			if (ImGui::Button(ICON_MDI_ARROW_LEFT))
 			{

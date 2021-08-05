@@ -13,6 +13,7 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <IconsMaterialDesignIcons.h>
+#include <RobotoRegular.inl>
 #include <MaterialDesign.inl>
 
 
@@ -36,8 +37,12 @@ namespace Maple
 		
 		ImGuiIO& io = ImGui::GetIO();
 		
-		io.DisplaySize = ImVec2(static_cast<float>(app->getWindow()->getWidth()),
-            static_cast<float>(app->getWindow()->getHeight()));
+		io.DisplaySize = ImVec2(
+			static_cast<float>(app->getWindow()->getWidth()),
+			static_cast<float>(app->getWindow()->getHeight())
+		);
+
+		ImGui::GetStyle().ScaleAllSizes(app->getWindow()->getScale());
 
 		addIcon();
 
@@ -74,16 +79,44 @@ namespace Maple
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		static const ImWchar icons_ranges[] = { ICON_MIN_MDI, ICON_MAX_MDI, 0 };
-		ImFontConfig icons_config;
-		io.Fonts->AddFontDefault();
-		// merge in icons from Font Awesome
-		icons_config.MergeMode = true;
-		icons_config.PixelSnapH = true;
-		icons_config.GlyphOffset.y = 1.0f;
-		icons_config.OversampleH = icons_config.OversampleV = 1;
-		icons_config.PixelSnapH = true;
-		icons_config.SizePixels = 18.f;
-		io.Fonts->AddFontFromMemoryCompressedTTF(MaterialDesign_compressed_data, MaterialDesign_compressed_size, 16, &icons_config, icons_ranges);
+		//io.Fonts->AddFontFromFileTTF("fonts/simsun.ttf", 16.f, NULL, io.Fonts->GetGlyphRangesChineseFull());
+	//	io.Fonts->AddFontDefault();
+	
+
+		ImFontConfig iconsConfig;
+		iconsConfig.MergeMode = false;
+		iconsConfig.PixelSnapH = true;
+		iconsConfig.OversampleH = iconsConfig.OversampleV = 1;
+		iconsConfig.GlyphMinAdvanceX = 4.0f;
+		iconsConfig.SizePixels = 12.0f;
+
+		static const ImWchar ranges[] = {
+			0x0020,
+			0x00FF,
+			0x0400,
+			0x044F,
+			0,
+		};
+
+		io.Fonts->AddFontFromMemoryCompressedTTF(
+			RobotoRegular_compressed_data, 
+			RobotoRegular_compressed_size, 16.f * app->getWindow()->getScale(),
+			&iconsConfig,
+			ranges);
+
+
+
+
+		iconsConfig.MergeMode = true;
+		iconsConfig.PixelSnapH = true;
+		iconsConfig.GlyphOffset.y = 1.0f;
+		iconsConfig.OversampleH = iconsConfig.OversampleV = 1;
+		iconsConfig.PixelSnapH = true;
+		iconsConfig.SizePixels = 18.f;
+		io.Fonts->AddFontFromMemoryCompressedTTF(
+			MaterialDesign_compressed_data, 
+			MaterialDesign_compressed_size, 16 * app->getWindow()->getScale(),
+			&iconsConfig, icons_ranges);
 	}
 
 	auto ImGuiSystem::onResize(uint32_t w, uint32_t h) -> void

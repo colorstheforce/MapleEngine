@@ -41,7 +41,7 @@ namespace Maple
 
 
 		template<class T>
-		inline auto getWindow() {
+		inline auto getEditorWindow() {
 			return std::static_pointer_cast<T>(editorWindows[typeid(T).hash_code()]);
 		}
 

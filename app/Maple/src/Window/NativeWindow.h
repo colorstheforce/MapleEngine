@@ -34,13 +34,14 @@ namespace Maple
 		virtual auto getNativeInterface() -> void* = 0;
 		virtual auto getNativeWindow() -> void* { return nullptr; }
 		virtual auto setTitle(const std::string& title)->void;
-
+		inline auto getScale() const { return scale; }
 		inline auto getExtensions() const { return extensions; };
 
 		static auto newInstance(const WindowInitData & data)->std::unique_ptr<NativeWindow>;
 		virtual auto init() -> void = 0;
 	protected:
 		std::vector<const char*> extensions;
+		float scale = 1;
 	private:
 		
 	};

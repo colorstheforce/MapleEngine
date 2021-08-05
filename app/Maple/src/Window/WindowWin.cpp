@@ -52,8 +52,20 @@ namespace Maple
 		if (!glfwInit())
 			return;
 	
+
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+		//glfwWindowHint(GLFW_SCALE_TO_MONITOR, 1);
+
+		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+		float xscale, yscale;
+		glfwGetMonitorContentScale(monitor, &xscale, &yscale);
+		if (xscale > 1 || yscale > 1)
+		{
+			scale = xscale;
+			glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+		}
+
 
 		nativeInterface = glfwCreateWindow(data.width,data.height,data.title.c_str(),nullptr,nullptr);
 
@@ -74,10 +86,12 @@ namespace Maple
 		});
 
 		glfwSetMouseButtonCallback(nativeInterface, [](GLFWwindow* window, int32_t btnId, int32_t state, int32_t mods) {
+			auto w = (WindowWin*)glfwGetWindowUserPointer(window);
+
 			double x;
 			double y;
 			glfwGetCursorPos(window, &x, &y);
-
+			
 			auto btn = -1;
 			switch (btnId)
 			{
@@ -97,8 +111,9 @@ namespace Maple
 			});
 
 
-		glfwSetCursorPosCallback(nativeInterface, [](GLFWwindow*, double x, double y) {
-			app->getEventDispatcher().postEvent(std::make_unique<MouseMoveEvent>(x, y));
+		glfwSetCursorPosCallback(nativeInterface, [](GLFWwindow* window, double x, double y) {
+			auto w = (WindowWin*)glfwGetWindowUserPointer(window);
+			app->getEventDispatcher().postEvent(std::make_unique<MouseMoveEvent>(x , y ));
 			});
 
 		glfwSetScrollCallback(nativeInterface, [](GLFWwindow* win, double xOffset, double yOffset) {
