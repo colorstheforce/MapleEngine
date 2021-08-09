@@ -17,6 +17,8 @@ imgui.ini
 
 *.log
 
+MapleLibrary.dll
+
 build/
 
 # Fortran module files
@@ -29,5 +31,5 @@ build/
 
 
 # Executables
-*.exe
+
 *.app
