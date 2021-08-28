@@ -12,6 +12,8 @@ set(CMAKE_CXX_STANDARD 17)
 file(GLOB EDITOR_STATIC_SRC
 	src/*.cpp
 	src/*.h
+	src/Plugin/*.cpp
+	src/Plugin/*.h
 )
 
 add_definitions(-DEDITOR_STATIC)
@@ -36,3 +38,5 @@ target_include_directories(EditorStatic PUBLIC
 	${EDITOR_LIB_SRC_DIR}/ktx/other_include
 	${EDITOR_LIB_SRC_DIR}/cereal/include
 )
+
+source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${EDITOR_STATIC_SRC})

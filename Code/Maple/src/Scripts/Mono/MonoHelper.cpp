@@ -145,4 +145,156 @@ namespace Maple::MonoHelper
 		return monoMethod;
 	}
 
+	auto getClassName(MonoObject* obj, std::string& ns, std::string& typeName) -> void
+	{
+		if (obj == nullptr)
+			return;
+		getClassName(mono_object_get_class(obj), ns, typeName);
+	}
+
+	auto getClassName(MonoClass* monoClass, std::string& ns, std::string& typeName) -> void
+	{
+		auto nestingClass = mono_class_get_nesting_type(monoClass);
+
+		if (nestingClass == nullptr)
+		{
+			ns = mono_class_get_namespace(monoClass);
+			typeName = mono_class_get_name(monoClass);
+
+			return;
+		}
+		else
+		{
+			const char* className = mono_class_get_name(monoClass);
+
+			if (className)
+				typeName = std::string("+") + className;
+
+			do
+			{
+				auto nextNestingClass = mono_class_get_nesting_type(nestingClass);
+				if (nextNestingClass != nullptr)
+				{
+					typeName = std::string("+") + mono_class_get_name(nestingClass) + typeName;
+					nestingClass = nextNestingClass;
+				}
+				else
+				{
+					ns = mono_class_get_namespace(nestingClass);
+					typeName = mono_class_get_name(nestingClass) + typeName;
+					break;
+				}
+			} while (true);
+		}
+	}
+
+	auto getClassName(MonoReflectionType* monoReflType, std::string& ns, std::string& typeName) -> void
+	{
+		getClassName(mono_type_get_class(mono_reflection_type_get_type(monoReflType)), ns, typeName);
+	}
+
+	auto monoToString(MonoString* str) -> std::string
+	{
+		if (str == nullptr)
+			return "";
+		auto chars = mono_string_to_utf8(str);
+		std::string ret = chars;
+		mono_free(chars);
+		return ret;
+	}
+
+	auto stringToMono(const std::string& str) -> MonoString*
+	{
+		auto utf16 = StringUtils::UTF8ToUTF16(str);
+		return mono_string_from_utf16((mono_unichar2*)str.c_str());
+	}
+
+	auto throwIfException(MonoObject* exception) -> void
+	{
+		if (exception != nullptr)
+		{
+			MonoClass* exceptionClass = mono_object_get_class(exception);
+			MonoProperty* exceptionMsgProp = mono_class_get_property_from_name(exceptionClass, "Message");
+			MonoMethod* exceptionMsgGetter = mono_property_get_get_method(exceptionMsgProp);
+			MonoString* exceptionMsg = (MonoString*)mono_runtime_invoke(exceptionMsgGetter, exception, nullptr, nullptr);
+
+			MonoProperty* exceptionStackProp = mono_class_get_property_from_name(exceptionClass, "StackTrace");
+			MonoMethod* exceptionStackGetter = mono_property_get_get_method(exceptionStackProp);
+			MonoString* exceptionStackTrace = (MonoString*)mono_runtime_invoke(exceptionStackGetter, exception, nullptr, nullptr);
+			// Note: If you modify this format make sure to also modify Debug.ParseExceptionMessage in managed code.
+			auto msg = "Managed exception: " + monoToString(exceptionMsg) + "\n" + monoToString(exceptionStackTrace);
+			LOGE(msg);
+		}
+	}
+
+	auto getUINT16Class() -> MonoClass*
+	{
+		return mono_get_uint16_class();
+	}
+
+	auto getINT16Class() -> MonoClass*
+	{
+		return mono_get_int16_class();
+	}
+
+	auto getUINT32Class() -> MonoClass*
+	{
+		return mono_get_uint32_class();
+	}
+
+	auto getINT32Class() -> MonoClass*
+	{
+		return mono_get_int32_class();
+	}
+
+	auto getUINT64Class() -> MonoClass*
+	{
+		return mono_get_uint64_class(); 
+	}
+
+	auto getINT64Class() -> MonoClass*
+	{
+		return mono_get_int64_class();
+	}
+
+	auto getStringClass() -> MonoClass*
+	{
+		return mono_get_string_class();
+	}
+
+	auto getFloatClass() -> MonoClass*
+	{
+		return mono_get_single_class();
+	}
+
+	auto getDoubleClass() -> MonoClass*
+	{
+		return mono_get_double_class();
+	}
+
+	auto getBoolClass() -> MonoClass*
+	{
+		return mono_get_boolean_class();
+	}
+
+	auto getByteClass() -> MonoClass*
+	{
+		return mono_get_byte_class();
+	}
+
+	auto getSByteClass() -> MonoClass*
+	{
+		return mono_get_sbyte_class();
+	}
+
+	auto getCharClass() -> MonoClass*
+	{
+		return mono_get_char_class();
+	}
+
+	auto getObjectClass() -> MonoClass*
+	{
+		return mono_get_object_class();
+	}
+
 };

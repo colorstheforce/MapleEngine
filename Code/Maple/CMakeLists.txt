@@ -148,7 +148,6 @@ if (${Target} MATCHES "Windows")
 	)
 
 	set_target_properties(lua zlib tinyobjloader tellenc imgui spirvCross ktx spdlog_headers_for_ide stb_image PROPERTIES FOLDER Library)
-
 endif()
 
 

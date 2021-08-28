@@ -3,30 +3,23 @@
 
 #include "Mono.h"
 #include "Others/Console.h"
+#include <unordered_map>
+#include <tuple>
+#include <string>
 
 namespace Maple 
 {
 	struct MonoScriptInstance 
 	{
-		MonoAssembly* assembly = nullptr;
-		MonoImage* image = nullptr;
-		MonoClass* klass = nullptr;
-		MonoObject* object = nullptr;
-		MonoMethod* methodStart = nullptr;
-		MonoMethod* methodUpdate = nullptr;
+		MonoScriptInstance() = default;
+		MonoScriptInstance(const std::string& ns, const std::string& name, const std::string& assembly, const std::function<void()>& initCallback) 
+			:ns(ns),name(name),assembly(assembly),initCallback(initCallback){}
 
-		template<class T>
-		auto setValue(T* value, const std::string& name) -> bool
-		{
-			if (MonoClassField* field = mono_class_get_field_from_name(klass, name.c_str()))
-			{
-				mono_field_set_value(object, field, value);
-				return true;
-			}
-
-			LOGE("Failed to set value for field {0}", name.c_str());
-			return false;
-		}
-
+		std::string ns;//namespace
+		std::string name;
+		std::string assembly;
+		std::function<void()> initCallback;
+		std::shared_ptr<MapleMonoClass> scriptClass;
+		std::shared_ptr<MapleMonoField> thisPtrField;
 	};
 };

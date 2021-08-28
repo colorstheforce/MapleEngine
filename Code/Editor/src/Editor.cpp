@@ -45,6 +45,7 @@
 #include "Engine/Renderer/Renderer2D.h"
 
 #include "EditorPlugin.h"
+#include "Plugin/PluginWindow.h"
 
 #include "Math/BoundingBox.h"
 #include "Math/Ray.h"
@@ -81,6 +82,7 @@ namespace Maple
 		addWindow(HierarchyWindow);
 		addWindow(PropertiesWindow);
 		addWindow(AssetsWindow);
+		addWindow(PluginWindow);
 
 		iconMap[typeid(Transform).hash_code()] = ICON_MDI_VECTOR_LINE;
 		iconMap[typeid(Editor).hash_code()] = ICON_MDI_SQUARE;
@@ -773,14 +775,7 @@ namespace Maple
 			selectedNode = closestEntity;
 			return;
 		}
-
-
-
-
-
 		auto spriteGroup = registry.group<Sprite>(entt::get<Transform>);
-
-
 
 		for (auto entity : spriteGroup)
 		{

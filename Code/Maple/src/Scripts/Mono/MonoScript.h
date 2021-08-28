@@ -6,12 +6,13 @@
 #pragma once
 #include <string>
 #include <cstdint>
+#include <memory>
 
 namespace Maple 
 {
 	class MonoSystem;
 	class MonoComponent;
-	struct MonoScriptInstance;
+	class MapleMonoObject;
 
 	class MonoScript 
 	{
@@ -22,11 +23,11 @@ namespace Maple
 		inline auto getClassName() const { return className; }
 		inline auto getClassNameInEditor() const { return classNameInEditor; }
 	private:
-		MonoScriptInstance * scriptInstance = nullptr;
 		MonoComponent* component = nullptr;
 		uint32_t id = 0;
 		std::string name;
 		std::string className;
 		std::string classNameInEditor;
+		std::shared_ptr<MapleMonoObject> scriptObject;
 	};
 };

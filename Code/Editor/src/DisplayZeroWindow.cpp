@@ -31,7 +31,8 @@ namespace Maple
 	{
 		auto& editor = *static_cast<Editor*>(app);
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 5.f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
 		auto flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 		ImGui::SetNextWindowBgAlpha(0.0f);
 		auto currentScene = app->getSceneManager()->getCurrentScene();
@@ -47,14 +48,14 @@ namespace Maple
 
 			if (camera != nullptr) 
 			{
-				ImVec2 offset = { 0.0f, 0.0f };
+				ImVec2 offset = ImGui::GetCursorPos();
 				drawToolBar();
 				ImGuizmo::SetDrawlist();
 				auto sceneViewSize = ImGui::GetWindowContentRegionMax() - ImGui::GetWindowContentRegionMin() - offset / 2.0f;// - offset * 0.5f;
 				auto sceneViewPosition = ImGui::GetWindowPos() + offset;
+
 				sceneViewSize.x -= static_cast<int>(sceneViewSize.x) % 2 != 0 ? 1.0f : 0.0f;
 				sceneViewSize.y -= static_cast<int>(sceneViewSize.y) % 2 != 0 ? 1.0f : 0.0f;
-
 
 				if (!freeAspect)
 				{
@@ -65,7 +66,7 @@ namespace Maple
 						sceneViewSize.x = sceneViewSize.y * aspect;
 						float xOffset = ((ImGui::GetContentRegionAvail() - sceneViewSize) * 0.5f).x;
 						sceneViewPosition.x += xOffset;
-						ImGui::SetCursorPos({ xOffset, ImGui::GetCursorPosY() + offset.x });
+						ImGui::SetCursorPos({ ImGui::GetCursorPosX() + xOffset, ImGui::GetCursorPosY() });
 						offset.x += xOffset;
 					}
 					else
@@ -74,16 +75,16 @@ namespace Maple
 						float yOffset = ((ImGui::GetContentRegionAvail() - sceneViewSize) * 0.5f).y;
 						sceneViewPosition.y += yOffset;
 
-						ImGui::SetCursorPos({ ImGui::GetCursorPosX(), yOffset + offset.y });
+						ImGui::SetCursorPos({ ImGui::GetCursorPosX(), ImGui::GetCursorPosY()  + yOffset });
 						offset.y += yOffset;
 					}
 				}
 
-				float aspect = static_cast<float>(sceneViewSize.x) / static_cast<float>(sceneViewSize.y);
+				float asp = static_cast<float>(sceneViewSize.x) / static_cast<float>(sceneViewSize.y);
 
-				if (!MathUtils::equals(aspect, camera->getAspectRatio()))
+				if (!MathUtils::equals(asp, camera->getAspectRatio()))
 				{
-					camera->setAspectRatio(aspect);
+					camera->setAspectRatio(asp);
 				}
 
 				resize(static_cast<uint32_t>(sceneViewSize.x), static_cast<uint32_t>(sceneViewSize.y));
@@ -91,7 +92,7 @@ namespace Maple
 					ImGuiHelper::image(previewTexture.get(), { static_cast<uint32_t>(sceneViewSize.x), static_cast<uint32_t>(sceneViewSize.y) });
 				}
 
-				ImGuizmo::SetRect(sceneViewPosition.x, sceneViewPosition.y, sceneViewSize.x, sceneViewSize.y);
+			//	ImGuizmo::SetRect(sceneViewPosition.x, sceneViewPosition.y, sceneViewSize.x, sceneViewSize.y);
 				ImGui::GetWindowDrawList()->PushClipRect(sceneViewPosition, { sceneViewSize.x + sceneViewPosition.x, sceneViewSize.y + sceneViewPosition.y - 2.0f });;
 
 				if (editor.isSceneActive() && !ImGuizmo::IsUsing() && Input::getInput()->isMouseClicked(KeyCode::MouseKey::ButtonLeft))
@@ -110,7 +111,7 @@ namespace Maple
 			this->height =	0;
 		}
 		ImGui::End();
-		ImGui::PopStyleVar();
+		ImGui::PopStyleVar(2);
 	}
 
 	static float stringToAspect(const std::string& aspect)

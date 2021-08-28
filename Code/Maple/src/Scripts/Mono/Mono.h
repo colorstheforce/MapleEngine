@@ -17,3 +17,48 @@
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/exception.h>
 #include <mono/metadata/appdomain.h>
+#include <mono/metadata/tokentype.h>
+#include <mono/metadata/attrdefs.h>
+#include <mono/utils/mono-logger.h>
+#include <memory>
+
+enum class MonoPrimitiveType
+{
+	Boolean,
+	Char,
+	I8,
+	U8,
+	I16,
+	U16,
+	I32,
+	U32,
+	I64,
+	U64,
+	R32,
+	R64,
+	String,
+	ValueType,
+	Class,
+	Array,
+	Generic,
+	Unknown
+};
+
+enum class MonoMemberVisibility 
+{
+	Private,
+	Protected,
+	Internal,
+	ProtectedInternal,
+	Public
+};
+
+namespace Maple {
+	class MapleMonoMethod;
+	class MapleMonoField;
+	class MapleMonoProperty;
+	class MapleMonoClass;
+	class MapleMonoAssembly;
+	class MapleMonoObject;
+	struct MonoScriptInstance;
+};

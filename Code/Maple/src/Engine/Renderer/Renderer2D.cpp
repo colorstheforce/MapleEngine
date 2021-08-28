@@ -248,6 +248,10 @@ namespace Maple
 	auto Renderer2D::beginScene(Scene* scene) -> void
 	{
 		auto camera = scene->getCamera();
+		if (camera.first == nullptr) {
+			return;
+		}
+
 		systemVsUniformBuffer.projView = 
 			camera.first->getProjectionMatrix() * glm::inverse(camera.second->getWorldMatrix());
 	
@@ -273,8 +277,6 @@ namespace Maple
 		std::sort(commands.begin(), commands.end(), [](Command2D & a,Command2D & b) {
 			return a.transform[3][2] < b.transform[3][2];
 		});
-		
-
 	}
 
 	auto Renderer2D::onResize(uint32_t width, uint32_t height) -> void

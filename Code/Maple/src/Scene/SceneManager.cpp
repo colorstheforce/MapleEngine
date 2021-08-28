@@ -9,6 +9,7 @@
 #include "Engine/Camera.h"
 #include "Entity/Entity.h"
 #include "Entity/EntityManager.h"
+#include "Scripts/Mono/MonoSystem.h"
 
 namespace Maple 
 {
@@ -51,8 +52,10 @@ namespace Maple
 
 		currentScene->loadFrom();
 
-		if(app->getEditorState() == EditorState::Play)
+		if (app->getEditorState() == EditorState::Play) {
 			currentScene->onInit();
+		
+		}
 
 		app->onSceneCreated(currentScene);
 

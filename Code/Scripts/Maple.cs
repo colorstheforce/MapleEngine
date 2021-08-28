@@ -250,6 +250,9 @@ namespace Maple
             transform = new Transform(_internal_transform_handle);
         }
 
+        public virtual void OnUpdate(float dt) { }
+        public virtual void OnStart() { }
+
         private NativeHandle _internal_entity_handle;
         private NativeHandle _internal_transform_handle;
 

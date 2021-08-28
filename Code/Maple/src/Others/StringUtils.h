@@ -58,6 +58,9 @@ namespace Maple
 		auto isTextureFile(const std::string& filePath) -> bool;
 		auto isCSharpFile(const std::string& filePath) -> bool;
 
+		auto UTF16ToUTF8(const std::u16string& utf16)->std::string;
+		auto UTF8ToUTF16(const std::string& utf8)->std::u16string;
+
 #ifdef _WIN32
 		static const std::string delimiter = "\\";
 #else

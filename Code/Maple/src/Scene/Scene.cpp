@@ -20,6 +20,8 @@
 #include "Devices/Input.h"
 #include "Others/Serialization.h"
 
+#include "Scripts/Mono/MonoSystem.h"
+
 #include <fstream>
 #include <filesystem>
 
@@ -143,11 +145,11 @@ namespace Maple {
 
 	auto Scene::onInit() -> void
 	{
-		
 		if (initCallback != nullptr) 
 		{
 			initCallback(this);
 		}
+		app->getSystemManager()->getSystem<MonoSystem>()->onStart(this);
 	}
 
 	auto Scene::onClean() -> void

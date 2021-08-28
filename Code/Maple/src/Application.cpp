@@ -33,7 +33,7 @@
 #include <imgui_impl_glfw.h>
 
 #include "Engine/Vulkan/VulkanContext.h"
-
+#include "Scripts/Mono/MonoVirtualMachine.h"
 
 Maple::Application* app;
 
@@ -49,6 +49,7 @@ namespace Maple
 		threadPool			= std::make_unique<ThreadPool>(4);
 		texturePool			= std::make_unique<TexturePool>();
 		luaVm				= std::make_unique<LuaVirtualMachine>();
+		monoVm				= std::make_shared<MonoVirtualMachine>();
 		systemManager		= std::make_unique<SystemManager>();
 	}
 
@@ -59,6 +60,7 @@ namespace Maple
 		timer.start();
 		rendererDevice->init();
 		luaVm->init();
+		monoVm->init();
 
 		auto render = std::make_unique<RenderManager>();
 		render->addRender(std::make_unique<PreProcessRenderer>());

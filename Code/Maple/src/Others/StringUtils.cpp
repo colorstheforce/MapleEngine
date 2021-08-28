@@ -8,7 +8,7 @@
 #include <algorithm>
 #include "StringUtils.h"
 #include "Console.h"
-
+#include <cpp_utf8.h>
 
 #ifdef _WIN32
 #include <direct.h>
@@ -271,6 +271,35 @@ namespace Maple
 		trim(extension);
 		std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c) -> unsigned char { return std::tolower(c); });
 		return extension == "cs";
+	}
+
+	auto StringUtils::UTF16ToUTF8(const std::u16string& utf16) ->std::string
+	{
+		try
+		{
+			std::string outUtf8;
+			utf8::utf16to8(utf16.begin(), utf16.end(), back_inserter(outUtf8));
+			return outUtf8;
+		}
+		catch (...)
+		{
+			return "";
+		}
+	}
+
+	auto StringUtils::UTF8ToUTF16(const std::string& utf8) ->std::u16string
+	{
+		try
+		{
+			std::u16string outUtf16;
+			utf8::utf8to16(utf8.begin(), utf8.end(), back_inserter(outUtf16));
+			return outUtf16;
+		}
+		catch (...)
+		{
+
+		}
+		return u"";
 	}
 
 };

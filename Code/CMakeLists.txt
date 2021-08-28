@@ -32,6 +32,8 @@ add_subdirectory(Scripts)
 file(GLOB VK_APP_SRC
 	${APP_SRC_DIR}/*.cpp
 	${APP_SRC_DIR}/*.h	
+	${APP_SRC_DIR}/Plugin/*.cpp
+	${APP_SRC_DIR}/Plugin/*.h	
 )
 
 file(GLOB GAME_APP_SRC
@@ -82,10 +84,10 @@ add_custom_command(TARGET Editor Game
 )
 
 
-add_custom_command(TARGET Editor Game
-				   POST_BUILD
-	COMMAND powershell Copy-Item ${PROJECT_BINARY_DIR}/Scripts/Debug/MapleLibrary.dll ${GLEW32_OUT_PATH}
-)
+#add_custom_command(TARGET Editor Game
+#				   POST_BUILD
+#	COMMAND powershell Copy-Item ${PROJECT_BINARY_DIR}/Scripts/Debug/MapleLibrary.dll ${GLEW32_OUT_PATH}
+#)
 
 
 target_include_directories(Editor PUBLIC
@@ -130,6 +132,9 @@ target_link_libraries(
 	Game 
 	MapleEngine
 )
+
+
+SET(LIBRARY_OUTPUT_PATH ${ASSET_DIR})
 
 endif()
 

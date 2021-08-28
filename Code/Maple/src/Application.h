@@ -23,8 +23,11 @@
 #include "Scene/System/SystemManager.h"
 #include "Scripts/Lua/LuaVirtualMachine.h"
 
+
 namespace Maple 
 {
+	class MonoVirtualMachine;
+
 	enum class EditorState
 	{
 		Paused,
@@ -93,6 +96,7 @@ namespace Maple
 		inline auto& getTexturePool() { return texturePool; }
 		inline auto& getLuaVirtualMachine() { return luaVm; }
 		inline auto& getSystemManager() { return systemManager; }
+		inline auto& getMonoVm() { return monoVm; }
 	protected:
 
 		std::unique_ptr<NativeWindow> window;
@@ -101,6 +105,7 @@ namespace Maple
 		std::unique_ptr<ThreadPool>	  threadPool;
 		std::unique_ptr<TexturePool>  texturePool;
 		std::unique_ptr<LuaVirtualMachine>  luaVm;
+		std::shared_ptr<MonoVirtualMachine> monoVm;
 		std::unique_ptr<SystemManager> systemManager;
 		std::vector<std::unique_ptr<RenderManager>> renderManagers;
 
