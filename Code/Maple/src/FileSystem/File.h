@@ -49,8 +49,6 @@ namespace Maple
 		auto getFileSize() { return fileSize; }
 		auto getOffset() { return pos; }
 		auto readBytes(int32_t size)->std::unique_ptr<int8_t[]>;
-		auto list() -> const std::vector<std::string>;
-		auto list(std::vector<std::string> & out) -> void;
 		auto cache(const std::vector<uint8_t> & buffer) -> void;
         auto getBuffer() -> std::unique_ptr<int8_t[]>;
 		auto write(const std::string& file) -> void;
@@ -58,6 +56,10 @@ namespace Maple
 		static auto fileExists(const std::string& file) -> bool;
 		static auto removeExtension(const std::string& file) -> std::string;
 		static auto read(const std::string& name)->std::vector<uint8_t>;
+
+		static auto list(const std::function<bool(const std::string&)> & predict = nullptr) -> const std::vector<std::string>;
+		static auto list(std::vector<std::string>& out, const std::function<bool(const std::string&)>& predict = nullptr) -> void;
+		static auto listFolder(const std::string & path,std::vector<std::string>& out, const std::function<bool(const std::string&)>& predict = nullptr) -> void;
 
 		static auto getFileType(const std::string& path)->FileType;
 

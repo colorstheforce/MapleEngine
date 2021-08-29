@@ -11,6 +11,11 @@ namespace Maple
 
 	}
 
+	MapleMonoObject::~MapleMonoObject()
+	{
+	
+	}
+
 	auto MapleMonoObject::setValue(void* value, const std::string& name) -> void
 	{
 		if (MonoClassField* field = mono_class_get_field_from_name(clazz->clazz, name.c_str()))

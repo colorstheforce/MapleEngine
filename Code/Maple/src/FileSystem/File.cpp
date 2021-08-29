@@ -174,19 +174,45 @@ namespace Maple
 		return (!stat(file.c_str(), &fileInfo)) != 0;
 	}
 
-	auto File::list() -> const std::vector<std::string> {
+	auto File::list(const std::function<bool(const std::string&)>& predict ) -> const std::vector<std::string> {
 		std::vector<std::string> files;
-		list(files);
+		list(files, predict);
 		return files;
 	}
 
-	auto File::list(std::vector<std::string> &out) -> void {
-		if (file.empty()) {
-			return ;
+	auto File::list(std::vector<std::string> &out, const std::function<bool(const std::string&)>& predict) -> void {
+		listFolder("./", out, predict);
+	}
+
+	auto File::listFolder(const std::string& path, std::vector<std::string>& out, const std::function<bool(const std::string&)>& predict) -> void
+	{
+		std::filesystem::path str(path);
+		if (!std::filesystem::exists(str))
+		{
+			LOGE("%s does not exists", path.c_str());
+			return;
+		}
+
+		std::filesystem::directory_entry entry(str);//文件入口
+		if (entry.status().type() == std::filesystem::file_type::directory)
+		{
+			std::filesystem::directory_iterator list(str);
+			for (auto& it : list)
+			{
+				if (it.status().type() == std::filesystem::file_type::directory)
+				{
+					listFolder(it.path().string(), out,predict);
+				}
+				else
+				{
+					if (predict == nullptr || predict(it.path().string()))
+						out.emplace_back(it.path().string());
+				}
+			}
 		}
 	}
 
-    auto File::getFileName(const std::string& file) -> const std::string {
+	auto File::getFileName(const std::string& file) -> const std::string {
 		auto pos = file.find_last_of('/');
 		return file.substr(pos+1);
 	}

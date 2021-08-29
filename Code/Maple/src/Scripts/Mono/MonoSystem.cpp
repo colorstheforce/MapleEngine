@@ -23,7 +23,20 @@ namespace Maple
 {
 	auto MonoSystem::onInit() -> void
 	{
-		MonoVirtualMachine::get()->loadAssembly("./","MapleAssembly.dll");
+		MonoVirtualMachine::get()->loadAssembly("./", "MapleAssembly.dll");
+		handler.compileHandler = [&](RecompileScriptsEvent * event) {
+			auto view = event->scene->getRegistry().view<MonoComponent>();
+			for (auto v : view)
+			{
+				auto& mono = event->scene->getRegistry().get<MonoComponent>(v);
+				for (auto& script : mono.getScripts())
+				{
+					script.second->loadFunction();
+				}
+			}
+			return true;
+		};
+		app->getEventDispatcher().addEventHandler(&handler);
 	}
 
 	auto MonoSystem::onStart(Scene* scene) -> void

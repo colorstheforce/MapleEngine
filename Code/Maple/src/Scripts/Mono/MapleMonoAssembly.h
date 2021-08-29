@@ -65,8 +65,8 @@ namespace Maple
 		MonoImage* monoImage = nullptr;
 		MonoAssembly* monoAssembly = nullptr;
 		uint8_t * debugData = nullptr;
-		bool loaded;
-		bool dependency;
+		bool loaded = false;
+		bool dependency = false;
 
 		mutable std::unordered_map<ClassId, std::shared_ptr<MapleMonoClass>, ClassId::Hash, ClassId::Equals> classes;
 		mutable std::unordered_map<MonoClass*, std::shared_ptr<MapleMonoClass>> classesByRaw;

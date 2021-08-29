@@ -44,6 +44,8 @@
 #include "Engine/Renderer/OmniShadowRenderer.h"
 #include "Engine/Renderer/Renderer2D.h"
 
+#include "Scripts/Mono/MonoVirtualMachine.h"
+
 #include "EditorPlugin.h"
 #include "Plugin/PluginWindow.h"
 
@@ -109,11 +111,17 @@ namespace Maple
 		}
 
 		processIcons();
+
+		MonoVirtualMachine::get()->compileAssembly([&](void*) {
+			MonoVirtualMachine::get()->loadAssembly("./", "MapleAssembly.dll");
+		});
+
 	}
 
 	auto Editor::onImGui() -> void
 	{
 		drawMenu();
+		dialog.onImGui();
 		beginDockSpace();
 		for (auto & win : editorWindows)
 		{
@@ -320,14 +328,11 @@ namespace Maple
 		}
 	}
 
-
-
 	auto Editor::drawPlayButtons() -> void
 	{
 		auto x = (ImGui::GetWindowContentRegionMax().x / 2.0f) - (1.5f * (ImGui::GetFontSize() + ImGui::GetStyle().ItemSpacing.x));
-		//ImGui::SameLine();
-
-		ImGui::Dummy({ x,0 });
+		
+		ImGui::SameLine(x);
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.2f, 0.7f, 0.0f));
 
@@ -340,7 +345,7 @@ namespace Maple
 			if (selected)
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.28f, 0.56f, 0.9f, 1.0f));
 
-			if (ImGui::Button(ICON_MDI_PLAY))
+			if (ImGui::Button(selected ? ICON_MDI_STOP : ICON_MDI_PLAY))
 			{
 				setEditorState(selected ? EditorState::Preview : EditorState::Play);
 
@@ -354,10 +359,7 @@ namespace Maple
 				}
 			}
 
-
 			ImGuiHelper::tooltip("Play");
-
-
 			if (selected)
 				ImGui::PopStyleColor();
 		}
@@ -416,6 +418,19 @@ namespace Maple
 
 				if (ImGui::MenuItem("Save (Ctrl + S)")) {
 					serialize();
+				}
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Scripts")) 
+			{
+				if (ImGui::MenuItem("Compile C# Assembly"))
+				{
+					dialog.show("Compiling ....");
+					MonoVirtualMachine::get()->compileAssembly([&](void*) {
+						dialog.close();
+						MonoVirtualMachine::get()->loadAssembly("./", "MapleAssembly.dll");
+					});
 				}
 				ImGui::EndMenu();
 			}

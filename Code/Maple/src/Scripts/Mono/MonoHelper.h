@@ -12,7 +12,7 @@ namespace Maple::MonoHelper
 {
 	auto executeCommand(const std::string & cmd)->std::string;
 	auto compileScript(const std::string& script, const std::string& dllReference = "") -> bool;
-	auto compileScript(MonoDomain* domain, const std::vector<std::string> & files, const std::string& dllReference = "")->MonoAssembly*;
+	auto compileScript(const std::vector<std::string>& files, const std::string& dllReference = "")-> bool;
 	auto getMethod(MonoImage* image, const std::string& method)->MonoMethod*;
 
 	auto getClassName(MonoObject* obj, std::string& ns, std::string& typeName) -> void;

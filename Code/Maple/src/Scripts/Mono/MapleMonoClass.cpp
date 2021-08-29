@@ -184,8 +184,10 @@ namespace Maple
 			const auto sigDesc = mono_signature_get_desc(sig, false);
 			const auto methodName = mono_method_get_name(curClassMethod);
 
+			LOGI("{0}____{1}", sigDesc, methodName);
+
 			auto curMethod = getMethodExact(methodName, sigDesc);
-			cachedMethodList.push_back(curMethod);
+			cachedMethodList.emplace_back(curMethod);
 
 			curClassMethod = mono_class_get_methods(clazz, &iter);
 		}

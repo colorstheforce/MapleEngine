@@ -252,6 +252,7 @@ namespace Maple
 
         public virtual void OnUpdate(float dt) { }
         public virtual void OnStart() { }
+        public virtual void OnDestory() { }
 
         private NativeHandle _internal_entity_handle;
         private NativeHandle _internal_transform_handle;

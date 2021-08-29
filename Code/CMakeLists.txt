@@ -34,6 +34,8 @@ file(GLOB VK_APP_SRC
 	${APP_SRC_DIR}/*.h	
 	${APP_SRC_DIR}/Plugin/*.cpp
 	${APP_SRC_DIR}/Plugin/*.h	
+	${APP_SRC_DIR}/UI/*.cpp
+	${APP_SRC_DIR}/UI/*.h	
 )
 
 file(GLOB GAME_APP_SRC

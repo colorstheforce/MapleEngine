@@ -192,9 +192,9 @@ namespace Maple
 		if (loaded)
 			unload();
 
-		File file(path);
+		File file(path+name);
 		auto buffer = file.getBuffer();
-		auto imageName = StringUtils::getFileName(path);
+		auto imageName = StringUtils::getFileName(name);
 
 
 		MonoImageOpenStatus status = MONO_IMAGE_OK;
@@ -202,7 +202,7 @@ namespace Maple
 
 		if (status != MONO_IMAGE_OK || image == nullptr)
 		{
-			LOGE("Failed loading image data for assembly {0} ", path);
+			LOGE("Failed loading image data for assembly {0}{1}", path,name);
 			return;
 		}
 

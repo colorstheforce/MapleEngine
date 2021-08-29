@@ -7,6 +7,7 @@ set(IMGUI_SRC
 	src/imgui_tables.cpp
 	src/imgui_draw.cpp
 	src/imgui_widgets.cpp
+	src/imgui_widgets_user.cpp
 	src/imgui.cpp
 	src/cimgui.cpp
 	src/imgui_impl_opengl3.cpp

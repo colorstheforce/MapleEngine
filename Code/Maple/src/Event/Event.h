@@ -20,6 +20,7 @@
 
 namespace Maple
 {
+	class Scene;
 	enum class EventType 
 	{
 		None,
@@ -38,6 +39,7 @@ namespace Maple
 		MouseMove,
 		MouseScrolled,
 		DeferredType,
+		RecompileScripts
 	};
 
 	class Event 
@@ -45,6 +47,13 @@ namespace Maple
 	public:
 		virtual auto getType() const -> EventType = 0;
 		virtual auto getName() const -> const char * = 0;
+	};
+
+	class RecompileScriptsEvent : public Event
+	{
+	public:
+		Scene* scene = nullptr;
+		GENERATE_EVENT_CLASS_TYPE(RecompileScripts);
 	};
 
 	class MouseMoveEvent : public Event

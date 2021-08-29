@@ -10,6 +10,7 @@
 #include "Scene/Component/Transform.h"
 #include "Engine/CameraController.h"
 #include "FileSystem/File.h"
+#include "UI/LoadingDialog.h"
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
 
@@ -112,6 +113,7 @@ namespace Maple
 		std::shared_ptr<TextureAtlas> textureAtlas;
 		std::vector<std::unique_ptr<EditorPlugin>> plugins;
 
+		LoadingDialog dialog;
 
 	private:
 		bool transitioningCamera = false;

@@ -75,9 +75,8 @@ namespace Maple::MonoHelper
 		return false;
 	}
 
-	auto compileScript(MonoDomain* domain, const std::vector<std::string>& files, const std::string& dllReference /*= ""*/) -> MonoAssembly *
+	auto compileScript(const std::vector<std::string>& files, const std::string& dllReference /*= ""*/) -> bool
 	{
-		const std::string dirScripts = "scripts/";
 #ifdef _WIN32
 		const std::string dirCompiler = "..\\Toolchains\\mono\\roslyn\\csc.exe";
 #else
@@ -121,9 +120,8 @@ namespace Maple::MonoHelper
 		if (compilationResult)
 		{
 			LOGI("Successfully compiled C# Script \"{0}\"", script);
-			return mono_domain_assembly_open(domain, "MapleAssembly.dll");
 		}
-		return nullptr;
+		return compilationResult;
 	}
 
 

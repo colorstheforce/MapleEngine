@@ -36,6 +36,10 @@ namespace Maple
 		std::function<bool(CharInputEvent*)> charInputHandler;
 		std::function<bool(DeferredTypeEvent*)> deferredTypeHandler;
 
+		std::function<bool(RecompileScriptsEvent*)> compileHandler;
+
+
+
 
 		auto remove() -> void;
 

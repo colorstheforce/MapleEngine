@@ -14,6 +14,7 @@ namespace Maple
 	{
 	public:
 		MapleMonoObject(MonoObject* rawPtr, MapleMonoClass * clazz);
+		~MapleMonoObject();
 		inline auto getRawPtr() { return rawPtr; }
 		inline auto getRawPtr() const { return rawPtr; }
 

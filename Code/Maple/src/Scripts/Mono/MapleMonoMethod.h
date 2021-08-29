@@ -7,7 +7,8 @@
 #include "Mono.h"
 #include <string>
 #include <vector>
-
+#include <tuple>
+#include <utility>
 namespace Maple
 {
 	class MapleMonoMethod 
@@ -16,8 +17,28 @@ namespace Maple
 	public:
 		~MapleMonoMethod();
 		MapleMonoMethod(MonoMethod* method);
-		auto invoke(MonoObject* instance, void** params) ->MonoObject*;
-		auto invokeVirtual(MonoObject* instance, void** params)->MonoObject*;
+		auto invoke(MonoObject* instance, void** params = nullptr) ->MonoObject*;
+		auto invokeVirtual(MonoObject* instance, void** params = nullptr)->MonoObject*;
+
+	
+		template<typename ...Args>
+		inline auto invokeVirtual(MonoObject* instance, Args ...args)
+		{
+			void* params[sizeof...(Args)] = {};
+			auto a = std::forward_as_tuple(args...);
+			packParams(params, a);
+			return invokeVirtual(instance, params);
+		}
+
+
+		template<typename ...Args>
+		inline auto invoke(MonoObject* instance, Args ...args)
+		{
+			void* params[sizeof...(Args)] = {};
+			auto a = std::forward_as_tuple(args...);
+			packParams(params, a);
+			return invoke(instance, params);
+		}
 
 		/**
 		 * Gets a thunk for this method. A thunk is a C++ like function pointer that you can use for calling the method.
@@ -49,5 +70,20 @@ namespace Maple
 		mutable uint32_t cachedNumParameters = 0;
 		mutable bool _static = false;
 		mutable bool hasCachedSignature = false;
+
+
+	private:
+		template<size_t I = 0, typename ...Tp>
+		inline typename std::enable_if_t<I == sizeof ...(Tp)> packParams(void**,  std::tuple<Tp ...>& t)
+		{
+		}
+
+		template<size_t I = 0, typename ...Tp>
+		inline typename std::enable_if_t < I < sizeof ...(Tp)> packParams(void** param,  std::tuple<Tp ...>& t)
+		{
+			param[I] = (void*)(&std::get<I>(t));
+			packParams<I + 1, Tp...>(param, t);
+		}
+
 	};
 };

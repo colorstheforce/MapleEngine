@@ -5,6 +5,7 @@
 
 #pragma once
 #include "Scene/System/ISystem.h"
+#include "Event/EventHandler.h"
 #include <unordered_map>
 #include <memory>
 
@@ -37,5 +38,7 @@ namespace Maple
 		std::unordered_map<uint32_t, std::shared_ptr<MonoScriptInstance>> scripts;
 		uint32_t scriptId = SCRIPT_NOT_LOADED;
 		bool assemblyCompiled = false;
+
+		EventHandler handler;
 	};
 };

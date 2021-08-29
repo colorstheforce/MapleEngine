@@ -10,6 +10,7 @@
 #include "Others/StringUtils.h"
 #include "Others/Console.h"
 
+#include "FileSystem/File.h"
 #include "Application.h"
 
 namespace Maple
@@ -196,6 +197,7 @@ namespace Maple
 		}
 
 		initializeAssembly(assembly);
+		LOGV("loadAssembly...");
 		return assembly;
 	}
 
@@ -230,9 +232,7 @@ namespace Maple
 	{
 		if (scriptDomain != nullptr)
 		{
-
 			mono_domain_set(mono_get_root_domain(), true);
-
 			MonoObject* exception = nullptr;
 			mono_domain_try_unload(scriptDomain, &exception);
 
@@ -257,5 +257,23 @@ namespace Maple
 		assemblies.clear();
 		assemblies["corlib"] = corlibAssembly;
 	}
+
+	auto MonoVirtualMachine::compileAssembly(const std::function<void(void*)>& callback) -> void
+	{
+		LOGV("compileAssembly...");
+		unloadScriptDomain();
+		app->getThreadPool()->addTask([=]() -> void*{
+			std::vector<std::string> out;
+			File::list(out, [](const std::string& str) -> bool {
+				return StringUtils::endWith(str, ".cs");
+			});
+			MonoHelper::compileScript(out, "MapleLibrary.dll");
+			auto event = std::make_unique<RecompileScriptsEvent>();
+			event->scene = app->getSceneManager()->getCurrentScene();
+			app->getEventDispatcher().postEvent(std::move(event));
+			return nullptr;
+		}, callback);
+	}
+		
 
 };

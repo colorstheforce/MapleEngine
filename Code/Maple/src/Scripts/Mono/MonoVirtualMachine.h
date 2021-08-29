@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <memory>
 #include <string>
-
+#include <functional>
 #include "Mono.h"
 
 namespace Maple
@@ -18,6 +18,7 @@ namespace Maple
 		MonoVirtualMachine();
 		~MonoVirtualMachine();
 
+		auto compileAssembly(const std::function<void(void*)> & callback) -> void;
 
 		auto loadAssembly(const std::string & path, const std::string & name) -> std::shared_ptr<MapleMonoAssembly>;
 		auto initializeAssembly(std::shared_ptr<MapleMonoAssembly> assembly) -> void;
