@@ -9,27 +9,33 @@
 #include "ktx.h"
 #include <memory>
 #include <string>
+#include "Engine/Core.h"
 
 namespace Maple
 {
 	class FrameBuffer;
 	class CommandBuffer;
 
-	class Texture {
+	class MAPLE_EXPORT Texture {
 	public:
+		Texture() = default;
+		Texture(const std::string& id) {};
 		virtual ~Texture() = default;
 		inline auto getWidth() const { return width; }
 		inline auto getHeight() const { return height; }
+		
 
-		virtual auto getHandle() const -> void* = 0;
-		virtual auto bind(uint32_t slot = 0) const -> void	 = 0 ;
-		virtual auto unbind(uint32_t slot = 0) const -> void = 0 ;
+		//implement by user
+		virtual auto getHandle() const -> void* { return nullptr; };
+		virtual auto bind(uint32_t slot = 0) const -> void { };
+		virtual auto unbind(uint32_t slot = 0) const -> void { };
+
 	protected:
 		uint32_t width = 0;
 		uint32_t height = 0;
 	};
 
-	class Texture2D : public Texture {
+	class MAPLE_EXPORT Texture2D : public Texture {
 	public:
 		static auto getDefaultTexture()->std::shared_ptr<Texture2D>;
 		static auto create(const std::string& name, const std::string& fileName)->std::shared_ptr<Texture2D>;
@@ -50,14 +56,14 @@ namespace Maple
 		uint32_t mipLevels = 1;
 	};
 
-	class TextureDepth : public Texture
+	class MAPLE_EXPORT TextureDepth : public Texture
 	{
 	public:
 		static auto create(uint32_t width, uint32_t height)->std::shared_ptr<TextureDepth>;
 		virtual auto resize(uint32_t width, uint32_t height) -> void = 0;
 	};
 
-	class TextureCube : public Texture
+	class MAPLE_EXPORT TextureCube : public Texture
 	{
 	public:
 		enum class InputFormat
@@ -79,7 +85,7 @@ namespace Maple
 	};
 
 
-	class TextureDepthArray : public Texture
+	class MAPLE_EXPORT TextureDepthArray : public Texture
 	{
 	public:
 		static auto create(uint32_t width, uint32_t height, uint32_t count)->std::shared_ptr<TextureDepthArray>;

@@ -11,7 +11,7 @@ namespace Maple
 {
 	class CameraController;
 
-	class CameraControllerComponent : public Component
+	class MAPLE_EXPORT CameraControllerComponent : public Component
 	{
 	public:
 		enum class ControllerType : int32_t

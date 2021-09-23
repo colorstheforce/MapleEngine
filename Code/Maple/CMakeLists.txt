@@ -21,7 +21,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 
 add_subdirectory(lib/spdlog)
-add_subdirectory(lib/imgui)
 add_subdirectory(lib/stb_image)
 add_subdirectory(lib/tinyobjloader)
 add_subdirectory(lib/SPIRV-Cross)
@@ -29,6 +28,7 @@ add_subdirectory(lib/ktx)
 add_subdirectory(lib/charset-detect)
 add_subdirectory(lib/zlib)
 add_subdirectory(lib/lua)
+add_subdirectory(lib/tracy)
 
 file(GLOB SHADERS_GLSL 
 	"${ENGINE_ASSET_DIR}/shaders/*.vert" 
@@ -36,6 +36,20 @@ file(GLOB SHADERS_GLSL
 	"${ENGINE_ASSET_DIR}/shaders/*.bat" 
 )
 
+file(GLOB IMGUI_SRC 
+	${ENGINE_LIB_SRC_DIR}/imgui/src/imgui_tables.cpp
+	${ENGINE_LIB_SRC_DIR}/imgui/src/imgui_draw.cpp
+	${ENGINE_LIB_SRC_DIR}/imgui/src/imgui_widgets.cpp
+	${ENGINE_LIB_SRC_DIR}/imgui/src/imgui_widgets_user.cpp
+	${ENGINE_LIB_SRC_DIR}/imgui/src/imgui.cpp
+	${ENGINE_LIB_SRC_DIR}/imgui/src/imgui_impl_opengl3.cpp
+	${ENGINE_LIB_SRC_DIR}/imgui/src/imgui_impl_opengl3.cpp
+	${ENGINE_LIB_SRC_DIR}/imgui/src/TextEditor.cpp
+	${ENGINE_LIB_SRC_DIR}/imgui/src/imgui_impl_vulkan.cpp
+	${ENGINE_LIB_SRC_DIR}/imgui/src/imgui_impl_glfw.cpp
+	${ENGINE_LIB_SRC_DIR}/imgui/src/ImGuizmo.cpp
+	${ENGINE_LIB_SRC_DIR}/imgui/src/cimgui.cpp
+)
 
 file(GLOB VK_APP_SRC
 	src/*.cpp
@@ -94,8 +108,10 @@ if (${Target} MATCHES "Windows")
 		-D_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES 
 		-DPLATFORM_WINDOWS
 		-DPLATFORM_DESKTOP
-		-DGLM_FORCE_DEPTH_ZERO_TO_ONE 
-		-DTOOLS_DIR=${TOOL_CHAIN_DIR}
+		-DGLM_FORCE_DEPTH_ZERO_TO_ONE
+		-DMAPLE_DYNAMIC
+		-DMAPLE_ENGINE
+		-DMAPLE_PROFILE
 	)
 
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -104,8 +120,10 @@ if (${Target} MATCHES "Windows")
 
 	source_group("Shaders\\GLSL" FILES ${SHADERS_GLSL})
 
-	add_library(MapleEngine ${VK_APP_SRC} ${KTX_SOURCES} ${SHADERS_GLSL})
+	add_library(MapleEngine SHARED ${VK_APP_SRC} ${KTX_SOURCES} ${SHADERS_GLSL} ${IMGUI_SRC})
 
+	SET_TARGET_PROPERTIES(MapleEngine PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ASSET_DIR})
+	#set(LIBRARY_OUTPUT_PATH ${ASSET_DIR})
 	target_include_directories(MapleEngine PUBLIC
 		src
 		${ENGINE_LIB_SRC_DIR}/opengl/include
@@ -126,16 +144,18 @@ if (${Target} MATCHES "Windows")
 		${ENGINE_LIB_SRC_DIR}/LuaBridge
 		${ENGINE_LIB_SRC_DIR}/lua/include
 		${ENGINE_LIB_SRC_DIR}/libmono/6.13.0/include
+		${ENGINE_LIB_SRC_DIR}/tracy
 	)
 
 	target_link_libraries(MapleEngine 
 		${ENGINE_LIB_SRC_DIR}/opengl/lib/${Arch}/glfw3.lib
 		${ENGINE_LIB_SRC_DIR}/opengl/lib/${Arch}/opengl32.lib
+		${ENGINE_LIB_SRC_DIR}/opengl/lib/${Arch}/glew.lib
 		${ENGINE_LIB_SRC_DIR}/vulkan/lib/${Arch}/vulkan-1.lib
 		${ENGINE_LIB_SRC_DIR}/vulkan/lib/${Arch}/VkLayer_utils.lib
 		${ENGINE_LIB_SRC_DIR}/libmono/6.13.0/windows/${Arch}/libmono-static-sgen.lib
 		tinyobjloader
-		imgui
+		#imgui
 		spirvCross
 		ktx
 		tellenc
@@ -145,9 +165,12 @@ if (${Target} MATCHES "Windows")
 		Winmm
 		Version
 		Bcrypt
+		TracyClient
 	)
 
-	set_target_properties(lua zlib tinyobjloader tellenc imgui spirvCross ktx spdlog_headers_for_ide stb_image PROPERTIES FOLDER Library)
+	set_target_properties(lua zlib tinyobjloader tellenc spirvCross ktx spdlog_headers_for_ide stb_image TracyClient PROPERTIES FOLDER Library)
+	
+
 endif()
 
 

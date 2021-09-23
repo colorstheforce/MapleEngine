@@ -21,7 +21,7 @@ namespace Maple
 	class Transform;
 	class TextureCube;
 
-	class OmniShadowRenderer : public Renderer
+	class MAPLE_EXPORT OmniShadowRenderer : public Renderer
 	{
 	public:
 		OmniShadowRenderer(const std::shared_ptr<TextureCube> & texture = nullptr, uint32_t size = 1024);

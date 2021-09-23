@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "Engine/Core.h"
 #include <unordered_map>
 #include <memory>
 #include <string>
@@ -12,7 +13,7 @@
 
 namespace Maple
 {
-	class MonoVirtualMachine final
+	class MAPLE_EXPORT MonoVirtualMachine final
 	{
 	public:
 		MonoVirtualMachine();

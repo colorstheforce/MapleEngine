@@ -7,14 +7,15 @@
 #include "Others/Console.h"
 #include "Application.h"
 
-extern Maple::Application * createApplication();
+
+extern Maple::Application* createApplication();
 
 auto main() -> int32_t
 {
 	Maple::Console::init();
-	app = createApplication();
-	auto retCode = app->start();
-	delete app;
+	Maple::Application::app = createApplication();
+	auto retCode = Maple::Application::app->start();
+	delete Maple::Application::app;
 	return retCode;
 }
 

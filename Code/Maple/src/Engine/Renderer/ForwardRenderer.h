@@ -9,16 +9,17 @@
 #include <glm/glm.hpp>
 #include "RenderParam.h"
 #include "Renderer.h"
+#include "Engine/Interface/DescriptorSet.h"
 
 namespace Maple 
 {
-	class VulkanDescriptorSet;
-	class VulkanUniformBuffer;
+
+	class UniformBuffer;
 	class Texture2D;
-	class VulkanFrameBuffer;
+	class FrameBuffer;
 	class Camera;
 
-	class ForwardRenderer : public Renderer
+	class MAPLE_EXPORT ForwardRenderer : public Renderer
 	{
 	public:
 		ForwardRenderer() = default;
@@ -51,14 +52,14 @@ namespace Maple
 		auto createFrameBuffers() -> void;
 
 	
-		std::vector<std::shared_ptr<VulkanUniformBuffer>> uniformBuffers;
-		std::vector<std::shared_ptr<VulkanUniformBuffer>> lightUniformBuffers;
-		std::vector<std::shared_ptr<VulkanUniformBuffer>> materialUniformBuffers;
+		std::vector<std::shared_ptr<UniformBuffer>> uniformBuffers;
+		std::vector<std::shared_ptr<UniformBuffer>> lightUniformBuffers;
+		std::vector<std::shared_ptr<UniformBuffer>> materialUniformBuffers;
 
 		UniformBufferObject systemVsUniformBuffer;
 		uint32_t bufferId = 0;
 	
-		std::unique_ptr<VulkanDescriptorSet> descriptorSet;
+		std::unique_ptr<DescriptorSet> descriptorSet;
 
 		std::shared_ptr<Texture2D> defaultTexture;
 

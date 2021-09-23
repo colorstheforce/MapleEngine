@@ -8,6 +8,7 @@
 #include <typeinfo>
 #include "Engine/Core.h"
 #include "ISystem.h"
+#include "Others/Console.h"
 
 namespace Maple
 {

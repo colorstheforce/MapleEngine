@@ -7,12 +7,11 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <algorithm>
-
+#include "Engine/Core.h"
 namespace Maple
 {
 
-	
-	class Frustum
+	class MAPLE_EXPORT Frustum
 	{
 	public:
 

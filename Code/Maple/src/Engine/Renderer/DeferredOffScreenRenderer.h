@@ -19,7 +19,7 @@ namespace Maple
 	class Camera;
 	class Material;
 
-	class DeferredOffScreenRenderer : public Renderer
+	class MAPLE_EXPORT DeferredOffScreenRenderer : public Renderer
 	{
 	public:
 		DeferredOffScreenRenderer() = default;

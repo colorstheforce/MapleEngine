@@ -230,7 +230,7 @@ namespace Maple
 
 		renderPass->endRenderpass(cmd);
 
-		//app->getRenderDevice()->present(commandBuffers[wd->FrameIndex].get());
+		//Application::get()->getRenderDevice()->present(commandBuffers[wd->FrameIndex].get());
 	}
 
 	auto VkImGUIRenderer::rebuildFontTexture() -> void

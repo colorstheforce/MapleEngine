@@ -118,7 +118,7 @@ namespace Maple
 
 /*
 		if (renderTexture == nullptr) {
-			app->getRenderDevice()->present(commandBuffers[VulkanContext::get()->getSwapChain()->getCurrentBuffer()].get());
+			Application::get()->getRenderDevice()->present(commandBuffers[VulkanContext::get()->getSwapChain()->getCurrentBuffer()].get());
 		}*/
 
 	}

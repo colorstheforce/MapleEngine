@@ -12,7 +12,7 @@ namespace Maple
 {
 	class Camera;
 
-	class CameraController
+	class MAPLE_EXPORT CameraController
 	{
 	public:
 		CameraController() = default;
@@ -47,7 +47,7 @@ namespace Maple
 
 
 
-	class EditorCameraController : public CameraController
+	class MAPLE_EXPORT EditorCameraController : public CameraController
 	{
 	public:
 		EditorCameraController();

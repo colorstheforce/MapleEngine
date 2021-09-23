@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "EventDispatcher.h"
 #include "Application.h"
+#include "Engine/Profiler.h"
 
 namespace Maple
 {
@@ -31,6 +32,7 @@ namespace Maple
 
 	auto EventDispatcher::addEventHandler(EventHandler *eventHandler) -> void
 	{
+		PROFILE_FUNCTION();
 		if (eventHandler->eventDispatcher)
 			eventHandler->eventDispatcher->removeEventHandler(eventHandler);
 
@@ -46,6 +48,7 @@ namespace Maple
 
 	auto EventDispatcher::removeEventHandler(EventHandler *eventHandler) -> void
 	{
+		PROFILE_FUNCTION();
 		if (eventHandler->eventDispatcher == this)
 			eventHandler->eventDispatcher = nullptr;
 
@@ -59,6 +62,7 @@ namespace Maple
 
 	auto EventDispatcher::dispatchEvent(std::unique_ptr<Event> &&event) -> bool
 	{
+		PROFILE_FUNCTION();
 		if (!event)
 			return false;
 
@@ -125,6 +129,7 @@ namespace Maple
 
 	auto EventDispatcher::postEvent(std::unique_ptr<Event> &&event) -> std::future<bool>
 	{
+		PROFILE_FUNCTION();
 		std::promise<bool> promise;
 		std::future<bool> future = promise.get_future();
 		std::unique_lock<std::mutex> lock(eventQueueMutex);
@@ -134,6 +139,7 @@ namespace Maple
 
 	auto EventDispatcher::dispatchEvents() -> void
 	{
+		PROFILE_FUNCTION();
 		//# clear handler what wait for delete
 		for (EventHandler *eventHandler : eventHandlerDeleteSet)
 		{

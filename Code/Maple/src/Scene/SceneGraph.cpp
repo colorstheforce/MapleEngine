@@ -5,7 +5,7 @@
 #include "SceneGraph.h"
 #include "Component/Component.h"
 #include "Component/Transform.h"
-
+#include "Engine/Profiler.h"
 namespace Maple 
 {
 	auto SceneGraph::init(entt::registry& registry) -> void
@@ -25,6 +25,7 @@ namespace Maple
 
 	auto SceneGraph::update(entt::registry& registry)  -> void
 	{
+		PROFILE_FUNCTION();
 		auto nonHierarchyView = registry.view<Transform>(entt::exclude<Hierarchy>);
 
 		for (auto entity : nonHierarchyView)
@@ -47,6 +48,7 @@ namespace Maple
 
 	auto SceneGraph::updateTransform(entt::entity entity, entt::registry& registry)  -> void
 	{
+		PROFILE_FUNCTION();
 		auto hierarchyComponent = registry.try_get<Hierarchy>(entity);
 		if (hierarchyComponent)
 		{

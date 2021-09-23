@@ -7,12 +7,12 @@
 #pragma once
 #include "QuadTree.h"
 #include "Quad2D.h"
-
+#include "Engine/Core.h"
 
 namespace Maple
 {
 	class Texture;
-	class TextureAtlas
+	class MAPLE_EXPORT TextureAtlas
 	{
 	public:
 		TextureAtlas(uint32_t w = 4096, uint32_t h = 4096);

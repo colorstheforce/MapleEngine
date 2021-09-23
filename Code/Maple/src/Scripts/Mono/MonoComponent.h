@@ -11,7 +11,7 @@ namespace Maple
 {
 	class MonoScript;
 	class MonoSystem;
-	class MonoComponent : public Component
+	class MAPLE_EXPORT MonoComponent : public Component
 	{
 	public:
 		auto addScript(const std::string& name, MonoSystem * system) -> void;

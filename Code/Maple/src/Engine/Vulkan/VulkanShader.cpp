@@ -150,6 +150,7 @@ namespace Maple
 	}
 
 	VulkanShader::VulkanShader(const std::string& path)
+		:Shader(path)
 	{
 
 		auto buffer = File::read(path);

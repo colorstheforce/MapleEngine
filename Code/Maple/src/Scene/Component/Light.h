@@ -25,7 +25,7 @@ namespace Maple
 		float angle;
 	};
 
-	class Light : public Component
+	class MAPLE_EXPORT Light : public Component
 	{
 	public:
 		// Construct.

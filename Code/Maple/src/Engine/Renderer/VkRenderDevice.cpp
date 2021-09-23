@@ -30,7 +30,7 @@ namespace Maple
 
 	auto VkRenderDevice::init() -> void
 	{
-		auto nativeWindow = app->getWindow()->getNativeInterface();
+		auto nativeWindow = Application::get()->getWindow()->getNativeInterface();
 		VulkanContext::get()->init();
 		VulkanContext::get()->createSurface((GLFWwindow*)nativeWindow);
 		VulkanDevice::get()->init();

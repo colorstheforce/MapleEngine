@@ -8,7 +8,7 @@
 #include <string>
 #include <stdarg.h>
 #include <spdlog/spdlog.h>
-
+#include "Engine/Core.h"
 struct lua_State;
 
 namespace Maple 
@@ -18,7 +18,7 @@ namespace Maple
 		auto exportLua(lua_State* L) -> void;
 	};
 
-	class Console
+	class MAPLE_EXPORT Console
 	{
 	public:
 		static auto init() -> void;

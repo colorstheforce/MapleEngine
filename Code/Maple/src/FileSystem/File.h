@@ -10,7 +10,7 @@
 #include <memory>
 #include <functional>
 #include <filesystem>
-
+#include "Engine/Core.h"
 namespace Maple
 {
 
@@ -37,7 +37,7 @@ namespace Maple
 
 
 
-	class File
+	class MAPLE_EXPORT File
 	{
 	public:
 		File();

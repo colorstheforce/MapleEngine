@@ -216,11 +216,11 @@ namespace Maple::MonoHelper
 			MonoMethod* exceptionMsgGetter = mono_property_get_get_method(exceptionMsgProp);
 			MonoString* exceptionMsg = (MonoString*)mono_runtime_invoke(exceptionMsgGetter, exception, nullptr, nullptr);
 
-			MonoProperty* exceptionStackProp = mono_class_get_property_from_name(exceptionClass, "StackTrace");
+		/*	MonoProperty* exceptionStackProp = mono_class_get_property_from_name(exceptionClass, "StackTrace");
 			MonoMethod* exceptionStackGetter = mono_property_get_get_method(exceptionStackProp);
-			MonoString* exceptionStackTrace = (MonoString*)mono_runtime_invoke(exceptionStackGetter, exception, nullptr, nullptr);
+			MonoString* exceptionStackTrace = (MonoString*)mono_runtime_invoke(exceptionStackGetter, exception, nullptr, nullptr);*/
 			// Note: If you modify this format make sure to also modify Debug.ParseExceptionMessage in managed code.
-			auto msg = "Managed exception: " + monoToString(exceptionMsg) + "\n" + monoToString(exceptionStackTrace);
+			auto msg = "Managed exception: " + monoToString(exceptionMsg);// +"\n" + monoToString(exceptionStackTrace);
 			LOGE(msg);
 		}
 	}

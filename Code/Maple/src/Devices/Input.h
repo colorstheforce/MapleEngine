@@ -8,7 +8,7 @@
 #include "Event/Event.h"
 #include "KeyCodes.h"
 #include "Event/EventHandler.h"
-
+#include "Engine/Core.h"
 #define MAX_KEYS	1024
 #define MAX_BUTTONS	32
 
@@ -16,7 +16,7 @@ namespace Maple
 {
 	class Event;
 
-	class Input
+	class MAPLE_EXPORT Input
 	{
 	public:
 		virtual ~Input() = default;

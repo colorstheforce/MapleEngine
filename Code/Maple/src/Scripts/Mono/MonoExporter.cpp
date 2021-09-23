@@ -27,33 +27,33 @@ namespace Maple::MonoExporter
 
 	static auto LogV(MonoString* monoString) -> void
 	{
-		LOGE("{0}", mono_string_to_utf8(monoString));
+		LOGV("{0}", mono_string_to_utf8(monoString));
 	}
 
 	static auto LogV_Float(float v) -> void
 	{
-		LOGE("{0}", v);
+		LOGV("{0}", v);
 	}
 
 	static auto LogW(MonoString* monoString) -> void
 	{
-		LOGE("{0}", mono_string_to_utf8(monoString));
+		LOGW("{0}", mono_string_to_utf8(monoString));
 	}
 
 
 	static auto LogW_Float(float v) -> void
 	{
-		LOGE("{0}", v);
+		LOGW("{0}", v);
 	}
 
 	static auto LogC(MonoString* monoString) -> void
 	{
-		LOGE("{0}", mono_string_to_utf8(monoString));
+		LOGC("{0}", mono_string_to_utf8(monoString));
 	}
 
 	static auto LogC_Float(float v) -> void
 	{
-		LOGE("{0}", v);
+		LOGC("{0}", v);
 	}
 
 
@@ -67,7 +67,7 @@ namespace Maple::MonoExporter
 		};
 	}
 
-	static void Transform_SetPosition(void* handle, ExportVector3 v) {
+	static void Transform_SetPosition(void* handle, const ExportVector3 & v) {
 		static_cast<Transform*>(handle)->setLocalPosition({ v.x, v.y, v.z });
 	}
 
@@ -82,7 +82,7 @@ namespace Maple::MonoExporter
 		};
 	}
 
-	static auto Input_IsMouseClicked(const KeyCode::MouseKey  key) {
+	static auto Input_IsMouseClicked(const KeyCode::MouseKey key) {
 		return Input::getInput()->isMouseClicked(key);
 	}
 

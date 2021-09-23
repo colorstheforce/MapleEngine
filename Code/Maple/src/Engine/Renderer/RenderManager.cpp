@@ -9,6 +9,7 @@
 #include "Engine/Camera.h"
 #include "Window/NativeWindow.h"
 #include "Scene/Scene.h"
+#include "Engine/Profiler.h"
 
 namespace Maple 
 {
@@ -30,6 +31,7 @@ namespace Maple
 
 	auto RenderManager::beginScene(Scene* scene) -> void
 	{
+		PROFILE_FUNCTION();
 		for (auto& render : renders)
 		{
 			render->beginScene(scene);
@@ -49,14 +51,15 @@ namespace Maple
 		scene->onUpdate(step);
 	}
 
-	auto RenderManager::addRender(std::unique_ptr<Renderer>&& render) -> void
+	auto RenderManager::addRender(const std::shared_ptr<Renderer>& render) -> void
 	{
 		render->setRenderManager(this);
-		renders.emplace_back(std::move(render));
+		renders.emplace_back(render);
 	}
 
 	auto RenderManager::onImGui() -> void
 	{
+		PROFILE_FUNCTION();
 		for (auto & renderer : renders)
 		{
 			renderer->onImGui();
@@ -74,7 +77,7 @@ namespace Maple
 		}
 
 		if(debug)
-			app->getDebugRenderer().onResize(width, height);
+			Application::get()->getDebugRenderer().onResize(width, height);
 	}
 
 	auto RenderManager::setRenderTarget(std::shared_ptr<Texture>  texture,bool rebuildTexture, bool debug) -> void
@@ -84,6 +87,6 @@ namespace Maple
 			render->setRenderTarget(texture, rebuildTexture);
 		}
 		if (debug)
-			app->getDebugRenderer().setRenderTarget(texture, rebuildTexture);
+			Application::get()->getDebugRenderer().setRenderTarget(texture, rebuildTexture);
 	}
 };

@@ -8,7 +8,7 @@ namespace Maple
 
 	Sprite::Sprite(const std::string& uniqueName, const std::vector<uint8_t>& data, uint32_t width, uint32_t height)
 	{
-		if (auto q = app->getTexturePool()->addSprite(uniqueName, data, width, height)) {
+		if (auto q = Application::get()->getTexturePool()->addSprite(uniqueName, data, width, height)) {
 			quad = *q;
 		}
 	}
@@ -36,7 +36,7 @@ namespace Maple
 
 	auto Sprite::loadQuad(const std::string& path) -> void
 	{
-		if (auto q = app->getTexturePool()->addSprite(path)) {
+		if (auto q = Application::get()->getTexturePool()->addSprite(path)) {
 			quad = *q;
 		}
 	}
@@ -49,7 +49,7 @@ namespace Maple
 
 	auto AnimatedSprite::addFrame(const std::vector<uint8_t>& data, uint32_t width, uint32_t height, float delay, const std::string& uniqueKey, float xOffset, float yOffset, uint32_t color) -> void
 	{
-		auto quad = app->getTexturePool()->addSprite(uniqueKey, data, width, height);
+		auto quad = Application::get()->getTexturePool()->addSprite(uniqueKey, data, width, height);
 		if (quad != nullptr)
 		{
 			auto& back = animationFrames.emplace_back();

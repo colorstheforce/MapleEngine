@@ -31,7 +31,7 @@ namespace Maple
 	};
 
 
-	class Model final : public Component
+	class MAPLE_EXPORT Model final : public Component
 	{
 	public:
 		Model() = default;
@@ -56,7 +56,7 @@ namespace Maple
 		std::shared_ptr<MeshResource> resource;
 	};
 
-	class MeshRenderer : public Component
+	class MAPLE_EXPORT MeshRenderer : public Component
 	{
 	public:
 

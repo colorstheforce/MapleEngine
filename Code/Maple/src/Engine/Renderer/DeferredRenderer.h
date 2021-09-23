@@ -24,7 +24,7 @@ namespace Maple
 	class FrameBuffer;
 	class DeferredOffScreenRenderer;
 
-	class DeferredRenderer : public Renderer
+	class MAPLE_EXPORT DeferredRenderer : public Renderer
 	{
 	public:
 		DeferredRenderer() = default;

@@ -5,11 +5,12 @@
 #pragma once
 #include <string>
 #include <entt/entt.hpp>
+#include "Engine/Core.h"
 namespace Maple 
 {
 	//TODO serialize function is not implementation
 	class Entity;
-	class Component 
+	class MAPLE_EXPORT Component
 	{
 	public:
 		virtual ~Component() = default;
@@ -21,7 +22,7 @@ namespace Maple
 		entt::entity entity = entt::null;
 	};
 
-	class NameComponent : public Component
+	class MAPLE_EXPORT NameComponent : public Component
 	{
 	public:
 		NameComponent() = default;
@@ -36,7 +37,7 @@ namespace Maple
 	};
 
 
-	class ActiveComponent : public Component
+	class MAPLE_EXPORT ActiveComponent : public Component
 	{
 	public:
 		ActiveComponent() = default;
@@ -51,7 +52,7 @@ namespace Maple
 
 	
 	//Component - 
-	class Hierarchy : public Component
+	class MAPLE_EXPORT Hierarchy : public Component
 	{
 	public:
 		Hierarchy(entt::entity p);
@@ -95,7 +96,7 @@ namespace Maple
 	class Texture;
 	class Texture2D;
 
-	class Environment : public Component
+	class MAPLE_EXPORT Environment : public Component
 	{
 	public:
 		static constexpr int32_t IrradianceMapSize = 32;

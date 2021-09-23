@@ -7,6 +7,8 @@
 #include <memory>
 #include <list>
 
+#include "Engine/Core.h"
+
 #include "Engine/Renderer/RenderDevice.h"
 #include "ImGui/VkImGUIRenderer.h"
 #include "Engine/Renderer/RenderManager.h"
@@ -36,7 +38,7 @@ namespace Maple
 		Preview
 	};
 
-	class AppDelegate 
+	class MAPLE_EXPORT AppDelegate
 	{
 	public:
 		virtual auto onInit() -> void = 0;
@@ -51,7 +53,7 @@ namespace Maple
 	};
 
 
-	class Application
+	class MAPLE_EXPORT Application
 	{
 	public:
 		Application(AppDelegate * appDelegate);
@@ -97,6 +99,10 @@ namespace Maple
 		inline auto& getLuaVirtualMachine() { return luaVm; }
 		inline auto& getSystemManager() { return systemManager; }
 		inline auto& getMonoVm() { return monoVm; }
+
+
+		static auto get()->Application*;
+		static Application* app;
 	protected:
 
 		std::unique_ptr<NativeWindow> window;
@@ -125,7 +131,9 @@ namespace Maple
 		std::mutex executeMutex;
 
 		std::shared_ptr<AppDelegate> appDelegate;
+
+
+	
 	};
 };
 
-extern Maple::Application * app;

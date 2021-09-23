@@ -419,7 +419,7 @@ namespace Maple
 		}
 
 		int32_t width, height;
-		glfwGetFramebufferSize(static_cast<GLFWwindow*>(app->getWindow()->getNativeInterface()), &width, &height);
+		glfwGetFramebufferSize(static_cast<GLFWwindow*>(Application::get()->getWindow()->getNativeInterface()), &width, &height);
 		VkExtent2D actualExtent = {
 			static_cast<uint32_t>(width),
 			static_cast<uint32_t>(height)

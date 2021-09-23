@@ -23,7 +23,7 @@ namespace Maple
 	constexpr glm::vec3 ONE(1.0f, 1.0f, 1.0f);
 
 
-	class Transform final : public Component
+	class MAPLE_EXPORT Transform final : public Component
 	{
 	public:
 		Transform();
@@ -100,7 +100,7 @@ namespace Maple
 
 
 
-	class BoneWarpper : public Component
+	class MAPLE_EXPORT BoneWarpper : public Component
 	{
 	public:
 		Mesh * mesh;

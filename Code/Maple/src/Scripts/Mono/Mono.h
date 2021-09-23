@@ -21,6 +21,7 @@
 #include <mono/metadata/attrdefs.h>
 #include <mono/utils/mono-logger.h>
 #include <memory>
+#include "Engine/Core.h"
 
 enum class MonoPrimitiveType
 {

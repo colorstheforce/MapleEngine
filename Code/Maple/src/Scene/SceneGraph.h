@@ -10,7 +10,7 @@
 
 namespace Maple
 {
-	class SceneGraph final
+	class MAPLE_EXPORT SceneGraph final
 	{
 	public:
 		SceneGraph() = default;

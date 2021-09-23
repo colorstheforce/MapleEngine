@@ -15,7 +15,43 @@
 
 namespace Maple 
 {
-	auto Renderer::bindDescriptorSets(Pipeline* pipeline, CommandBuffer* cmdBuffer, uint32_t dynamicOffset,const std::vector<std::shared_ptr<DescriptorSet>>& descriptorSets) -> void
+
+	auto Renderer::init(const std::shared_ptr<GBuffer>& buffer) -> void
+	{
+
+	}
+
+	auto Renderer::begin() -> void
+	{
+
+	}
+
+	auto Renderer::present() -> void
+	{
+
+	}
+
+	auto Renderer::end() -> void
+	{
+
+	}
+
+	auto Renderer::submit(const RenderCommand& cmd) -> void
+	{
+
+	}
+
+	auto Renderer::renderScene() -> void
+	{
+
+	}
+
+	auto Renderer::beginScene(Scene* scene) -> void
+	{
+
+	}
+
+	auto Renderer::bindDescriptorSets(Pipeline* pipeline, CommandBuffer* cmdBuffer, uint32_t dynamicOffset, const std::vector<std::shared_ptr<DescriptorSet>>& descriptorSets) -> void
 	{
 		uint32_t numDynamicDescriptorSets = 0;
 		uint32_t numDesciptorSets = 0;

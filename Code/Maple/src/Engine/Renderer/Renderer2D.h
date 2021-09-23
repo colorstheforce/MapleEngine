@@ -11,14 +11,13 @@
 #include "Engine/Quad2D.h"
 #include "RenderParam.h"
 #include "Renderer.h"
-
+#include "Engine/Interface/DescriptorSet.h"
 namespace Maple 
 {
 	class UniformBuffer;
 	class Texture2D;
 	class VertexBuffer;
 	class IndexBuffer;
-	class DescriptorSet;
 
 	struct Config2D
 	{
@@ -51,7 +50,7 @@ namespace Maple
 		glm::mat4 transform;
 	};
 
-	class Renderer2D : public Renderer
+	class MAPLE_EXPORT Renderer2D : public Renderer
 	{
 	public:
 		Renderer2D() = default;

@@ -9,7 +9,7 @@ namespace Maple
 {
 	class Texture2D;
 
-	class Sprite : public Component
+	class MAPLE_EXPORT Sprite : public Component
 	{
 	public:
 		Sprite();
@@ -52,7 +52,7 @@ namespace Maple
 
 
 
-	class AnimatedSprite : public Sprite
+	class MAPLE_EXPORT AnimatedSprite : public Sprite
 	{
 	public:
 		

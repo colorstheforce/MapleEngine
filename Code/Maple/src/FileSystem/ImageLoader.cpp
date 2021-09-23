@@ -17,13 +17,14 @@
 
 #include "Others/StringUtils.h"
 #include <ktx.h>
+#include "Engine/Profiler.h"
 
 
 namespace Maple
 {
 	auto ImageLoader::loadAsset(const std::string& name, bool mipmaps) -> std::unique_ptr<Image>
 	{
-
+		PROFILE_FUNCTION();
 		bool hdr = stbi_is_hdr(name.c_str());
 		stbi_set_flip_vertically_on_load(1);
 		int32_t width;
@@ -41,6 +42,7 @@ namespace Maple
 
 	auto ImageLoader::loadAsset(const std::string& name, Image* image) -> void
 	{
+		PROFILE_FUNCTION();
 		bool hdr = stbi_is_hdr(name.c_str());
 		stbi_set_flip_vertically_on_load(1);
 		int32_t width;

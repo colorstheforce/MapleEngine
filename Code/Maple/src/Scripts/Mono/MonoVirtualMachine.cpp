@@ -166,7 +166,7 @@ namespace Maple
 
 	auto MonoVirtualMachine::get() ->std::shared_ptr<MonoVirtualMachine>
 	{
-		return app->getMonoVm();
+		return Application::get()->getMonoVm();
 	}
 
 	auto MonoVirtualMachine::loadAssembly(const std::string& path, const std::string& name) -> std::shared_ptr<MapleMonoAssembly>
@@ -262,15 +262,15 @@ namespace Maple
 	{
 		LOGV("compileAssembly...");
 		unloadScriptDomain();
-		app->getThreadPool()->addTask([=]() -> void*{
+		Application::get()->getThreadPool()->addTask([=]() -> void*{
 			std::vector<std::string> out;
 			File::list(out, [](const std::string& str) -> bool {
 				return StringUtils::endWith(str, ".cs");
 			});
 			MonoHelper::compileScript(out, "MapleLibrary.dll");
 			auto event = std::make_unique<RecompileScriptsEvent>();
-			event->scene = app->getSceneManager()->getCurrentScene();
-			app->getEventDispatcher().postEvent(std::move(event));
+			event->scene = Application::get()->getSceneManager()->getCurrentScene();
+			Application::get()->getEventDispatcher().postEvent(std::move(event));
 			return nullptr;
 		}, callback);
 	}

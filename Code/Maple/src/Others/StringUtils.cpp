@@ -1,4 +1,4 @@
-
+#include "StringUtils.h"
 
 #include <ctime>
 #include <stdio.h>
@@ -6,7 +6,7 @@
 #include <sstream>
 #include <memory.h>
 #include <algorithm>
-#include "StringUtils.h"
+
 #include "Console.h"
 #include <cpp_utf8.h>
 
@@ -302,4 +302,10 @@ namespace Maple
 		return u"";
 	}
 
+
+#ifdef _WIN32
+	const std::string  StringUtils::delimiter = "\\";
+#else						  
+	const std::string  StringUtils::delimiter = "/";
+#endif
 };

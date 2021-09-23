@@ -29,13 +29,13 @@ namespace Maple
 
 	auto DisplayZeroWindow::onImGui() -> void
 	{
-		auto& editor = *static_cast<Editor*>(app);
+		auto& editor = *static_cast<Editor*>(Application::get());
 
 		ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 5.f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
 		auto flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 		ImGui::SetNextWindowBgAlpha(0.0f);
-		auto currentScene = app->getSceneManager()->getCurrentScene();
+		auto currentScene = Application::get()->getSceneManager()->getCurrentScene();
 		if (ImGui::Begin(title.c_str(), &active, flags)) 
 		{
 			Camera* camera = nullptr;
@@ -174,7 +174,7 @@ namespace Maple
 	auto DisplayZeroWindow::resize(uint32_t width, uint32_t height) -> void
 	{
 		bool resized = false;
-		auto& editor = *static_cast<Editor*>(app);
+		auto& editor = *static_cast<Editor*>(Application::get());
 		if (this->width != width || this->height != height)
 		{
 			resized = true;
@@ -189,7 +189,7 @@ namespace Maple
 		{
 			VulkanContext::get()->waiteIdle();
 			previewTexture->buildTexture(TextureFormat::RGBA8, width, height, false, false, false);
-			for (auto & r : app->getRenderManagers())
+			for (auto & r : Application::get()->getRenderManagers())
 			{
 				if (!r->isEditor()) {
 					r->setRenderTarget(previewTexture, false);

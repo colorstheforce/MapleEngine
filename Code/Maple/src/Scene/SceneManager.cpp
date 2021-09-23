@@ -10,7 +10,8 @@
 #include "Entity/Entity.h"
 #include "Entity/EntityManager.h"
 #include "Scripts/Mono/MonoSystem.h"
-
+#include "Engine/Core.h"
+#include "Engine/Profiler.h"
 namespace Maple 
 {
 	auto SceneManager::switchScene(const std::string& name) -> void
@@ -32,6 +33,7 @@ namespace Maple
 	
 	auto SceneManager::apply() -> void
 	{
+		PROFILE_FUNCTION();
 		if (!switchingScenes)
 		{
 			if (currentScene != nullptr)
@@ -52,12 +54,12 @@ namespace Maple
 
 		currentScene->loadFrom();
 
-		if (app->getEditorState() == EditorState::Play) {
+		if (Application::get()->getEditorState() == EditorState::Play) {
 			currentScene->onInit();
 		
 		}
 
-		app->onSceneCreated(currentScene);
+		Application::get()->onSceneCreated(currentScene);
 
 		switchingScenes = false;
 	}

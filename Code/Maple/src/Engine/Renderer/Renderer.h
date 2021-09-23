@@ -8,6 +8,8 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include "RenderParam.h"
+#include "Engine/Core.h"
+
 namespace Maple 
 {
 	class FrameBuffer;
@@ -23,7 +25,7 @@ namespace Maple
 	class DescriptorSet;
 	class RenderManager;
 
-	class Renderer
+	class MAPLE_EXPORT Renderer
 	{
 	public:
 		virtual ~Renderer() = default;

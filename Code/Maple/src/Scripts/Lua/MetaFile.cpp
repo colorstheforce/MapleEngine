@@ -9,6 +9,7 @@
 #include "cereal/archives/json.hpp"
 #include "Scene/Entity/Entity.h"
 #include "Others/Serialization.h"
+#include "Others/Console.h"
 
 namespace Maple
 {

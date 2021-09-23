@@ -427,7 +427,7 @@ namespace MM
 				{
 					if (ImGui::Selectable(entry.path().string().c_str()))
 					{
-						mono.addScript(entry.path().string(), app->getSystemManager()->getSystem<MonoSystem>());
+						mono.addScript(entry.path().string(), Application::get()->getSystemManager()->getSystem<MonoSystem>());
 					}
 				
 				}
@@ -577,7 +577,7 @@ namespace Maple
 
 	auto PropertiesWindow::onImGui() -> void
 	{
-		auto& editor = static_cast<Editor&>(*app);
+		auto& editor = static_cast<Editor&>(*Application::get());
 		auto& registry = editor.getSceneManager()->getCurrentScene()->getRegistry();
 		auto selected = editor.getSelected();
 
@@ -637,7 +637,7 @@ namespace Maple
 	{
 		enttEditor.clear();
 
-		auto& editor = static_cast<Editor&>(*app);
+		auto& editor = static_cast<Editor&>(*Application::get());
 		auto& iconMap = editor.getComponentIconMap();
 
 #define TRIVIAL_COMPONENT(ComponentType,show,showName) \
@@ -703,7 +703,7 @@ namespace Maple
 			if (StringUtils::isCSharpFile(fileName)) {
 				auto & mono = registry.get_or_emplace<MonoComponent>(ent);
 				mono.setEntity(ent);
-				mono.addScript(fileName, app->getSystemManager()->getSystem<MonoSystem>());
+				mono.addScript(fileName, Application::get()->getSystemManager()->getSystem<MonoSystem>());
 			}
 		};
 	}

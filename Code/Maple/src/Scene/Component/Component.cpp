@@ -179,7 +179,7 @@ namespace Maple
 
 	Maple::Entity Component::getEntity()
 	{
-		return {entity, app->getSceneManager()->getCurrentScene()};
+		return {entity, Application::get()->getSceneManager()->getCurrentScene()};
 	}
 
 	auto Component::setEntity(entt::entity entity) -> void

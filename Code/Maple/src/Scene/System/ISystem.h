@@ -2,11 +2,12 @@
 // This file is part of the Maple Game Engine			                    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-
+#include "Engine/Core.h"
 namespace Maple 
 {
 	class Scene;
-	class ISystem
+
+	class MAPLE_EXPORT ISystem
 	{
 	public:
 		ISystem() = default;

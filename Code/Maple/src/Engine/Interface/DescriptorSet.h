@@ -7,6 +7,7 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include "Engine/Core.h"
 
 namespace Maple
 {
@@ -85,7 +86,7 @@ namespace Maple
 
 
 
-	class DescriptorSet
+	class MAPLE_EXPORT DescriptorSet
 	{
 	public:
 		virtual ~DescriptorSet() {};

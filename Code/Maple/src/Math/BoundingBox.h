@@ -7,11 +7,12 @@
 #include <glm/glm.hpp>
 #include <cstdint>
 #include "Rect2D.h"
+#include "Engine/Core.h"
 
 namespace Maple
 {
 
-	class BoundingBox 
+	class MAPLE_EXPORT BoundingBox
 	{
 	public:
 		BoundingBox() : min(INFINITY, INFINITY, INFINITY), max(-INFINITY, -INFINITY, -INFINITY) {}

@@ -12,7 +12,7 @@ namespace Maple
 {
 	class Scene;
 
-	class SceneManager final
+	class MAPLE_EXPORT SceneManager final
 	{
 	public:
 		SceneManager() = default;

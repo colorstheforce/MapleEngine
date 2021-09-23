@@ -17,7 +17,7 @@ namespace Maple
 
 	auto LuaSystem::onUpdate(float dt, Scene* scene)-> void
 	{
-		if (app->getEditorState() == EditorState::Play) 
+		if (Application::get()->getEditorState() == EditorState::Play) 
 		{
 			auto view = scene->getRegistry().view<LuaComponent>();
 			for (auto v : view)

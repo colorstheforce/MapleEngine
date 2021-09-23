@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "Engine/Core.h"
 #include "Scene/System/ISystem.h"
 #include "Event/EventHandler.h"
 #include <unordered_map>
@@ -18,7 +19,7 @@ namespace Maple
 
 	static const uint32_t SCRIPT_NOT_LOADED = 0;
 
-	class MonoSystem final : public ISystem
+	class MAPLE_EXPORT MonoSystem final : public ISystem
 	{
 	public:
 		~MonoSystem();

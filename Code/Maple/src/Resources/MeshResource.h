@@ -7,12 +7,13 @@
 #include <string>
 #include <unordered_map>
 #include "Resources.h"
+#include "Engine/Core.h"
 
 namespace Maple
 {
 	class Mesh;
 
-	class MeshResource : public Resources<MeshResource>
+	class MAPLE_EXPORT MeshResource : public Resources<MeshResource>
 	{
 	public:
 		MeshResource(const std::string& name);

@@ -9,7 +9,7 @@
 
 namespace Maple
 {
-	class MapleMonoField
+	class MAPLE_EXPORT MapleMonoField
 	{
 	public:
 		friend class MapleMonoClass;

@@ -8,6 +8,7 @@
 #include <vector>
 #include "Engine/Timestep.h"
 #include "Renderer.h"
+#include "Engine/Core.h"
 
 namespace Maple 
 {	
@@ -19,7 +20,7 @@ namespace Maple
 	class ShadowRenderer;
 	class OmniShadowRenderer;
 	class PreProcessRenderer;
-	class RenderManager 
+	class MAPLE_EXPORT RenderManager
 	{
 	public:
 		RenderManager();
@@ -28,7 +29,7 @@ namespace Maple
 		auto onRender() -> void;
 		auto onUpdate(const Timestep& step,Scene * scene) -> void;
 
-		auto addRender(std::unique_ptr<Renderer>&& render) -> void;
+		auto addRender(const std::shared_ptr<Renderer>& render) -> void;
 		auto onImGui() -> void;
 
 		auto onResize(uint32_t width, uint32_t height, bool debug = false) -> void;
@@ -53,7 +54,7 @@ namespace Maple
 		inline auto setEditor(bool val) { editor = val; }
 
 	private:
-		std::vector<std::unique_ptr<Renderer>> renders;
+		std::vector<std::shared_ptr<Renderer>> renders;
 		std::shared_ptr<GBuffer> gbuffer;
 		uint32_t width = 0;
 		uint32_t height = 0;

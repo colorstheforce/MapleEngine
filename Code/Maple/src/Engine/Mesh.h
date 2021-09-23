@@ -12,7 +12,7 @@
 #include "Engine/Vulkan/IndexBuffer.h"
 #include "Engine/Vulkan/VertexBuffer.h"
 #include "Engine/Interface/Texture.h"
-
+#include "Engine/Core.h"
 namespace Maple 
 {
 	enum MeshType
@@ -25,7 +25,7 @@ namespace Maple
 	class Camera;
 	class BoundingBox;
 
-	class Mesh
+	class MAPLE_EXPORT Mesh
 	{
 	public:
 		Mesh() = default;

@@ -81,8 +81,8 @@ namespace Maple
 	auto WindowWin::registerNativeEvent(const WindowInitData& data) -> void
 	{
 		glfwSetWindowSizeCallback(nativeInterface, [](GLFWwindow* win, int32_t w, int32_t h) {
-			app->getEventDispatcher().postEvent(std::make_unique<WindowResizeEvent>(w, h));
-			app->onWindowResized(w, h);
+			Application::get()->getEventDispatcher().postEvent(std::make_unique<WindowResizeEvent>(w, h));
+			Application::get()->onWindowResized(w, h);
 		});
 
 		glfwSetMouseButtonCallback(nativeInterface, [](GLFWwindow* window, int32_t btnId, int32_t state, int32_t mods) {
@@ -102,30 +102,30 @@ namespace Maple
 
 			if (state == GLFW_PRESS || state == GLFW_REPEAT)
 			{
-				app->getEventDispatcher().postEvent(std::make_unique<MouseClickEvent>(btn,x, y));
+				Application::get()->getEventDispatcher().postEvent(std::make_unique<MouseClickEvent>(btn,x, y));
 			}
 			if (state == GLFW_RELEASE)
 			{
-				app->getEventDispatcher().postEvent(std::make_unique<MouseReleaseEvent>(btn,x, y));
+				Application::get()->getEventDispatcher().postEvent(std::make_unique<MouseReleaseEvent>(btn,x, y));
 			}
 			});
 
 
 		glfwSetCursorPosCallback(nativeInterface, [](GLFWwindow* window, double x, double y) {
 			auto w = (WindowWin*)glfwGetWindowUserPointer(window);
-			app->getEventDispatcher().postEvent(std::make_unique<MouseMoveEvent>(x , y ));
+			Application::get()->getEventDispatcher().postEvent(std::make_unique<MouseMoveEvent>(x , y ));
 			});
 
 		glfwSetScrollCallback(nativeInterface, [](GLFWwindow* win, double xOffset, double yOffset) {
 			double x;
 			double y;
 			glfwGetCursorPos(win, &x, &y);
-			app->getEventDispatcher().postEvent(std::make_unique<MouseScrolledEvent>(xOffset, yOffset, 
+			Application::get()->getEventDispatcher().postEvent(std::make_unique<MouseScrolledEvent>(xOffset, yOffset, 
 				x, y));
 			});
 
 		glfwSetCharCallback(nativeInterface, [](GLFWwindow* window, unsigned int keycode) {
-			app->getEventDispatcher().postEvent(std::make_unique<CharInputEvent>(KeyCode::Id(keycode),(char)keycode));
+			Application::get()->getEventDispatcher().postEvent(std::make_unique<CharInputEvent>(KeyCode::Id(keycode),(char)keycode));
 		});
 
 		glfwSetKeyCallback(nativeInterface, [](GLFWwindow*, int32_t key, int32_t scancode, int32_t action, int32_t mods) {
@@ -133,17 +133,17 @@ namespace Maple
 			{
 			case GLFW_PRESS:
 			{
-				app->getEventDispatcher().postEvent(std::make_unique <KeyPressedEvent>(static_cast<KeyCode::Id>(key), 0));
+				Application::get()->getEventDispatcher().postEvent(std::make_unique <KeyPressedEvent>(static_cast<KeyCode::Id>(key), 0));
 				break;
 			}
 			case GLFW_RELEASE:
 			{
-				app->getEventDispatcher().postEvent(std::make_unique <KeyReleasedEvent>(static_cast<KeyCode::Id>(key)));
+				Application::get()->getEventDispatcher().postEvent(std::make_unique <KeyReleasedEvent>(static_cast<KeyCode::Id>(key)));
 				break;
 			}
 			case GLFW_REPEAT:
 			{
-				app->getEventDispatcher().postEvent(std::make_unique <KeyPressedEvent>(static_cast<KeyCode::Id>(key), 1));
+				Application::get()->getEventDispatcher().postEvent(std::make_unique <KeyPressedEvent>(static_cast<KeyCode::Id>(key), 1));
 				break;
 			}
 			}

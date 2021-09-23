@@ -6,8 +6,6 @@
 #include <string>
 #include <memory>
 #include <entt/entt.hpp>
-
-
 #include "Engine/Core.h"
 
 
@@ -19,7 +17,7 @@ namespace Maple
 	class Camera;
 	class Transform;
 
-	class Scene 
+	class MAPLE_EXPORT Scene
 	{
 	public:
 		Scene(const std::string& name);

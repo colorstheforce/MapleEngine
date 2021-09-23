@@ -8,7 +8,7 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
-
+#include "Engine/Core.h"
 namespace Maple
 {
 	class Texture2D;
@@ -50,7 +50,7 @@ namespace Maple
 		std::shared_ptr<Texture2D> emissive;
 	};
 #define BIT(x) (1 << x)
-	class Material
+	class MAPLE_EXPORT Material
 	{
 	public:
 		enum class RenderFlags

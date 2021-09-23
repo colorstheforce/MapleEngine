@@ -9,7 +9,8 @@
 #include <tiny_obj_loader.h>
 #include "Engine/Material.h"
 #include "Others/StringUtils.h"
-
+#include "Engine/Interface/Texture.h"
+#include "Engine/Profiler.h"
 namespace Maple
 {
 	namespace MeshLoader
@@ -37,6 +38,7 @@ namespace Maple
 
 		auto load(const std::string& obj, std::unordered_map<std::string, std::shared_ptr<Mesh>>& meshes) -> void
 		{
+			PROFILE_FUNCTION();
 			std::string resolvedPath = obj;
 			auto directory = resolvedPath.substr(0, resolvedPath.find_last_of(StringUtils::delimiter));
 			std::string name = directory.substr(directory.find_last_of(StringUtils::delimiter) + 1);

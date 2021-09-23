@@ -7,10 +7,10 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <cstdint>
-
+#include "Engine/Core.h"
 namespace Maple
 {
-	class Rect2D final
+	class MAPLE_EXPORT Rect2D final
 	{
 	public:
 		Rect2D() : min(INFINITY, INFINITY)

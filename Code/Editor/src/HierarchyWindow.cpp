@@ -23,7 +23,7 @@
 #include "ImGui/ImGuiHelpers.h"
 
 #include "imgui_internal.h"
-
+#include "Others/Console.h"
 constexpr size_t INPUT_BUFFER = 256;
 
 namespace Maple
@@ -54,7 +54,7 @@ namespace Maple
 
 	auto HierarchyWindow::drawName()-> void
 	{
-		auto scene = app->getSceneManager()->getCurrentScene();
+		auto scene = Application::get()->getSceneManager()->getCurrentScene();
 		auto& registry = scene->getRegistry();
 
 		const auto& sceneName = scene->getName();
@@ -70,7 +70,7 @@ namespace Maple
 
 	auto HierarchyWindow::popupWindow()-> void
 	{
-		auto scene = app->getSceneManager()->getCurrentScene();
+		auto scene = Application::get()->getSceneManager()->getCurrentScene();
 		auto& registry = scene->getRegistry();
 		ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding,10.f);
 		if (ImGui::BeginPopupContextWindow("HierarchyWindow::PopupWindow"))
@@ -147,7 +147,7 @@ namespace Maple
 
 	auto HierarchyWindow::dragEntity()-> void
 	{
-		auto scene = app->getSceneManager()->getCurrentScene();
+		auto scene = Application::get()->getSceneManager()->getCurrentScene();
 		auto& registry = scene->getRegistry();
 
 		if (ImGui::BeginDragDropTarget())
@@ -226,9 +226,9 @@ namespace Maple
 
 		if (!registry.valid(node))
 			return;
-		Editor* editor = static_cast<Editor*>(app);
+		Editor* editor = static_cast<Editor*>(Application::get());
 
-		auto scene = app->getSceneManager()->getCurrentScene();
+		auto scene = editor->getSceneManager()->getCurrentScene();
 
 
 		const auto nameComponent = registry.try_get<NameComponent>(node);

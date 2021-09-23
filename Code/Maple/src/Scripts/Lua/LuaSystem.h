@@ -9,7 +9,7 @@
 namespace Maple 
 {
 	class Scene;
-	class LuaSystem final : public ISystem
+	class MAPLE_EXPORT LuaSystem final : public ISystem
 	{
 	public:
 		auto onInit() -> void override;

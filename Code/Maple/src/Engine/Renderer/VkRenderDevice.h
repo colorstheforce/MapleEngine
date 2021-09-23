@@ -11,7 +11,7 @@
 
 namespace Maple
 {
-	class VkRenderDevice : public RenderDevice
+	class MAPLE_EXPORT VkRenderDevice : public RenderDevice
 	{
 	public:
 		VkRenderDevice() = default;

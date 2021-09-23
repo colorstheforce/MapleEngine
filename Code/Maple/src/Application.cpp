@@ -20,6 +20,7 @@
 #include "Engine/Renderer/OmniShadowRenderer.h"
 #include "Engine/Renderer/Renderer2D.h"
 #include "Engine/Terrain.h"
+#include "Engine/Profiler.h"
 
 #include "Scripts/Lua/LuaSystem.h"
 #include "Scripts/Mono/MonoSystem.h"
@@ -29,13 +30,14 @@
 #include "ImGui/ImGuiSystem.h"
 #include "Scene/SceneManager.h"
 #include "Scene/Scene.h"
+
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 
 #include "Engine/Vulkan/VulkanContext.h"
 #include "Scripts/Mono/MonoVirtualMachine.h"
 
-Maple::Application* app;
+//Maple::Application* app;
 
 namespace Maple 
 {
@@ -55,6 +57,7 @@ namespace Maple
 
 	auto Application::init() -> void
 	{
+		PROFILE_FUNCTION();
 		Input::create();
 		window->init();
 		timer.start();
@@ -87,6 +90,7 @@ namespace Maple
 	
 		while (1) 
 		{
+			PROFILE_FRAMEMARKER();
 			Timestep timestep = timer.stop() / 1000000.f;
 			ImGuiIO& io = ImGui::GetIO();
 			io.DeltaTime = timestep.getMilliseconds();
@@ -122,6 +126,7 @@ namespace Maple
 	//update all things
 	auto Application::onUpdate(const Timestep& delta) -> void
 	{
+		PROFILE_FUNCTION();
 		onImGui();
 		systemManager->onUpdate(delta, sceneManager->getCurrentScene());
 		window->onUpdate();
@@ -134,6 +139,8 @@ namespace Maple
 
 	auto Application::onRender() -> void
 	{
+		PROFILE_FUNCTION();
+
 		for (auto& r : renderManagers)
 		{
 			sceneManager->getCurrentScene()->setGameView(!r->isEditor());
@@ -164,6 +171,7 @@ namespace Maple
 
 	auto Application::onImGui() ->void
 	{
+		PROFILE_FUNCTION();
 		for (auto& r : renderManagers)
 		{
 			r->onImGui();
@@ -182,6 +190,7 @@ namespace Maple
 
 	auto Application::onWindowResized(uint32_t w, uint32_t h) -> void
 	{
+		PROFILE_FUNCTION();
 		VulkanContext::get()->waiteIdle();
 
 		if (w == 0 || h == 0)
@@ -206,6 +215,7 @@ namespace Maple
 
 	auto Application::serialize() -> void
 	{
+		PROFILE_FUNCTION();
 		if(sceneManager->getCurrentScene() != nullptr){
 			sceneManager->getCurrentScene()->saveTo();
 			window->setTitle(sceneManager->getCurrentScene()->getName());
@@ -214,6 +224,7 @@ namespace Maple
 
 	auto Application::postOnMainThread(const std::function<bool()>& mainCallback) ->std::future<bool>
 	{
+		PROFILE_FUNCTION();
 		std::promise<bool> promise;
 		std::future<bool> future = promise.get_future();
 
@@ -224,6 +235,7 @@ namespace Maple
 
 	auto Application::executeAll() -> void
 	{
+		PROFILE_FUNCTION();
 		std::pair<std::promise<bool>, std::function<bool(void)>> func;
 		for (;;) {
 			{
@@ -239,4 +251,10 @@ namespace Maple
 		}
 	}
 
+	auto Application::get() -> Application*
+	{
+		return app;
+	}
+
+	Maple::Application* Application::app = nullptr;
 };

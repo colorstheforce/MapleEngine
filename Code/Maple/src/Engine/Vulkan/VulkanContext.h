@@ -9,14 +9,14 @@
 #include <vector>
 #include <optional>
 #include <vulkan/vulkan.h>
-
+#include "Engine/Core.h"
 
 struct GLFWwindow;
 namespace Maple
 {
 	class SwapChain;
 
-	class VulkanContext
+	class MAPLE_EXPORT VulkanContext
 	{
 	public:
 		VulkanContext(bool enableValidation = false);

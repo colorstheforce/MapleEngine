@@ -13,7 +13,7 @@
 #include "UI/LoadingDialog.h"
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
-
+#include "Math/Ray.h"
 namespace Maple
 {
 	class EditorPlugin;
@@ -22,7 +22,7 @@ namespace Maple
 	class TextureAtlas;
 	class RenderManager;
 	class Quad2D;
-	class Ray;
+
 
 	class Editor final : public Application 
 	{

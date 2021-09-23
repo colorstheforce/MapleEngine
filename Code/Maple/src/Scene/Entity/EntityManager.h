@@ -9,7 +9,7 @@ namespace Maple
 {
 	class Scene;
 
-	class EntityManager final
+	class MAPLE_EXPORT EntityManager final
 	{
 	public:
 		EntityManager(Scene* initScene) : scene(initScene)

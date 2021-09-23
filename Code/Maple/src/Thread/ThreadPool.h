@@ -28,7 +28,7 @@ namespace Maple
 		};
 
 		static auto sleep(int64_t ms) -> void;
-		Thread();
+		Thread(const std::string & name);
 		~Thread();
 		auto wait() -> void;
 		auto getTaskSize()->int32_t;

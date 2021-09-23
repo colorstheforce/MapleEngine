@@ -15,13 +15,14 @@
 
 #include "Engine/Material.h"
 #include "Engine/CameraController.h"
+#include "Engine/Profiler.h"
 #include "Others/StringUtils.h"
 #include "Engine/Camera.h"
 #include "Devices/Input.h"
 #include "Others/Serialization.h"
 
 #include "Scripts/Mono/MonoSystem.h"
-
+#include "Others/Console.h"
 #include <fstream>
 #include <filesystem>
 
@@ -62,6 +63,7 @@ namespace Maple {
 
 	auto Scene::saveTo(const std::string& path, bool binary) -> void
 	{
+		PROFILE_FUNCTION();
 		if (dirty) {
 			LOGV("save to disk");
 			if (path != "" && path != filePath)
@@ -79,6 +81,7 @@ namespace Maple {
 
 	auto Scene::loadFrom()-> void
 	{
+		PROFILE_FUNCTION();
 		if(filePath != ""){
 			entityManager->clear();
 			sceneGraph->disconnectOnConstruct(true, getRegistry());
@@ -95,6 +98,7 @@ namespace Maple {
 
 	auto Scene::createEntity(const std::string& name) -> Entity
 	{
+		PROFILE_FUNCTION();
 		dirty = true;
 		int32_t i = 0; 
 		auto entity = entityManager->getEntityByName(name);
@@ -107,6 +111,7 @@ namespace Maple {
 
 	auto Scene::duplicateEntity(const Entity& entity, const Entity& parent) -> void
 	{
+		PROFILE_FUNCTION();
 		dirty = true;
 
 		Entity newEntity = entityManager->create();
@@ -149,7 +154,7 @@ namespace Maple {
 		{
 			initCallback(this);
 		}
-		app->getSystemManager()->getSystem<MonoSystem>()->onStart(this);
+		Application::get()->getSystemManager()->getSystem<MonoSystem>()->onStart(this);
 	}
 
 	auto Scene::onClean() -> void
@@ -159,13 +164,14 @@ namespace Maple {
 
 	auto Scene::updateCameraController(float dt) -> void
 	{
+		PROFILE_FUNCTION();
 		auto controller = entityManager->getRegistry().group<CameraControllerComponent>(entt::get<Transform>);
 		for (auto entity : controller)
 		{
 			const auto mousePos = Input::getInput()->getMousePosition();
 			auto& [con, trans] = controller.get<CameraControllerComponent, Transform>(entity);
-			if (app->isSceneActive() && 
-				app->getEditorState() == EditorState::Play&&
+			if (Application::get()->isSceneActive() && 
+				Application::get()->getEditorState() == EditorState::Play&&
 				con.getController() )
 			{
 				con.getController()->handleMouse(trans, dt, mousePos.x, mousePos.y);
@@ -176,6 +182,7 @@ namespace Maple {
 
 	auto Scene::onUpdate(float dt) -> void
 	{
+		PROFILE_FUNCTION();
 		updateCameraController(dt);
 		sceneGraph->update(entityManager->getRegistry());
 		auto view = entityManager->getRegistry().group<AnimatedSprite>(entt::get<Transform>);

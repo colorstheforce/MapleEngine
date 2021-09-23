@@ -18,6 +18,10 @@ imgui.ini
 *.log
 
 MapleLibrary.dll
+MapleEngine.dll
+MapleAssembly.dll
+
+*.pdb
 
 build/
 
@@ -33,3 +37,5 @@ build/
 # Executables
 
 *.app
+
+Assets/Debug/

@@ -7,6 +7,7 @@
 #include <string>
 #include <cstdint>
 #include <memory>
+#include "Engine/Core.h"
 
 namespace Maple 
 {
@@ -15,7 +16,7 @@ namespace Maple
 	class MapleMonoObject;
 	class MapleMonoMethod;
 
-	class MonoScript final
+	class MAPLE_EXPORT MonoScript final
 	{
 	public:
 		MonoScript(const std::string & name, MonoComponent * component, MonoSystem* system);

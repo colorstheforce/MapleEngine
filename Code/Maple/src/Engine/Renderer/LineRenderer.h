@@ -37,7 +37,7 @@ namespace Maple
 	};
 
 
-	class LineRenderer : public Renderer
+	class MAPLE_EXPORT LineRenderer : public Renderer
 	{
 	public:
 		LineRenderer() = default;

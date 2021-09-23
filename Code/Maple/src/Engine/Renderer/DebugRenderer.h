@@ -19,7 +19,7 @@ namespace Maple
 	class LineRenderer;
 	class BoundingBox;
 
-	class DebugRenderer
+	class MAPLE_EXPORT DebugRenderer
 	{
 	public:
 		auto init(uint32_t width, uint32_t height) -> void;

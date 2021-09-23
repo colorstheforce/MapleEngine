@@ -17,7 +17,7 @@ namespace Maple
 	class UniformBuffer;
 
 
-	class SkyboxRenderer : public Renderer
+	class MAPLE_EXPORT SkyboxRenderer : public Renderer
 	{
 	public:
 		SkyboxRenderer(uint32_t width, uint32_t height);

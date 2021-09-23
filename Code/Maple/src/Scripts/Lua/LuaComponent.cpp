@@ -130,7 +130,7 @@ return #name
 
 	auto LuaComponent::loadScript() -> void
 	{
-		auto & vm = app->getLuaVirtualMachine();
+		auto & vm = Application::get()->getLuaVirtualMachine();
 		luaL_dofile(vm->getState(), file.c_str());
 		try
 		{
@@ -286,7 +286,7 @@ return #name
 								if (ImGui::AcceptDragDropPayload("Drag_Entity"))
 								{
 									v->setHandle(entity);
-									v->setScene(app->getSceneManager()->getCurrentScene());
+									v->setScene(Application::get()->getSceneManager()->getCurrentScene());
 								}
 								ImGui::EndDragDropTarget();
 							}

@@ -7,12 +7,12 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include <array>
-
+#include "Engine/Core.h"
 namespace Maple 
 {
 	class Texture2D;
 
-	class Quad2D  
+	class MAPLE_EXPORT Quad2D
 	{
 	public:
 		Quad2D();

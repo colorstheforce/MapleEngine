@@ -41,7 +41,12 @@ set_property(
 	VS_DOTNET_REFERENCES
 	"System;System.Core;System.Numerics;System.Runtime;System.Runtime.CompilerServices.Unsafe"
 )
+
+
+
 SET(LIBRARY_OUTPUT_PATH ${ASSET_DIR})
+
+
 endif()
 
 

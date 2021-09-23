@@ -66,9 +66,10 @@ namespace Maple
 	auto Editor::init() -> void
 	{
 		Application::init();
-		auto& renderManager = std::make_unique<RenderManager>();
+		auto renderManager = std::make_unique<RenderManager>();
 		renderManager->setEditor(true);
 		//off-screen
+	
 
 		renderManager->addRender(std::make_unique<ShadowRenderer>());
 		renderManager->addRender(std::make_unique<DeferredRenderer>(window->getWidth(), window->getHeight()));
@@ -83,8 +84,10 @@ namespace Maple
 		addWindow(DisplayZeroWindow);
 		addWindow(HierarchyWindow);
 		addWindow(PropertiesWindow);
-		addWindow(AssetsWindow);
-		addWindow(PluginWindow);
+		addWindow(AssetsWindow); 
+	
+
+	
 
 		iconMap[typeid(Transform).hash_code()] = ICON_MDI_VECTOR_LINE;
 		iconMap[typeid(Editor).hash_code()] = ICON_MDI_SQUARE;
@@ -113,9 +116,10 @@ namespace Maple
 		processIcons();
 
 		MonoVirtualMachine::get()->compileAssembly([&](void*) {
+			MonoVirtualMachine::get()->loadAssembly("./", "MapleLibrary.dll");
 			MonoVirtualMachine::get()->loadAssembly("./", "MapleAssembly.dll");
+			addWindow(PluginWindow);
 		});
-
 	}
 
 	auto Editor::onImGui() -> void
@@ -442,43 +446,43 @@ namespace Maple
 				if (ImGui::MenuItem("Depth"))
 				{
 					event->setDeferredType(0);
-					app->getEventDispatcher().postEvent(std::move(event));
+					Application::get()->getEventDispatcher().postEvent(std::move(event));
 				}
 
 				if (ImGui::MenuItem("Color"))
 				{
 					event->setDeferredType(1);
-					app->getEventDispatcher().postEvent(std::move(event));
+					Application::get()->getEventDispatcher().postEvent(std::move(event));
 				}
 
 				if (ImGui::MenuItem("Position"))
 				{
 					event->setDeferredType(2);
-					app->getEventDispatcher().postEvent(std::move(event));
+					Application::get()->getEventDispatcher().postEvent(std::move(event));
 				}
 
 				if (ImGui::MenuItem("Normal"))
 				{
 					event->setDeferredType(3);
-					app->getEventDispatcher().postEvent(std::move(event));
+					Application::get()->getEventDispatcher().postEvent(std::move(event));
 				}
 
 				if (ImGui::MenuItem("ShadowMap"))
 				{
 					event->setDeferredType(4);
-					app->getEventDispatcher().postEvent(std::move(event));
+					Application::get()->getEventDispatcher().postEvent(std::move(event));
 				}
 
 				if (ImGui::MenuItem("ShadowCubeMap"))
 				{
 					event->setDeferredType(5);
-					app->getEventDispatcher().postEvent(std::move(event));
+					Application::get()->getEventDispatcher().postEvent(std::move(event));
 				}
 
 				if (ImGui::MenuItem("Deferred"))
 				{
 					event->setDeferredType(6);
-					app->getEventDispatcher().postEvent(std::move(event));
+					Application::get()->getEventDispatcher().postEvent(std::move(event));
 				}
 
 

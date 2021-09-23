@@ -12,7 +12,7 @@
 
 namespace Maple
 {
-	class MapleMonoClass final
+	class MAPLE_EXPORT MapleMonoClass final
 	{
 		struct MethodId
 		{

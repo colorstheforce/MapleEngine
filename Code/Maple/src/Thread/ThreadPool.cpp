@@ -5,6 +5,7 @@
 
 #include "ThreadPool.h"
 #include "Application.h"
+#include "Engine/Profiler.h"
 
 namespace Maple
 {
@@ -13,9 +14,10 @@ namespace Maple
 		std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 	}
 
-	Thread::Thread()
+	Thread::Thread(const std::string& name)
 	{
 		thread = std::make_shared<std::thread>(&Thread::run, this);
+		PROFILE_SETTHREADNAME(name.c_str());
 	}
 
 	Thread::~Thread()
@@ -82,7 +84,7 @@ namespace Maple
 				void* result = task.job();
 				if (task.complete)
 				{
-					app->postOnMainThread([=]() {
+					Application::get()->postOnMainThread([=]() {
 						task.complete(result);
 						return true;
 					});
@@ -105,7 +107,7 @@ namespace Maple
 	{
 		for (int32_t i = 0; i < count; i++)
 		{
-			threads.emplace_back(std::make_shared<Thread>());
+			threads.emplace_back(std::make_shared<Thread>("Thread:"+std::to_string(i)));
 		}
 	}
 

@@ -14,7 +14,7 @@ namespace Editor
         public string Path { get => path; set => path = value; }
     }
 
-    abstract class EditorWindow 
+    public abstract class EditorWindow 
     {
         public abstract void OnUpdate(float dt);
         public abstract void OnImGui();
@@ -37,34 +37,14 @@ namespace Editor
 
         public static T GetWindow<T> () where T : EditorWindow
         {
-            if (!windowCache.ContainsKey(typeof(T).FullName)) {
-                windowCache.Add(typeof(T).FullName, System.Activator.CreateInstance<T>());
+            var name = typeof(T).FullName;
+            Maple.Debug.LogV(name);
+            if (!windowCache.ContainsKey(name)) {
+                windowCache.Add(name, System.Activator.CreateInstance<T>());
             }
-            return (T)windowCache[typeof(T).FullName];
+            return (T)windowCache[name];
         }
-        private static Dictionary<string, EditorWindow> windowCache;
+        private static Dictionary<string, EditorWindow> windowCache = new Dictionary<string, EditorWindow>();
     };
-
-  
-    class TestWindow : EditorWindow
-    {
-        [MenuItem("Custom/TestWindow")]
-        public static void Init() { 
-        	GetWindow<TestWindow>();
-        }
-
-        public override void OnImGui()
-        {
-            ImGuiNET.ImGui.Begin("Test");
-
-            ImGuiNET.ImGui.End();
-        }
-
-        public override void OnUpdate(float dt)
-        {
-        }
-
-
-    }
 
 }

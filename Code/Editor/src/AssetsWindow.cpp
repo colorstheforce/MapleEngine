@@ -133,7 +133,7 @@ namespace Maple
 					int shownIndex = 0;
 
 					float xAvail = ImGui::GetContentRegionAvail().x;
-					gridItemsPerRow = (int32_t)std::floor(xAvail / (95.0f * app->getWindow()->getScale()));
+					gridItemsPerRow = (int32_t)std::floor(xAvail / (95.0f * Application::get()->getWindow()->getScale()));
 					gridItemsPerRow = std::max(1, gridItemsPerRow);
 
 					for (auto & dir : currentDir->children)
@@ -188,7 +188,7 @@ namespace Maple
 	auto AssetsWindow::drawFile(FileInfo* file, bool folder, int32_t shownIndex, bool gridView) -> bool
 	{
 		bool doubleClicked = false;
-		auto& editor = static_cast<Editor&>(*app);
+		auto& editor = static_cast<Editor&>(*Application::get());
 
 		
 		if (gridView)

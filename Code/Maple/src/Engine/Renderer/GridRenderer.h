@@ -14,7 +14,7 @@ namespace Maple
 {
 	class UniformBuffer;
 
-	class GridRenderer : public Renderer
+	class MAPLE_EXPORT GridRenderer : public Renderer
 	{
 	public:
 		GridRenderer() = default;

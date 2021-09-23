@@ -11,7 +11,7 @@ namespace Maple
 {
 	class MapleMonoClass;
 
-	class MapleMonoProperty
+	class  MAPLE_EXPORT MapleMonoProperty
 	{
 	public:
 		MapleMonoProperty(MonoProperty* monoProp);

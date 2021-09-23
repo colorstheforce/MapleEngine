@@ -15,7 +15,7 @@
 #include <IconsMaterialDesignIcons.h>
 #include <RobotoRegular.inl>
 #include <MaterialDesign.inl>
-
+#include "Engine/Profiler.h"
 
 namespace Maple
 {
@@ -29,8 +29,8 @@ namespace Maple
     }
     auto ImGuiSystem::onInit() -> void
     {
-
-		app->getEventDispatcher().addEventHandler(&handler);
+		PROFILE_FUNCTION();
+		Application::get()->getEventDispatcher().addEventHandler(&handler);
 
 		ImGui::CreateContext();
 		ImGui::StyleColorsDark();
@@ -38,18 +38,18 @@ namespace Maple
 		ImGuiIO& io = ImGui::GetIO();
 		
 		io.DisplaySize = ImVec2(
-			static_cast<float>(app->getWindow()->getWidth()),
-			static_cast<float>(app->getWindow()->getHeight())
+			static_cast<float>(Application::get()->getWindow()->getWidth()),
+			static_cast<float>(Application::get()->getWindow()->getHeight())
 		);
 
-		ImGui::GetStyle().ScaleAllSizes(app->getWindow()->getScale());
+		ImGui::GetStyle().ScaleAllSizes(Application::get()->getWindow()->getScale());
 
 		addIcon();
 
 
 		imguiRender = std::make_unique<VkImGUIRenderer>(
-            app->getWindow()->getWidth(), 
-            app->getWindow()->getHeight(),
+            Application::get()->getWindow()->getWidth(), 
+            Application::get()->getWindow()->getHeight(),
             clearScreen);
 
 
@@ -57,7 +57,7 @@ namespace Maple
 		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 	
 		imguiRender->init();
-		ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)app->getWindow()->getNativeInterface(), true);
+		ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)Application::get()->getWindow()->getNativeInterface(), true);
 		/*io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 		io.ConfigWindowsMoveFromTitleBarOnly = true;*/
@@ -67,16 +67,19 @@ namespace Maple
 
     auto ImGuiSystem::onUpdate(float dt, Scene* scene) -> void
     {
+		PROFILE_FUNCTION();
         ImGui::Render();
     }
 
     auto ImGuiSystem::onRender(Scene* scene) -> void
     {
+		PROFILE_FUNCTION();
         imguiRender->render(nullptr);
     }
 
 	auto ImGuiSystem::addIcon() -> void
 	{
+		PROFILE_FUNCTION();
 		ImGuiIO& io = ImGui::GetIO();
 		static const ImWchar icons_ranges[] = { ICON_MIN_MDI, ICON_MAX_MDI, 0 };
 		//io.Fonts->AddFontFromFileTTF("fonts/simsun.ttf", 16.f, NULL, io.Fonts->GetGlyphRangesChineseFull());
@@ -100,7 +103,7 @@ namespace Maple
 
 		io.Fonts->AddFontFromMemoryCompressedTTF(
 			RobotoRegular_compressed_data, 
-			RobotoRegular_compressed_size, 16.f * app->getWindow()->getScale(),
+			RobotoRegular_compressed_size, 16.f * Application::get()->getWindow()->getScale(),
 			&iconsConfig,
 			ranges);
 
@@ -115,12 +118,13 @@ namespace Maple
 		iconsConfig.SizePixels = 18.f;
 		io.Fonts->AddFontFromMemoryCompressedTTF(
 			MaterialDesign_compressed_data, 
-			MaterialDesign_compressed_size, 16 * app->getWindow()->getScale(),
+			MaterialDesign_compressed_size, 16 * Application::get()->getWindow()->getScale(),
 			&iconsConfig, icons_ranges);
 	}
 
 	auto ImGuiSystem::onResize(uint32_t w, uint32_t h) -> void
 	{
+		PROFILE_FUNCTION();
 		imguiRender->onResize(w, h);
 	}
 

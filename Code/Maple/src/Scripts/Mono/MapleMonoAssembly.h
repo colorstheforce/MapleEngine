@@ -13,7 +13,7 @@
 
 namespace Maple
 {
-	class  MapleMonoAssembly
+	class MAPLE_EXPORT  MapleMonoAssembly
 	{
 	public:
 		struct ClassId
@@ -71,7 +71,7 @@ namespace Maple
 		mutable std::unordered_map<ClassId, std::shared_ptr<MapleMonoClass>, ClassId::Hash, ClassId::Equals> classes;
 		mutable std::unordered_map<MonoClass*, std::shared_ptr<MapleMonoClass>> classesByRaw;
 
-		mutable bool haveCachedClassList;
+		mutable bool haveCachedClassList = false;
 		mutable std::vector<std::shared_ptr<MapleMonoClass>> cachedClassList;
 	};
 

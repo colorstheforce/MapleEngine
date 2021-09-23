@@ -10,7 +10,7 @@
 
 namespace Maple
 {
-	class Entity final
+	class MAPLE_EXPORT Entity final
 	{
 	public:
 

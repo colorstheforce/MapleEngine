@@ -10,7 +10,7 @@
 
 namespace Maple
 {
-	class MapleMonoObject 
+	class MAPLE_EXPORT MapleMonoObject
 	{
 	public:
 		MapleMonoObject(MonoObject* rawPtr, MapleMonoClass * clazz);

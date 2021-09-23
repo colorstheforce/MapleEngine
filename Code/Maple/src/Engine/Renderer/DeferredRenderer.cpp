@@ -66,7 +66,7 @@ namespace Maple
 		systemVsUniformBuffer.colorCascade = 0;
 		systemVsUniformBuffer.displayCascadeLevel = 0;
 
-		app->getEventDispatcher().addEventHandler(&eventHandler);
+		Application::get()->getEventDispatcher().addEventHandler(&eventHandler);
 
 		gbuffer = buffer;
 		deferredOffScreenRenderer->init(buffer);

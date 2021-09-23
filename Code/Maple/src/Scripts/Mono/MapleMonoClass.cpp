@@ -17,7 +17,7 @@ namespace Maple
 		, hasCachedProperties(false), hasCachedMethods(false)
 
 	{
-
+		fullName = nameSpace + "." + type;
 	}
 
 	MapleMonoClass::~MapleMonoClass()
@@ -40,7 +40,12 @@ namespace Maple
 
 		auto newMethod = std::make_shared<MapleMonoMethod>(method);
 		methods[mehodId] = newMethod;
-		return newMethod;
+
+		return methods.emplace(
+			std::piecewise_construct,
+			std::forward_as_tuple(mehodId),
+			std::forward_as_tuple(std::make_shared<MapleMonoMethod>(method))
+		).first->second;
 	}
 
 	auto MapleMonoClass::getMethodExact(const std::string& name, const std::string& signature) const ->std::shared_ptr<MapleMonoMethod>
@@ -62,9 +67,11 @@ namespace Maple
 				const char* curSig = mono_signature_get_desc(mono_method_signature(method), false);
 				if (strcmp(rawSig, curSig) == 0)
 				{
-					auto newMethod = std::make_shared<MapleMonoMethod>(method);
-					methods[mehodId] = newMethod;
-					return newMethod;
+					return methods.emplace(
+						std::piecewise_construct,
+						std::forward_as_tuple(mehodId),
+						std::forward_as_tuple(std::make_shared<MapleMonoMethod>(method))
+					).first->second;
 				}
 			}
 		}
@@ -81,9 +88,11 @@ namespace Maple
 		if (field == nullptr)
 			return nullptr;
 
-		auto newField = std::make_shared<MapleMonoField>(field);
-		fields[name] = newField;
-		return newField;
+		return fields.emplace(
+			std::piecewise_construct,
+			std::forward_as_tuple(name),
+			std::forward_as_tuple(std::make_shared<MapleMonoField>(field))
+		).first->second;
 	}
 
 	auto MapleMonoClass::getProperty(const std::string& name) const -> std::shared_ptr<MapleMonoProperty>
@@ -96,9 +105,11 @@ namespace Maple
 		if (property == nullptr)
 			return nullptr;
 
-		auto newProperty = std::make_shared<MapleMonoProperty>(property);
-		properties[name] = newProperty;
-		return newProperty;
+		return properties.emplace(
+			std::piecewise_construct,
+			std::forward_as_tuple(name),
+			std::forward_as_tuple(std::make_shared<MapleMonoProperty>(property))
+		).first->second;
 	}
 
 	auto MapleMonoClass::getAttribute(MapleMonoClass* monoClass) const -> MonoObject*

@@ -5,11 +5,12 @@
 #pragma once
 
 #include <cstdint>
+#include "Engine/Core.h"
 
 namespace Maple
 {
 	class CommandBuffer;
-	class RenderDevice
+	class MAPLE_EXPORT RenderDevice
 	{
 	public:
 		virtual ~RenderDevice() = default;

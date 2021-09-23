@@ -10,7 +10,7 @@
 
 namespace Maple
 {
-	class TexturePool final
+	class MAPLE_EXPORT TexturePool final
 	{
 	public:
 		TexturePool() = default;

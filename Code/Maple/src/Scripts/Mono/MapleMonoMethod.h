@@ -11,12 +11,13 @@
 #include <utility>
 namespace Maple
 {
-	class MapleMonoMethod 
+	class MAPLE_EXPORT MapleMonoMethod
 	{
 	
 	public:
 		~MapleMonoMethod();
 		MapleMonoMethod(MonoMethod* method);
+
 		auto invoke(MonoObject* instance, void** params = nullptr) ->MonoObject*;
 		auto invokeVirtual(MonoObject* instance, void** params = nullptr)->MonoObject*;
 

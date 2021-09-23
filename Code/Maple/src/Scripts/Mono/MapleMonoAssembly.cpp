@@ -187,7 +187,7 @@ namespace Maple
 	}
 
 	auto MapleMonoAssembly::load() -> void
-	{
+	{ 
 
 		if (loaded)
 			unload();

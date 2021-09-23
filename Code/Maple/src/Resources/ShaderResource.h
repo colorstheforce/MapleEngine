@@ -7,9 +7,10 @@
 #include <string>
 #include <unordered_map>
 #include "Resources.h"
+#include "Engine/Core.h"
 
 namespace Maple
 {
 	class Shader;
-	class ShaderResource : public Resources<Shader> { };
+	class MAPLE_EXPORT ShaderResource : public Resources<Shader> { };
 };

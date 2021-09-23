@@ -34,11 +34,14 @@ namespace Maple
 	class Shader
 	{
 	public:
+		Shader(const std::string& id) : path(id){}
 		virtual ~Shader() {};
-		virtual auto bind() const -> void = 0;
-		virtual auto unbind() const -> void = 0;
-		virtual auto bindPushConstants(CommandBuffer * cmdBuffer, Pipeline * pipeline) -> void = 0;
-		virtual auto getHandle() const -> void* = 0;
+
+		virtual auto bind() const -> void {};
+		virtual auto unbind() const -> void {};
+		virtual auto bindPushConstants(CommandBuffer * cmdBuffer, Pipeline * pipeline) -> void {};
+		virtual auto getHandle() const -> void* { return nullptr; };
+
 		inline auto& getPushConstants() { return pushConstants; }
 		auto getPushConstant(uint32_t index)->PushConstant*;
 		inline auto& getFilePath() const { return path; }

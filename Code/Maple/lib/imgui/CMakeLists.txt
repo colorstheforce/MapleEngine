@@ -9,7 +9,6 @@ set(IMGUI_SRC
 	src/imgui_widgets.cpp
 	src/imgui_widgets_user.cpp
 	src/imgui.cpp
-	src/cimgui.cpp
 	src/imgui_impl_opengl3.cpp
 	src/imgui_impl_opengl3.cpp
 	src/TextEditor.cpp
@@ -18,16 +17,16 @@ set(IMGUI_SRC
 	src/ImGuizmo.cpp
 )
 	  
-add_library(imgui ${IMGUI_SRC})
+#add_library(imgui ${IMGUI_SRC})
 
 
 
-target_include_directories(imgui PUBLIC
-	../opengl/include
-)
-target_include_directories(imgui PUBLIC
-	../vulkan/include
-)
+#target_include_directories(imgui PUBLIC
+#	../opengl/include
+#)
+#target_include_directories(imgui PUBLIC
+#	../vulkan/include
+#)
 
-target_include_directories(imgui PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>")
+#target_include_directories(imgui PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>")
 

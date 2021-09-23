@@ -10,7 +10,7 @@
 
 namespace Maple
 {
-	class MapleMonoArray
+	class MAPLE_EXPORT MapleMonoArray
 	{
 	public:
 		MapleMonoArray(MonoArray * existingArray);

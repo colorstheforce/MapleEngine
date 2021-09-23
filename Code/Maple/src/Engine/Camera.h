@@ -13,7 +13,7 @@
 
 namespace Maple 
 {
-	class Camera : public Component
+	class MAPLE_EXPORT Camera : public Component
 	{
 	public:
 		Camera() = default;

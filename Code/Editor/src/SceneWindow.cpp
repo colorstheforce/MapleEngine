@@ -15,7 +15,7 @@
 #include <ImGuizmo.h>
 #include <glm/gtc/type_ptr.hpp>
 #include "IconsMaterialDesignIcons.h"
-
+#include "Others/Console.h"
 #include "imgui_internal.h"
 
 namespace Maple 
@@ -29,14 +29,14 @@ namespace Maple
 	auto SceneWindow::onImGui() -> void
 	{
 		
-		auto& editor = *static_cast<Editor*>(app);
+		auto& editor = *static_cast<Editor*>(Application::get());
 
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		auto flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 		ImGui::SetNextWindowBgAlpha(0.0f);
 
-		auto currentScene = app->getSceneManager()->getCurrentScene();
+		auto currentScene = Application::get()->getSceneManager()->getCurrentScene();
 		ImGui::Begin(title.c_str(), &active, flags);
 		Camera* camera = nullptr;
 		Transform* transform = nullptr;
@@ -143,7 +143,7 @@ namespace Maple
 	auto SceneWindow::resize(uint32_t width, uint32_t height) -> void
 	{
 		bool resized = false;
-		auto& editor = *static_cast<Editor*>(app);
+		auto& editor = *static_cast<Editor*>(Application::get());
 		if (this->width != width || this->height != height)
 		{
 			resized = true;
@@ -161,7 +161,7 @@ namespace Maple
 			VulkanContext::get()->waiteIdle();
 			previewTexture->buildTexture(TextureFormat::RGBA8, width, height, false, false, false);
 			
-			for (auto& r : app->getRenderManagers())
+			for (auto& r : Application::get()->getRenderManagers())
 			{
 				if (r->isEditor()) {
 					r->setRenderTarget(previewTexture, false, true);
@@ -238,7 +238,7 @@ namespace Maple
 		ImGui::Indent();
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		bool selected = false;
-		auto& editor = *static_cast<Editor*>(app);
+		auto& editor = *static_cast<Editor*>(Application::get());
 		{
 			selected = editor.getImGuizmoOperation() == 4;
 			if (selected)

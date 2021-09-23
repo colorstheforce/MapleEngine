@@ -6,13 +6,13 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <cstdint>
-
+#include "Engine/Core.h"
 namespace Maple
 {
 
 	class BoundingBox;
 
-	class Ray 
+	class MAPLE_EXPORT Ray
 	{
 	public:
 		Ray() = default;
@@ -20,7 +20,7 @@ namespace Maple
 		{
 			set(origin, direction);
 		}
-
+		~Ray() {};
 		inline auto operator==(const Ray & rhs) const { return origin == rhs.origin && direction == rhs.direction; }
 		inline auto operator!=(const Ray & rhs) const { return origin != rhs.origin || direction != rhs.direction; }
 

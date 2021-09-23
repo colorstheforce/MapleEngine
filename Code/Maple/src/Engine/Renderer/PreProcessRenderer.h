@@ -21,7 +21,7 @@ namespace Maple
 	class UniformBuffer;
 	class Environment;
 
-	class PreProcessRenderer : public Renderer
+	class MAPLE_EXPORT PreProcessRenderer : public Renderer
 	{
 	public:
 		static constexpr int32_t SkyboxSize = 512;

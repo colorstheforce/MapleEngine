@@ -5,14 +5,14 @@
 
 #pragma once
 
-
+#include "Engine/Core.h"
 #include <string>
 
 struct lua_State;
 
 namespace Maple 
 {
-	class LuaVirtualMachine final
+	class MAPLE_EXPORT LuaVirtualMachine final
 	{
 	public:
 		LuaVirtualMachine();

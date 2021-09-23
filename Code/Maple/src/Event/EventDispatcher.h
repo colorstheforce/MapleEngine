@@ -10,10 +10,11 @@
 #include <future>
 #include "Event.h"
 #include "EventHandler.h"
+#include "Engine/Core.h"
 
 namespace Maple 
 {
-	class EventDispatcher final
+	class MAPLE_EXPORT EventDispatcher final
 	{
 	public:
 		EventDispatcher();

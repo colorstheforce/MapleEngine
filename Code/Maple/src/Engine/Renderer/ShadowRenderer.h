@@ -22,7 +22,7 @@ namespace Maple
 	class Transform;
 	class TextureDepth;
 
-	class ShadowRenderer : public Renderer
+	class MAPLE_EXPORT ShadowRenderer : public Renderer
 	{
 	public:
 		ShadowRenderer(const std::shared_ptr<TextureDepthArray> & texture = nullptr, uint32_t size = 4096, uint32_t numMaps = 4);

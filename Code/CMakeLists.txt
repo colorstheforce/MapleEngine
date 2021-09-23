@@ -6,7 +6,7 @@ get_filename_component(LIB_SRC_DIR
                        ${CMAKE_SOURCE_DIR}/Maple/lib
                        ABSOLUTE)
 
-get_filename_component(APP_SRC_DIR
+get_filename_component(APP_SRC_DIR  
                        ${CMAKE_SOURCE_DIR}/Editor/src ABSOLUTE)
 
 get_filename_component(GAME_SRC_DIR
@@ -54,6 +54,7 @@ add_definitions(
 	-DPLATFORM_WINDOWS 
 	-DPLATFORM_DESKTOP
 	-DGLM_FORCE_DEPTH_ZERO_TO_ONE 
+	-DMAPLE_DYNAMIC
 	-DTOOLS_DIR=${TOOL_CHAIN_DIR}
 )
 
@@ -68,7 +69,6 @@ source_group(TREE ${GAME_SRC_DIR} FILES ${GAME_APP_SRC})
 add_executable(Editor ${VK_APP_SRC})
 
 add_executable(Game ${GAME_APP_SRC})
-
 
 set_property(TARGET Editor Game PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${ASSET_DIR})
 
@@ -86,10 +86,16 @@ add_custom_command(TARGET Editor Game
 )
 
 
-#add_custom_command(TARGET Editor Game
-#				   POST_BUILD
-#	COMMAND powershell Copy-Item ${PROJECT_BINARY_DIR}/Scripts/Debug/MapleLibrary.dll ${GLEW32_OUT_PATH}
-#)
+add_custom_command(TARGET Editor Game
+				   POST_BUILD
+	COMMAND powershell Copy-Item ${ASSET_DIR}/${CMAKE_BUILD_TYPE}/MapleLibrary.dll ${GLEW32_OUT_PATH}
+)
+
+add_custom_command(TARGET Editor Game
+				   POST_BUILD
+	COMMAND powershell Copy-Item ${ASSET_DIR}/${CMAKE_BUILD_TYPE}/MapleEngine.dll ${GLEW32_OUT_PATH}
+)
+
 
 
 target_include_directories(Editor PUBLIC
@@ -136,7 +142,6 @@ target_link_libraries(
 )
 
 
-SET(LIBRARY_OUTPUT_PATH ${ASSET_DIR})
 
 endif()
 

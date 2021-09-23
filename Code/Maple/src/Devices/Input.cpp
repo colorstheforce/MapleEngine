@@ -39,7 +39,7 @@ namespace Maple
 		handler.mouseMoveHandler = std::bind(&Input::onMouseMoved, this, std::placeholders::_1);
 		handler.keyPressedHandler = std::bind(&Input::onKeyPressed, this, std::placeholders::_1);
 		handler.keyReleasedHandler = std::bind(&Input::onKeyReleased, this, std::placeholders::_1);
-		app->getEventDispatcher().addEventHandler(&handler);
+		Application::get()->getEventDispatcher().addEventHandler(&handler);
 		reset();
 	}
 
