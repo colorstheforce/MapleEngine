@@ -15,9 +15,9 @@ namespace Maple
 	}
 
 	Thread::Thread(const std::string& name)
+		:name(name)
 	{
 		thread = std::make_shared<std::thread>(&Thread::run, this);
-		PROFILE_SETTHREADNAME(name.c_str());
 	}
 
 	Thread::~Thread()
@@ -62,6 +62,8 @@ namespace Maple
 
 	auto Thread::run() -> void
 	{
+		PROFILE_SETTHREADNAME(name.c_str());
+		PROFILE_FUNCTION();
 		while (true)
 		{
 			Task task;

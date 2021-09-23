@@ -14,9 +14,11 @@ file(GLOB EDITOR_STATIC_SRC
 	src/*.h
 	src/Plugin/*.cpp
 	src/Plugin/*.h
+	src/UI/*.cpp
+	src/UI/*.h
 )
 
-add_definitions(-DEDITOR_STATIC)
+add_definitions(-DEDITOR_STATIC -DMAPLE_DYNAMIC -DPLATFORM_WINDOWS)
 
 add_library(EditorStatic 
 	${EDITOR_STATIC_SRC}
@@ -37,6 +39,7 @@ target_include_directories(EditorStatic PUBLIC
 	${EDITOR_LIB_SRC_DIR}/ktx/include
 	${EDITOR_LIB_SRC_DIR}/ktx/other_include
 	${EDITOR_LIB_SRC_DIR}/cereal/include
+	${EDITOR_LIB_SRC_DIR}/libmono/6.13.0/include
 )
 
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${EDITOR_STATIC_SRC})

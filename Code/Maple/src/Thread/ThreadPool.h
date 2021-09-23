@@ -12,13 +12,14 @@
 #include <list>
 #include <functional>
 #include <vector>
+#include "Engine/Core.h"
 
 namespace Maple 
 {
-	class Thread
+	class MAPLE_EXPORT Thread
 	{
 	public:
-		struct Task
+		struct MAPLE_EXPORT Task
 		{
 			Task() = default;
 			Task(const std::function<void*()> & j, std::function<void(void*)> c) : job(j), complete(c) {};
@@ -41,9 +42,10 @@ namespace Maple
 		std::mutex mutex;
 		std::condition_variable condition;
 		bool close = false;
+		std::string name;
 	};
 
-	class ThreadPool
+	class MAPLE_EXPORT ThreadPool
 	{
 	public:
 		ThreadPool(int32_t threadCount);

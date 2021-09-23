@@ -9,7 +9,7 @@ get_filename_component(LIB_SRC_DIR
 message( ${CMAKE_CURRENT_LIST_DIR})
 
 get_filename_component(ASSET_DIR
-					  ${CMAKE_CURRENT_LIST_DIR}/../../Assets
+					  ${CMAKE_SOURCE_DIR}/Assets
                       ABSOLUTE)		
 
 file(GLOB GAME_APP_SRC
@@ -42,11 +42,7 @@ set_property(
 	"System;System.Core;System.Numerics;System.Runtime;System.Runtime.CompilerServices.Unsafe"
 )
 
-
-
 SET(LIBRARY_OUTPUT_PATH ${ASSET_DIR})
-
-
 endif()
 
 
